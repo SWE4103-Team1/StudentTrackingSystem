@@ -4,26 +4,7 @@ This is the dev branch, and only your name-feature can be merged into this.
 
 ## Dependencies
 
-1.
-    First, ensure you create and activate a Python virtual environment in this
-    project's root:
-
-    ```bash
-    python -m venv venv        # create
-    source ./venv/bin/activate # activate
-    ```
-
-    activate scripts exist for various shells
-
-2.
-    All *pip* dependencies are listed in the `requirements.txt` file, and can be
-    installed with:
-
-    ```bash
-    pip install -r requirements.txt
-    ```
-
-3. Install system packages, listed below
+1. Install system packages, listed below
 
     **mysqlclient**
 
@@ -36,3 +17,19 @@ This is the dev branch, and only your name-feature can be merged into this.
     Installation information can be found at the [pypi package
     listing](https://pypi.org/project/mysqlclient/). On arch-linux, it was as simple as:
     `yay -S mysql`.
+
+2. First, ensure you create and activate a Python virtual environment in this
+    project's root:
+
+    ```bash
+    python -m venv venv        # create
+    source ./venv/bin/activate # activate
+    ```
+
+    activate scripts exist for various shells
+
+3. All *pip* dependencies are listed in the `requirements.txt` file, and can be
+    installed with:
+
+    ```bash
+    pip install -r requirements.txt
