@@ -76,7 +76,7 @@ WSGI_APPLICATION = "StudentTrackingSystem.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.mysql",
-        "NAME": "mysql-1",
+        "NAME": "team1db",
         "USER": "admin",
         "PASSWORD": "tJbsbKrk7!%m",
         "HOST": "mysql-1.cfjvavoil0w7.us-east-2.rds.amazonaws.com",
@@ -127,3 +127,4 @@ STATIC_URL = "/static/"
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+AUTH_USER_MODEL = "StudentTrackingSystemApp.User"
