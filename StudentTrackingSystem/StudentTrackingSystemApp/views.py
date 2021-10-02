@@ -1,3 +1,6 @@
 from django.shortcuts import render
 
-# Create your views here.
+def loginPage(request):
+	# Reminds: context is a dictionary mapping template variable names to Python objects.
+	context = {}
+	return render(request, 'StudentTrackingSystemApp/login.html', context)
