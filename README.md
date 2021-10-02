@@ -33,3 +33,8 @@ This is the dev branch, and only your name-feature can be merged into this.
 
     ```bash
     pip install -r requirements.txt
+
+
+## Database Connection
+
+The database is currently publically accessible, but has a subnet group with source IP address restrictions to it. If you would like direct connection to the database, contact Justen.
