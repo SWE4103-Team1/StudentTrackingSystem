@@ -21,6 +21,9 @@ class UserManager(BaseUserManager):
             raise ValueError(err_msg.format("Role"))
 
         email = self.normalize_email(email)
+        username = (
+            username if username else ""
+        )  # django user model can't have username = Null
         user = self.model(email=email, username=username, role=role, **extra_fields)
         user.set_password(password)
         user.save()
