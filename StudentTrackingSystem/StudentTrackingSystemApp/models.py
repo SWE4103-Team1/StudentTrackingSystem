@@ -1,5 +1,6 @@
 from django.db import models
 
+
 class Student(models.Model):
     sid = models.IntegerField(max_length=8, primary_key=True)
     name = models.CharField(max_length=70)
@@ -10,8 +11,10 @@ class Student(models.Model):
     program = models.CharField(max_length=10)
     start_date = models.DateField(max_length=8)
 
-    def __str__ (self):
+
+    def __str__(self):
         return self.sid
+
 
 class Course(models.Model):
     course_code = models.CharField(max_length=20, primary_key=True)
@@ -19,8 +22,9 @@ class Course(models.Model):
     credit_hours = models.IntegerField()
     name = models.CharField(max_length=50)
 
-    def __str__ (self):
-        return self.name
+
+    def __str__(self):
+        return self.course_code
 
 
 class Enrolment(models.Model):
@@ -32,5 +36,4 @@ class Enrolment(models.Model):
 
     def __str__(self):
         return self.sid
-
 
