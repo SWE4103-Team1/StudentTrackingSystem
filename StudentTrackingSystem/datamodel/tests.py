@@ -18,3 +18,4 @@ class StudentTests(TestCase):
         )
         student.save()
         self.assertEqual(student.sid, 123456)
+        self.assertEqual(student.name, "john doe")
