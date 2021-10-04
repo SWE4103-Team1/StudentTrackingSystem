@@ -1,10 +1,101 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8">
-    <title>Student Tracking System Login</title>
-  </head>
-  <body>
-    <h1>WIP: Login Page</h1>
-  </body>
+    <head>
+        <title>
+             Student Tracking System Login
+        </title>
+        <meta charset="UTF-8">
+        <style>
+            body{
+                font-family:sans-serif;
+                background-color: #629199;
+            }
+            h1{
+                color:aliceblue;
+                text-align: center;
+                padding: 50px 0 0 ;
+            }
+            form{
+                background-color: #d9d8a1;
+                width: 50%;
+                padding-top: 10px;
+                padding-bottom: 10px;
+                margin: auto;
+                border-radius: 25px;
+
+            }
+            input[type=text], input[type=password] {
+                width: 90%;
+                text-align: left;
+                padding: 12px;
+                margin-top: 10px;
+                margin-left: auto;
+                margin-right: auto;
+                display: block;
+                border: 1px solid #ccc;
+                box-sizing: border-box;
+                border-radius: 25px;
+                
+            }
+            button {
+                background-color: #629199;
+                color: white;
+                text-align: center;
+                padding: 14px 20px;
+                margin: 10px auto;
+                display: block;
+                border: none;
+                cursor: pointer;
+                width: 50%;
+                border-radius: 20px;
+            }
+            button:hover{
+                opacity: 0.8;
+            }
+            .links{
+                margin: auto;
+                display: block;
+                width: 50%;
+            }
+            span.accnt{
+                text-align: center;
+                display: inline-block;
+                color: white;
+            }
+            span.psw{
+                text-align: right;
+                margin: 5px 0px 0 200px;
+                display: inline-block;
+            }
+            a:link{
+                color: white;
+            }
+
+        </style>
+    </head>
+
+    <body>
+        <h1>
+            Login
+        </h1>
+       <form action="/action_page.php" method="POST">
+            <div class="container">
+                <input type="text" placeholder="Username" name="uname" required>
+                <input type="password" placeholder="Password" name="psw" required>
+                <button type="submit">Login</button>
+            </div>
+       </form>
+
+       <div class="links">
+            <span class="accnt"> 
+                <a href= "##" style="color: white;"> Create an Account </a>
+            </span>
+
+            <span class="psw">    
+                    <a href="#" style="color: white;">Forgot password?</a>
+            </span>
+        </div>
+    </body>
+
+
 </html>
