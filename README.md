@@ -11,6 +11,7 @@ For coding, please
 ## differnences for dev or feature
 - **choose feature_xxxx** just for checkouting from dev_*** and ***delete*** it after merging
 - **choose dev_xxxx** for merging your code with others and **delete your feature** branch after that
+- delete old dev if you all are working on new dev
 *******
 ## main
 After completing all development of a phase
