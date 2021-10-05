@@ -12,7 +12,7 @@ class Student(models.Model):
     start_date = models.DateField(max_length=8)
 
     def __str__(self):
-        return str(self.sid)
+        return f"sid: {self.sid}, name: {self.name}, gender: {self.gender}, address: {self.address}, email: {self.email}"
 
 
 class Course(models.Model):
