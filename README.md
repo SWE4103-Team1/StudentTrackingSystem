@@ -1,5 +1,4 @@
 # Student Tracking System
-*******
 ## fetch, push & merge
 For coding, please
 - choose one dev branch from the lists
