@@ -1,3 +1,16 @@
-# TestMerge
-It is a repo for testing.
-This is the main branch, and only the dev branch can be merged into this.
+# Student Tracking System
+##fetch, push & merge
+For coding, please
+->choose one dev branch from the lists
+->create one new branch, like feature_Tom
+->check out to your branch and code
+->commit and push to your brach
+->merge your code into the latest dev branch and delete your feature branch
+##dev & main
+After completing all development of a phase
+->merge all dev branches into the main branch
+->update the version number, like STS 1.0
+->delete all feature branches
+->write a document for this version
+
+
