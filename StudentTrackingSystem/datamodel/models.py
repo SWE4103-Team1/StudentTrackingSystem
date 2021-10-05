@@ -3,10 +3,10 @@ from django.db import models
 
 class UploadSet(models.Model):
     upload_date = models.DateField(primary_key=True)
-    # must be sure that
-    person_data_file = models.FileField(upload_to="uploads/")
-    course_data_file = models.FileField(upload_to="uploads/")
-    transfer_data_file = models.FileField(upload_to="uploads/")
+    # ensure nefarious scripts aren't uploaded
+    person_data_file = models.FileField(upload_to="uploads/", blank=True)
+    course_data_file = models.FileField(upload_to="uploads/", blank=True)
+    transfer_data_file = models.FileField(upload_to="uploads/", blank=True)
 
 
 class Student(models.Model):

@@ -2,7 +2,7 @@ from django.db.models.query_utils import select_related_descend
 
 # from django.test import TestCase
 from unittest import TestCase
-from .models import Student, Course, Enrolment, CourseSection
+from ..models import Student, Course, Enrolment, CourseSection
 
 from datetime import date
 
