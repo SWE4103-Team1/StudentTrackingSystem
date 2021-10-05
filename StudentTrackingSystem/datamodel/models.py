@@ -3,7 +3,7 @@ from django.db import models
 
 class Student(models.Model):
     sid = models.IntegerField(primary_key=True)
-    name = models.CharField(max_length=70)
+    name = models.TextField(max_length=70)
     gender = models.CharField(max_length=1)
     address = models.TextField(max_length=140)
     email = models.EmailField(max_length=50)
@@ -12,16 +12,13 @@ class Student(models.Model):
     start_date = models.DateField(max_length=8)
 
     def __str__(self):
-        return self.sid
+        return str(self.sid)
 
 
 class Course(models.Model):
     course_code = models.CharField(max_length=20, primary_key=True)
     credit_hours = models.IntegerField()
     name = models.CharField(max_length=50)
-
-    def __str__(self):
-        return self.name
 
 
 class CourseSection(models.Model):
