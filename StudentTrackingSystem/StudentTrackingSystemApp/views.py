@@ -1,6 +1,11 @@
 from django.shortcuts import render
 
 def loginPage(request):
-	# Reminds: context is a dictionary mapping template variable names to Python objects.
+	if request.method == 'POST':
+		email = request.POST.get('email')
+		password = request.POST.get('password')
+
+		print(f'{email} : {password}')
+		
 	context = {}
 	return render(request, 'StudentTrackingSystemApp/login.html', context)

@@ -74,10 +74,11 @@
         <h1>
             Login
         </h1>
-       <form action="/action_page.php" method="POST">
+       <form method="POST">
+            {% csrf_token %}
             <div class="container">
                 <input type="email" placeholder="Email" name="email" required>
-                <input type="password" placeholder="Password" name="psw" required>
+                <input type="password" placeholder="Password" name="password" required>
                 <button type="submit">Login</button>
             </div>
        </form>
