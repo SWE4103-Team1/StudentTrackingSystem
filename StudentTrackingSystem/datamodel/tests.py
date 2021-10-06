@@ -1,3 +1,4 @@
+
 '''
 Author: Justen George Di Ruscio, Elliot Chin
 Last Edit: Elliot Chin (6.10.2021)
@@ -11,9 +12,13 @@ from django.test import TestCase
 from .models import Student, Course, Enrolment, CourseSection
 from datetime import date
 
+def checkEmpty(self, m):
+  all_entries = m.objects.all()
+  self.assertFalse(not all_entries)
+
 
 class Tests(TestCase):
-
+   
     # This creates a student object
     def test_create_student(self):
         student = Student(
@@ -65,7 +70,21 @@ class Tests(TestCase):
         )
         # This saves the enrollment object to the database
         enrollment.save()
-        
+              
+class StudentTests(TestCase):
+    def test_checkEmpty_student(self):
+        checkEmpty(self, Student)
+        # all_entries = Student.objects.all()
+        # print(all_entries)
+        # self.assertFalse(not all_entries)
 
+    def test_checkEmail_Student(self):
+        all_entries = Student.objects.all()
+        self.assertTrue(x for x in all_entries if x.sid == 123456)
+
+
+class CourseTests(TestCase):
+    def test_checkEmpty_course(self):
+        checkEmpty(self, Course)
     
 

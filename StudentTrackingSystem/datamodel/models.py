@@ -3,7 +3,9 @@ Author : Yuzhuo Zheng, Elliot Chin
 Last Edit : Elliot Chin (6.10.2021) 
 '''
 
+
 from django.db import models
+
 
 class Student(models.Model):
     sid = models.IntegerField(primary_key=True)
