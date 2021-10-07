@@ -1,26 +1,37 @@
-
 '''
-Author: Justen George Di Ruscio, Elliot Chin
-Last Edit: Elliot Chin (6.10.2021)
+Author: Justen George Di Ruscio, Elliot Chin, Yuzhuo Zheng
+Last Edit: Yuzhuo (6.10.2021)
 '''
-
 
 from django.db.models.query_utils import select_related_descend
 from django.test import TestCase
 # Uncomment the bottom and comment the top import to keep the database from deleting itself
-#from unittest import TestCase
+from unittest import TestCase
 from .models import Student, Course, Enrolment, CourseSection
 from datetime import date
 
+printNo = 0
+
+
+# function for debugging
+def nicePrint(x):
+    global printNo
+    printNo += 1
+    print("\n\n\n" + str(str(printNo) + " : " + str(x)) + "\n\n\n")
+
+
+# Checks if the current database is empty and returns a Boolean value
 def checkEmpty(self, m):
-  all_entries = m.objects.all()
-  self.assertFalse(not all_entries)
+    all_entries = m.objects.all()
+    return not all_entries
 
 
-class Tests(TestCase):
-   
+# It is a test suit for checking whether entries can be inserted into database successfully
+class CreateTests(TestCase):
+
+    # django test suit tests in alphabetical order, and a, b, c, d are used for reordering
     # This creates a student object
-    def test_create_student(self):
+    def test_a_create_student(self):
         student = Student(
             sid=123456,
             name="john doe",
@@ -31,60 +42,78 @@ class Tests(TestCase):
             program="Computer Science",
             start_date=date(2020, 10, 4),
         )
-        # This saves the student object to the database
-        student.save()
-  
+
+        # Null-check is performed and new entities are inserted if the database is empty
+        if checkEmpty(self, Student):
+            # This saves the student object to the database
+            student.save()
+
     # This creates a course object
-    def test_create_course(self):
+    def test_b_create_course(self):
         course = Course(
-            course_code = "SWE4103",
-            credit_hours = 3,
-            name = "This Class Name",
+            course_code="SWE4103",
+            credit_hours=3,
+            name="This Class Name",
         )
         # This saves the course object to the database
-        course.save()
+        if checkEmpty(self, Course):
+            course.save()
 
     # This creates a course section
-    def test_create_courseSection(self):
+    def test_c_create_courseSection(self):
         # This returns the course with the course code "SWE4103"
         selected_course = [course for course in Course.objects.all() if course.course_code == "SWE4103"]
         course_section = CourseSection(
-            section = "FR01B",
+            section="FR01B",
             # This sets the foreign key to the course with the course code "SWE4103"
-            course_code = selected_course[0],
+            course_code=selected_course[0],
         )
         # This saves the course_section object to the database
-        course_section.save()
+        if checkEmpty(self, CourseSection):
+            course_section.save()
 
     # This creates a enrollment
-    def test_create_enrollment(self):  
-        # This returns the course section with the section name "FR01B"
-        selected_course_section = [courseSection for courseSection in CourseSection.objects.all() if courseSection.section == "FR01B"]
+    def test_d_create_enrollment(self):
+        # This returns the course section with the section name "FR01B" and similar to student
+        selected_course_section = [courseSection for courseSection in CourseSection.objects.all() if
+                                   courseSection.section == "FR01B"]
+        selected_student = [student for student in Student.objects.all()]
+
+        nicePrint(selected_student)
         enrollment = Enrolment(
             # This sets the SID Foreign key to the first student in the Student DB
-            sid = Student.objects.all()[0],
+
+            sid=selected_student[0],
             # THis sets the course_section Foreign key to the section with the name "FR01B"
-            course_section = selected_course_section[0],
-            term = "WI2021",
-            grade = "F",
+            course_section=selected_course_section[0],
+            term="WI2021",
+            grade="F",
         )
         # This saves the enrollment object to the database
-        enrollment.save()
-              
-class StudentTests(TestCase):
-    def test_checkEmpty_student(self):
-        checkEmpty(self, Student)
-        # all_entries = Student.objects.all()
-        # print(all_entries)
-        # self.assertFalse(not all_entries)
+        if checkEmpty(self, Enrolment):
+            enrollment.save()
 
+
+# It is a class for checking empty after entries are created
+class EmptyTests(TestCase):
+    def test_checkEmpty_student(self):
+        self.assertFalse(checkEmpty(self, Student))
+
+    def test_checkEmpty_course(self):
+        self.assertFalse(checkEmpty(self, Course))
+
+    def test_checkEmpty_course_section(self):
+        self.assertFalse(checkEmpty(self, CourseSection))
+
+    def test_checkEmpty_enrolment(self):
+        self.assertFalse(checkEmpty(self, Enrolment))
+
+
+# It is a class for proofreading entries in the database.
+class ProofreadingTests(TestCase):
+    # Check whether Jonhn's email address is "john@unb.ca"
     def test_checkEmail_Student(self):
         all_entries = Student.objects.all()
-        self.assertTrue(x for x in all_entries if x.sid == 123456)
-
-
-class CourseTests(TestCase):
-    def test_checkEmpty_course(self):
-        checkEmpty(self, Course)
-    
-
+        select_student = [x for x in all_entries if x.sid == 123456]
+        for x in select_student:
+            self.assertEqual(x.email, "john@unb.ca")
