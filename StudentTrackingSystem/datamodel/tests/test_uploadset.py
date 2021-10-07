@@ -41,8 +41,7 @@ class UploadSetTests(TestCase):
 
     def test_create_upload_set(self, today=date.today()):
         with mktemp() as course_file, mktemp() as person_file, mktemp() as transfer_file:
-            course_contents = "course file contents"
-            course_file.write(course_contents)
+            course_file.write(course_contents := "course file contents")
             person_file.write(person_contents := "person file contents")
             transfer_file.write(transfer_contents := "transfer file contents")
 
