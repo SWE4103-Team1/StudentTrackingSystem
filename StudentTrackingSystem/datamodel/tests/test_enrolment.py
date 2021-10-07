@@ -33,3 +33,6 @@ class EnrolmentTests(TestCase):
         self.assertEqual(e.upload_set, us)
 
         return e
+
+    def test_query_enrolment_index(self):
+        pass

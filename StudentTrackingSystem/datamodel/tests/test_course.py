@@ -25,3 +25,19 @@ class CourseTests(TestCase):
         self.assertEqual(c.upload_set, us)
 
         return c
+
+    def test_query_course_index(self):
+        c = self.test_create_course()
+
+        db_course = Course.objects.get(
+            course_code=c.course_code, section=c.section, upload_set=c.upload_set
+        )
+
+        self.assertIsNotNone(db_course)
+        self.assertEquals(db_course.course_code, c.course_code)
+        self.assertEquals(db_course.section, c.section)
+        self.assertEquals(db_course.credit_hours, c.credit_hours)
+        self.assertEquals(db_course.name, c.name)
+        self.assertEquals(db_course.upload_set, c.upload_set)
+
+        return db_course
