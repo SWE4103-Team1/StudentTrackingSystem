@@ -5,69 +5,7 @@
              Student Tracking System Login
         </title>
         <meta charset="UTF-8">
-        <style>
-            body{
-                font-family:sans-serif;
-                background-color: #629199;
-            }
-            h1{
-                color:aliceblue;
-                text-align: center;
-                padding: 50px 0 0 ;
-            }
-            form{
-                background-color: #d9d8a1;
-                width: 50%;
-                padding-top: 10px;
-                padding-bottom: 10px;
-                margin: auto;
-                border-radius: 25px;
-
-            }
-            input[type=email], input[type=password] {
-                width: 90%;
-                text-align: left;
-                padding: 12px;
-                margin-top: 10px;
-                margin-left: auto;
-                margin-right: auto;
-                display: block;
-                border: 1px solid #ccc;
-                box-sizing: border-box;
-                border-radius: 25px;
-                
-            }
-            button {
-                background-color: #629199;
-                color: white;
-                text-align: center;
-                padding: 14px 20px;
-                margin: 10px auto;
-                display: block;
-                border: none;
-                cursor: pointer;
-                width: 50%;
-                border-radius: 20px;
-            }
-            button:hover{
-                opacity: 0.8;
-            }
-            .links{
-                margin: auto;
-                display: block;
-                width: 50%;
-            }
-            span.accnt{
-                text-align: center;
-                display: inline-block;
-                color: white;
-            }
-
-            a:link{
-                color: white;
-            }
-
-        </style>
+        <link href="main.css" rel="stylesheet">
     </head>
 
     <body>
@@ -75,7 +13,7 @@
             Login
         </h1>
        <form method="POST">
-            {% csrf_token %}
+            {% csrf_token %} <!-- Not sure what this is but it is appearing on the form-->
             <div class="container">
                 <input type="email" placeholder="Email" name="email" required>
                 <input type="password" placeholder="Password" name="password" required>
@@ -85,7 +23,7 @@
 
        <div class="links">
             <span class="accnt"> 
-                <a href= "##" style="color: white;"> Registration </a>
+                <a href= "createAccount.html" style="color: white;"> Registration </a>
             </span>
         </div>
     </body>
