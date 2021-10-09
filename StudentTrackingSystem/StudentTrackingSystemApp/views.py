@@ -9,3 +9,7 @@ def loginPage(request):
 		
 	context = {}
 	return render(request, 'StudentTrackingSystemApp/login.html', context)
+
+def registerPage(request):
+	context = {}
+	return render(request, 'StudentTrackingSystemApp/register.html', context)
