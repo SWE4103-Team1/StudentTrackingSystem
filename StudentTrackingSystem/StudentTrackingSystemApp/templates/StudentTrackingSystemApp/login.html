@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html>
+    {% load static %}
     <head>
         <title>
              Student Tracking System Login
         </title>
         <meta charset="UTF-8">
-        <link href="main.css" rel="stylesheet">
+        <link rel="stylesheet" href="{% static 'StudentTrackingSystemApp/main.css' %}">
     </head>
 
     <body>
@@ -13,7 +14,7 @@
             Login
         </h1>
        <form method="POST">
-            {% csrf_token %} <!-- Not sure what this is but it is appearing on the form-->
+            {% csrf_token %}
             <div class="container">
                 <input type="email" placeholder="Email" name="email" required>
                 <input type="password" placeholder="Password" name="password" required>
