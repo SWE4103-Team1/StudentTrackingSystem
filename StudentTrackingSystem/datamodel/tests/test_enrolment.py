@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from ..models import Enrolment
+from ..models import Enrolment, UploadSet
 from .test_uploadset import UploadSetTests
 from .test_course import CourseTests
 from .test_student import StudentTests
@@ -35,4 +35,18 @@ class EnrolmentTests(TestCase):
         return e
 
     def test_query_enrolment_index(self):
-        pass
+        e = self.test_create_enrolment()
+
+        db_enrolment = Enrolment.objects.get(
+            student=e.student, course=e.course, term=e.term, grade=e.grade, upload_set = e.upload_set
+        )
+
+        # test query enrollment
+        self.assertIsNot(db_enrolment)
+        self.assertEquals(db_enrolment.student , e.student)
+        self.assertEquals(db_enrolment.course, e.course)
+        self.assertEquals(db_enrolment.term, e.term)
+        self.assertEquals(db_enrolment.grade, e.grade)
+        self.assertEquals(db_enrolment.upload_set, e.upload_set)
+    
+        return db_enrolment
