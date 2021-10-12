@@ -1,6 +1,6 @@
 from django.test import TestCase
 from django.core.files import File as DjangoFile
-from datetime import date, timedelta
+from datetime import date
 from tempfile import NamedTemporaryFile
 import os
 
@@ -77,4 +77,3 @@ class UploadSetTests(TestCase):
         self.assertTrue(db_us.transfer_data_file)
 
         return db_us
-
