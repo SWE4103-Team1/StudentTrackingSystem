@@ -16,8 +16,10 @@ This is the dev branch, and only your name-feature can be merged into this.
     package does not ship the actual MySQL client, merely the Python bindings to it.
     As such, the MySQL client must be separately installed as a system package.
     Installation information can be found at the [pypi package
-    listing](https://pypi.org/project/mysqlclient/). On arch-linux, it was as simple as:
-    `yay -S mysql`.
+    listing](https://pypi.org/project/mysqlclient/).
+
+    On arch-linux, run `yay -S mysql`. With debian/Ubuntu, `sudo apt install
+    libmysqlclient-dev` will work.
 
 2. First, ensure you create and activate a Python virtual environment in this
     project's root:
