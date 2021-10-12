@@ -79,7 +79,7 @@ WSGI_APPLICATION = "StudentTrackingSystem.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.mysql",
-        "NAME": "justen_db_models",
+        "NAME": "team1db",
         "USER": "admin",
         "PASSWORD": "tJbsbKrk7!%m",
         "HOST": "mysql-1.cfjvavoil0w7.us-east-2.rds.amazonaws.com",
