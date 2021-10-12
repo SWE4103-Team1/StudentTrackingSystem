@@ -38,7 +38,10 @@ class EnrolmentTests(TestCase):
         e = self.test_create_enrolment()
 
         db_enrolment = Enrolment.objects.get(
-            student=e.student, course=e.course, term=e.term, grade=e.grade, upload_set=e.upload_set
+            student=e.student,
+            course=e.course,
+            term=e.term,
+            upload_set=e.upload_set,
         )
 
         # test query enrollment
