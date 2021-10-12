@@ -21,7 +21,16 @@ class StudentTests(TestCase):
             upload_set=us,
         )
         s.save()
+
         self.assertEqual(s.student_number, 123456)
+        self.assertEqual(s.name, "John Doe")
+        self.assertEqual(s.gender, "M")
+        self.assertEqual(s.address, "123 unb lane")
+        self.assertEqual(s.email, "johndoe@unb.ca")
+        self.assertEqual(s.campus, "FR")
+        self.assertEqual(s.program, "SWE")
+        self.assertEqual(s.start_date, us.upload_date)
+        self.assertEqual(s.upload_set, us)
 
         return s
 
@@ -29,11 +38,11 @@ class StudentTests(TestCase):
         s = self.test_create_student()
 
         db_student = Student.objects.get(
-            student=s.student
+            student_number=s.student_number, upload_set=s.upload_set
         )
 
         # test query enrollment
-        self.assertIsNot(db_student)
+        self.assertIsNotNone(db_student)
         self.assertEquals(db_student.name, s.name)
         self.assertEqual(db_student.gender, s.gender)
         self.assertEqual(db_student.address, s.address)

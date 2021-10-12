@@ -38,11 +38,14 @@ class EnrolmentTests(TestCase):
         e = self.test_create_enrolment()
 
         db_enrolment = Enrolment.objects.get(
-            student=e.student, course=e.course, term=e.term, grade=e.grade, upload_set=e.upload_set
+            student=e.student,
+            course=e.course,
+            term=e.term,
+            upload_set=e.upload_set,
         )
 
         # test query enrollment
-        self.assertIsNot(db_enrolment)
+        self.assertIsNotNone(db_enrolment)
         self.assertEquals(db_enrolment.student, e.student)
         self.assertEquals(db_enrolment.course, e.course)
         self.assertEquals(db_enrolment.term, e.term)
