@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     "StudentTrackingSystemApp",
     "users",
     "datamodel",
+    "dataloader",
 ]
 
 MIDDLEWARE = [
