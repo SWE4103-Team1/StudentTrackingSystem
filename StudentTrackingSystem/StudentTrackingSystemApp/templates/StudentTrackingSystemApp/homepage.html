@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+
+<html>
+{% load static %}
+
+<head>
+    <title>
+        Student Tracking System Login
+    </title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{% static 'StudentTrackingSystemApp/main.css' %}">
+</head>
+
+<body>
+    <h1>Homepage</h1>
+    {% csrf_token %}
+    <form action="action_page.php">
+        <br>
+        <input type="file" name="input_files" multiple>
+        <br><br>
+        <button type="submit">Upload</button>
+    </form>
+</body>
+
+</html>
