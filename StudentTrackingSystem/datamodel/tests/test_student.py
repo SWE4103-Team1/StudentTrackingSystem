@@ -40,11 +40,20 @@ class StudentTests(TestCase):
         s = self.test_create_student()
 
         db_student = Student.objects.get(
-            student_number=s.student_number, upload_set=s.upload_set
+            student_number=s.student_number,
+            name=s.name,
+            gender=s.gender,
+            address=s.address,
+            email=s.email,
+            campus=s.campus,
+            program=s.program,
+            start_date=s.start_date,
+            upload_set=s.upload_set,
         )
 
         # test query enrollment
         self.assertIsNotNone(db_student)
+        self.assertEqual(db_student.student_number, s.student_number)
         self.assertEquals(db_student.name, s.name)
         self.assertEqual(db_student.gender, s.gender)
         self.assertEqual(db_student.address, s.address)
