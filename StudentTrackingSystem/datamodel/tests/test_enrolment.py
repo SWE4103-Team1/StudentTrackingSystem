@@ -42,7 +42,7 @@ class EnrolmentTests(TestCase):
         )
 
         # test query enrollment
-        self.assertIsNot(db_enrolment)
+        self.assertIsNotNone(db_enrolment)
         self.assertEquals(db_enrolment.student, e.student)
         self.assertEquals(db_enrolment.course, e.course)
         self.assertEquals(db_enrolment.term, e.term)
