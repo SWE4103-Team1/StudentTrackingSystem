@@ -15,7 +15,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-
+from StudentTrackingSystemApp import views
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('login', views.loginPage, name = 'loginPage'),
+    path('createAccount', views.createAccountPage, name = 'createAccountPage')
 ]
