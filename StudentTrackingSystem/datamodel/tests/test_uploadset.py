@@ -1,6 +1,6 @@
 from django.test import TestCase
 from django.core.files import File as DjangoFile
-from datetime import date
+from datetime import date, timedelta
 from tempfile import NamedTemporaryFile
 import os
 
@@ -72,6 +72,21 @@ class UploadSetTests(TestCase):
 
         self.assertIsNotNone(db_us)
         self.assertEqual(db_us.upload_date, today)
+        self.assertTrue(db_us.course_data_file)
+        self.assertTrue(db_us.person_data_file)
+        self.assertTrue(db_us.transfer_data_file)
+
+        return db_us
+
+    def test_same_upload_set_with_different_date(self):
+        yesterday = date.today() - timedelta(days=1)
+        us = self.test_create_upload_set(yesterday)
+
+        # query it from DB
+        db_us = UploadSet.objects.get(upload_date=yesterday)
+
+        self.assertIsNotNone(db_us)
+        self.assertEqual(db_us.upload_date, yesterday)
         self.assertTrue(db_us.course_data_file)
         self.assertTrue(db_us.person_data_file)
         self.assertTrue(db_us.transfer_data_file)
