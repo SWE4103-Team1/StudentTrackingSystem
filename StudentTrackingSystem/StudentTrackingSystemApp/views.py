@@ -1,5 +1,5 @@
 from django.shortcuts import render
-
+from dataloader.load_extract import _uploadAllFiles
 
 def loginPage(request):
     if request.method == 'POST':
@@ -21,6 +21,16 @@ def homePage(request):
     if request.method == 'POST':
 		# files will hold all the files that are read in
         files = request.FILES.getlist('input_files')
+
+        for f in files:
+            if f.name == 'personData.txt':
+                personData = f
+            elif f.name == 'courseData.txt':
+                courseData = f
+            elif f.name == 'transferData.txt':
+                transferData = f
+
+        _uploadAllFiles(personData, courseData, transferData)
 
     context = {}
     return render(request, 'StudentTrackingSystemApp/homepage.html', context)
