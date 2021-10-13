@@ -6,6 +6,20 @@ from ..models import Student
 from .test_uploadset import UploadSetTests
 
 
+def get_student_by_student_number(student_number):
+    selected_students = Student.objects.all().values()
+    for x in selected_students:
+        if x["student_number"] == student_number:
+            return x
+
+
+def get_student_by_student_number_and_upload_set_id(student_number, upload_set_id):
+    selected_students = Student.objects.all().values()
+    for x in selected_students:
+        if x["student_number"] == student_number & x["upload_set_id"] == upload_set_id:
+            return x
+
+
 class StudentTests(TestCase):
     def test_create_student(self):
         us_tester = UploadSetTests()
@@ -24,44 +38,19 @@ class StudentTests(TestCase):
         )
         s.save()
 
-        self.assertEqual(s.student_number, 123456)
-        self.assertEqual(s.name, "John Doe")
-        self.assertEqual(s.gender, "M")
-        self.assertEqual(s.address, "123 unb lane")
-        self.assertEqual(s.email, "johndoe@unb.ca")
-        self.assertEqual(s.campus, "FR")
-        self.assertEqual(s.program, "SWE")
-        self.assertEqual(s.start_date, us.upload_date)
-        self.assertEqual(s.upload_set, us)
+        s123456 = get_student_by_student_number(123456)
+        self.assertDictContainsSubset(s123456, s.__dict__)
 
         return s
 
     def test_query_student_index(self):
         s = self.test_create_student()
 
-        db_student = Student.objects.get(
-            student_number=s.student_number,
-            name=s.name,
-            gender=s.gender,
-            address=s.address,
-            email=s.email,
-            campus=s.campus,
-            program=s.program,
-            start_date=s.start_date,
-            upload_set=s.upload_set,
-        )
+        db_student = get_student_by_student_number(s.student_number)
 
         # test query enrollment
         self.assertIsNotNone(db_student)
-        self.assertEqual(db_student.student_number, s.student_number)
-        self.assertEquals(db_student.name, s.name)
-        self.assertEqual(db_student.gender, s.gender)
-        self.assertEqual(db_student.address, s.address)
-        self.assertEqual(db_student.email, s.email)
-        self.assertEqual(db_student.campus, s.campus)
-        self.assertEqual(db_student.program, s.program)
-        self.assertEquals(db_student.upload_set, s.upload_set)
-
+        self.assertDictContainsSubset(db_student, s.__dict__)
         return db_student
 
     def test_repeat_student_in_upload_set(self):

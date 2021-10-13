@@ -1,10 +1,18 @@
 from django.test import TestCase
-
 from ..models import Course
 from .test_uploadset import UploadSetTests
 
 
+def get_course_by_course_code(course_code):
+    selected_courses = Course.objects.all().values()
+    for x in selected_courses:
+        # print(str(x.items()))
+        if x["course_code"] == course_code:
+            return x
+
+
 class CourseTests(TestCase):
+
     def test_create_course(self):
         us_tester = UploadSetTests()
         us = us_tester.test_create_null_upload_set()
@@ -18,26 +26,15 @@ class CourseTests(TestCase):
         )
         c.save()
 
-        self.assertEqual(c.course_code, "cs2333")
-        self.assertEqual(c.section, "FR01B")
-        self.assertEqual(c.credit_hours, 3)
-        self.assertEqual(c.name, "Formal Languages")
-        self.assertEqual(c.upload_set, us)
+        cs2333 = get_course_by_course_code("cs2333")
+        self.assertDictContainsSubset(cs2333, c.__dict__)
 
         return c
 
     def test_query_course_index(self):
         c = self.test_create_course()
 
-        db_course = Course.objects.get(
-            course_code=c.course_code, section=c.section, upload_set=c.upload_set
-        )
-
-        self.assertIsNotNone(db_course)
-        self.assertEquals(db_course.course_code, c.course_code)
-        self.assertEquals(db_course.section, c.section)
-        self.assertEquals(db_course.credit_hours, c.credit_hours)
-        self.assertEquals(db_course.name, c.name)
-        self.assertEquals(db_course.upload_set, c.upload_set)
+        db_course = get_course_by_course_code(c.course_code)
+        self.assertDictContainsSubset(db_course,c.__dict__)
 
         return db_course
