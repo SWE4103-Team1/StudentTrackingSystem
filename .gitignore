@@ -1,3 +1,4 @@
+
 # Created by https://www.toptal.com/developers/gitignore/api/django,python,visualstudiocode
 # Edit at https://www.toptal.com/developers/gitignore?templates=django,python,visualstudiocode
 
@@ -176,6 +177,11 @@ cython_debug/
 
 # PyBuilder
 
+
+
+
+
+
 # Jupyter Notebook
 
 # IPython
@@ -230,3 +236,10 @@ cython_debug/
 .ionide
 
 # End of https://www.toptal.com/developers/gitignore/api/django,python,visualstudiocode
+
+venv/
+__pycache__/
+*.py[cod]
+uploads/
+.idea/
+.vscode/
