@@ -36,7 +36,7 @@ def uploadPersonDataFile(personfile):
 
 
 
-#THIS LOOP CREATES AND POPULATES THE COURSE,COURSE,SECTION and Enrolment Models
+#THIS LOOP CREATES AND POPULATES THE COURSE,and Enrolment Models
 def uploadCourseDataFile(coursefile):
     course_dict = {}
     enrolment_dict={}
