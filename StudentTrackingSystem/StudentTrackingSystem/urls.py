@@ -18,6 +18,6 @@ from django.urls import include, path
 from StudentTrackingSystemApp import views
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('login', views.loginPage, name = 'loginPage'),
-    path('createAccount', views.createAccountPage, name = 'createAccountPage')
+    path('login/', views.loginPage, name = 'loginPage'),
+    path('createAccount/', views.createAccountPage, name = 'createAccountPage')
 ]

@@ -31,10 +31,10 @@ def loginPage(request):
 	context = {}
 	if request.method == 'POST':
 		
-		email = request.POST.get('email')
+		username = request.POST.get('username')
 		password = request.POST.get('password')
 		try:
-			user = authenticate(request, email=email, password=password)
+			user = authenticate(request, username=username, password=password)
 			if user is not None:
 				print(user)
 				print("loginSuccessful")
@@ -43,8 +43,7 @@ def loginPage(request):
 				return render(request, 'StudentTrackingSystemApp/login.html', context)
 		except:
 			print("error")
-		print(f'{email} : {password}')
-		
+		print(f'{username} : {password}')		
 	
 	return render(request, 'StudentTrackingSystemApp/login.html', context)
 

@@ -13,7 +13,8 @@
         <h1>
             Create an Account
         </h1>
-       <form action="/createAccount" method="POST">
+       <form method="POST">
+            {% csrf_token %}
             <div class="container">
                 <input type="text" placeholder="Name" name="username" required>
                 <input type="email" placeholder="Email" name="email" required>
