@@ -1,12 +1,12 @@
 import os
 from django.db import IntegrityError
-os.environ.setdefault('DJANGO_SETTINGS_MODULE','StudentTrackingSystem.settings')
+#os.environ.setdefault('DJANGO_SETTINGS_MODULE','StudentTrackingSystem.settings')
 import datetime
-os.system("python3 manage.py flush")
+#os.system("python3 manage.py flush")
 
-import django
-from django.core.exceptions import ObjectDoesNotExist
-django.setup()
+#import django
+#from django.core.exceptions import ObjectDoesNotExist
+#django.setup()
 
 from datamodel.models import Student,Course,Enrolment,UploadSet
 
