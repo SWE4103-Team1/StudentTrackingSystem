@@ -19,47 +19,32 @@ def createAccountPage(request):
 				role=UserRole.ProgramAdvisor,
 			)
 			context = {}
-			return render(request, 'login.html', context)
+			return render(request, 'StudentTrackingSystemApp/login.html', context)
 		except ValueError:
 			print("Error")
 	form = UserCreationForm()	
 	context = {'form':form}
-	return render(request, 'createAccount.html', context)
+	return render(request, 'StudentTrackingSystemApp/createAccount.html', context)
 
 
 def loginPage(request):
 	context = {}
 	if request.method == 'POST':
 		
-		username = request.POST.get('username')
+		email = request.POST.get('email')
 		password = request.POST.get('password')
 		try:
-			user = authenticate(request, username=username, password=password)
+			user = authenticate(request, email=email, password=password)
 			if user is not None:
 				print(user)
 				print("loginSuccessful")
-				return render(request, 'createAccount.html', context)
+				return render(request, 'StudentTrackingSystemApp/createAccount.html', context)
 			else:
-				return render(request, 'login.html', context)
+				return render(request, 'StudentTrackingSystemApp/login.html', context)
 		except:
 			print("error")
-		print(f'{username} : {password}')
-		
-	
-	return render(request, 'login.html', context)
-
-
-
-def loginPage(request):
-	if request.method == 'POST':
-		email = request.POST.get('email')
-		password = request.POST.get('password')
-
 		print(f'{email} : {password}')
 		
-	context = {}
+	
 	return render(request, 'StudentTrackingSystemApp/login.html', context)
 
-def registerPage(request):
-	context = {}
-	return render(request, 'StudentTrackingSystemApp/register.html', context)
