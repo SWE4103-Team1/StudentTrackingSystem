@@ -19,5 +19,5 @@ from StudentTrackingSystemApp import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('login/', views.loginPage, name = 'loginPage'),
-    path('createAccount/', views.createAccountPage, name = 'createAccountPage')
+    path('register/', views.registerPage, name = 'registerPage')
 ]
