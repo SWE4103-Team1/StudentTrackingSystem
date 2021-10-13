@@ -1,33 +1,34 @@
 <!DOCTYPE html>
 <html>
-    {% load static %}
-    <head>
-        <title>
-             Student Tracking System Login
-        </title>
-        <meta charset="UTF-8">
-        <link rel="stylesheet" href="{% static 'StudentTrackingSystemApp/main.css' %}">
-    </head>
+{% load static %}
 
-    <body>
-        <h1>
-            Login
-        </h1>
-       <form method="POST">
-            {% csrf_token %}
-            <div class="container">
-                <input type="email" placeholder="Email" name="email" required>
-                <input type="password" placeholder="Password" name="password" required>
-                <button type="submit">Login</button>
-            </div>
-       </form>
+<head>
+    <title>
+        Student Tracking System Login
+    </title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{% static 'StudentTrackingSystemApp/main.css' %}">
+</head>
 
-       <div class="links">
-            <span class="accnt"> 
-                <a href= "createAccount.html" style="color: white;"> Registration </a>
-            </span>
+<body>
+    <h1>
+        Login
+    </h1>
+    <form method="POST">
+        {% csrf_token %}
+        <div class="container">
+            <input type="email" placeholder="Email" name="email" required>
+            <input type="password" placeholder="Password" name="password" required>
+            <button type="submit">Login</button>
         </div>
-    </body>
+    </form>
+
+    <div class="links">
+        <span class="accnt"> 
+                <a href= "../register" style="color: white;"> Registration </a>
+            </span>
+    </div>
+</body>
 
 
 </html>
