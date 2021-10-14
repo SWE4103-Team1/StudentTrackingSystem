@@ -21,11 +21,9 @@ class User(AbstractUser):
         blank=True,
     )
 
-    USERNAME_FIELD = (
-        "email"  # makes email the primary key for default authentication backend
-    )
+   
 
-    EMAIL_FIELD = "email"
+   
     REQUIRED_FIELDS = ["role"]  # in addition to USERNAME_FIELD and password
 
     objects = UserManager()

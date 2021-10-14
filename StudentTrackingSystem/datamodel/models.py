@@ -38,6 +38,7 @@ class Student(models.Model):
         return f"sid: {self.id}, name: {self.name}, gender: {self.gender}, address: {self.address}, email: {self.email}"
 
 
+
 class Course(models.Model):
     id = models.BigAutoField(primary_key=True)
     course_code = models.CharField(max_length=20)

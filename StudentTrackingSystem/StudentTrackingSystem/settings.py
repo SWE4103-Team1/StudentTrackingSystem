@@ -58,16 +58,16 @@ ROOT_URLCONF = "StudentTrackingSystem.urls"
 
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR/'StudentTrackingSystemApp', 'templates')],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.debug',
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
 
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        'DIRS': [os.path.join(BASE_DIR/'StudentTrackingSystemApp', 'templates')],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.debug",
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
             ],
         },
     },
@@ -133,7 +133,6 @@ STATIC_URL = 'StudentTrackingSystemApp/static/'
 STATICFILES_DIRS = [
    os.path.join(BASE_DIR/'StudentTrackingSystemApp', 'static')
 ]
-
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field

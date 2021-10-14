@@ -1,27 +1,28 @@
 <!DOCTYPE html>
 <html>
-{% load static %}
 
-<head>
-    <title>
-        Student Tracking System Registration
-    </title>
-    <meta charset="UTF-8">
-    <link rel="stylesheet" href="{% static 'StudentTrackingSystemApp/main.css' %}">
-</head>
+    {% load static %}
+    <head>
+        <title>
+             Student Tracking System Registration
+        </title>
+        <meta charset="UTF-8">
+        <link rel="stylesheet" href="{% static 'StudentTrackingSystemApp/main.css' %}">
+    </head>
 
-<body>
-    <h1>
-        Create an Account
-    </h1>
-    <form action="/action_page.php" method="POST">
-        <div class="container">
-            <input type="text" placeholder="Name" name="name" required>
-            <input type="email" placeholder="Email" name="email" required>
-            <input type="text" placeholder="Password" name="psw" required>
-            <input type="text" placeholder=" Confirm Password" name="psw2" required>
+    <body>
+        <h1>
+            Create an Account
+        </h1>
+       <form method="POST">
+            {% csrf_token %}
+            <div class="container">
+                <!--<input type="text" placeholder="Name" name="username" required>-->
+                <input type="email" placeholder="Email" name="email" required>
+                <input type="text" placeholder="Password" name="psw" required>
+                <input type="text" placeholder="Confirm Password" name="psw2" required>
 
-            <!-- 
+                <!-- 
                 <label for="accntType"> Choose an Account Type: </label> 
                     <select name="Account Type" id="accntType">
                     <option value="Program Coordinator">Program Coordinator</option>
@@ -30,16 +31,14 @@
                 </select>
                 -->
 
-            <button type="submit">Create Account</button>
-        </div>
-    </form>
+                <button type="submit">Create Account</button>
+            </div>
+       </form>
 
-    <div class="links">
-        <span class="accnt"> 
-                <a href= "../login" style="color: white;"> Login </a>
+       <div class="links">
+            <span class="accnt"> 
+                <a href="{% url 'loginPage' %}" style="color: white;"> Login </a>
             </span>
-    </div>
-</body>
-
-
+        </div>
+    </body>
 </html>
