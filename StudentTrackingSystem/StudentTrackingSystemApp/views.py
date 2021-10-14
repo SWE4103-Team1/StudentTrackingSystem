@@ -2,7 +2,7 @@ from django.contrib.auth import authenticate, get_user_model, logout
 from django.shortcuts import redirect, render
 from users.managers import UserManager
 from users.roles import UserRole
-from dataloader import load_extract
+from dataloader.load_extract import _uploadAllFiles
 
 
 def registerPage(request):
@@ -48,10 +48,10 @@ def loginPage(request):
 
 #able to read in files
 def homePage(request):
+
     if request.method == 'POST':
 		# files will hold all the files that are read in
         files = request.FILES.getlist('input_files')
-
         for f in files:
             if f.name == 'personData.txt':
                 personData = f
@@ -59,8 +59,8 @@ def homePage(request):
                 courseData = f
             elif f.name == 'transferData.txt':
                 transferData = f
-
-        load_extract._uploadAllFiles(personData, courseData, transferData)
+	
+        _uploadAllFiles(personData, courseData, transferData)
 
     context = {}
     return render(request, 'StudentTrackingSystemApp/homepage.html', context)
@@ -117,7 +117,7 @@ def enrolment_data(request):
 		# "course_code" : course_code_list,
 		# "course_name" : course_name_list
     }
-    return render(request, 'StudentTrackingSystemApp/Enrolment_data.html', context)
+    return render(request, 'StudentTrackingSystemApp/enrolment_data.html', context)
     
 
 
