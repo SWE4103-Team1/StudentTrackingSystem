@@ -34,3 +34,15 @@ def homePage(request):
 
     context = {}
     return render(request, 'StudentTrackingSystemApp/homepage.html', context)
+
+
+def view_data(request):
+    from datamodel.models import Student
+
+    all_entries = Student.objects.all()
+    print(all_entries)
+    context = {
+        "object_list": all_entries
+    }
+    return render(request, 'StudentTrackingSystemApp/data.html', context)
+    
