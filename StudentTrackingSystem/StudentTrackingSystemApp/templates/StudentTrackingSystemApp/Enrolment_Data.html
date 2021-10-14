@@ -1,0 +1,38 @@
+<html>
+{% load static %}
+<h1>Raw Data</h1>
+{% block page_content %}
+<div class="row">
+    <div class="col-md-4">
+        <table class="table table-striped table-hover">
+            <thead>
+                <th>ID</th>
+                <th>Student Number</th>
+                <th>Course Code</th>
+                <th>Course Title</th>
+                <th>Term</th>
+                <th>Grade</th>
+            </thead>
+            <tbody>
+                {% for obj in object_list %}
+                <tr>
+                    <td><strong>{{ obj.id }} </strong></td>
+                    <td><strong>{{ obj.student.student_number}}</strong></td> 
+                    <td>{{ obj.course.course_code}} </td> 
+                    <td>{{ obj.Course.name}} </td>
+                    <td>{{ obj.term}} </td>
+                    <td>{{ obj.grade}} </td>
+                </tr>
+
+                {% endfor %}
+            </tbody>
+        </table>
+        <div>
+        </div>
+
+
+
+
+        {% endblock %}
+
+</html>
