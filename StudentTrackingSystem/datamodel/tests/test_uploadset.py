@@ -77,3 +77,17 @@ class UploadSetTests(TestCase):
         self.assertTrue(db_us.transfer_data_file)
 
         return db_us
+
+    def test_many_uploads_in_day(self):
+        existing_num_uploads = UploadSet.objects.count()
+        if existing_num_uploads == 0:
+            db_us = self.test_create_null_upload_set()
+            self.assertIsNotNone(db_us)
+
+        # additional upload set on same date & diff time
+        db_us = self.test_create_null_upload_set()
+        self.assertIsNotNone(db_us)
+
+        # ensure adding additional upload set on same date & diff time creates another entry
+        new_num_uploads = UploadSet.objects.count()
+        self.assertGreater(new_num_uploads, existing_num_uploads)
