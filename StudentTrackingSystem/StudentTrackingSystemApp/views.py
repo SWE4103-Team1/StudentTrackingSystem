@@ -1,8 +1,9 @@
-from django.shortcuts import render, redirect
+from django.contrib.auth import authenticate, get_user_model, logout
+from django.shortcuts import redirect, render
 from users.managers import UserManager
 from users.roles import UserRole
-from django.contrib.auth import get_user_model
-from django.contrib.auth import authenticate, logout
+from dataloader import load_extract
+
 
 def registerPage(request):
 	context = {}
@@ -36,6 +37,7 @@ def loginPage(request):
 			if user is not None:
 				print(f'Successfully logged in user: {user}')
 				# Here is where we need to redirect the user to landing page
+				return redirect('homepage')
 			else:
 				print(f'{user} does not exist')
 				return redirect('registerPage')
@@ -58,7 +60,7 @@ def homePage(request):
             elif f.name == 'transferData.txt':
                 transferData = f
 
-        _uploadAllFiles(personData, courseData, transferData)
+        load_extract._uploadAllFiles(personData, courseData, transferData)
 
     context = {}
     return render(request, 'StudentTrackingSystemApp/homepage.html', context)
