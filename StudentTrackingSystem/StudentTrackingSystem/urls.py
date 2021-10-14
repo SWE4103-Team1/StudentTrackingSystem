@@ -20,5 +20,9 @@ from StudentTrackingSystemApp import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('login/', views.loginPage, name = 'loginPage'),
-    path('register/', views.registerPage, name = 'registerPage')
+    path('register/', views.registerPage, name = 'registerPage'),
+    path('homepage/', views.homePage, name='homepage'),
+    path('student_data/', views.student_data, name = 'student_data'),
+    path('course_data/', views.course_data, name = 'course_data'),
+    path('enrolment_data/', views.enrolment_data, name = 'enrolment_data')
 ]
