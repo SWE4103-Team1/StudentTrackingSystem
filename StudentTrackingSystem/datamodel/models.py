@@ -78,4 +78,4 @@ class Enrolment(models.Model):
         ]
 
     def __str__(self):
-        return f"Enrolment: {self.id} (Student: {self.sid}) (Course Section: {self.section})"
+        return f"Enrolment: {self.id} (Student: {self.student.student_number}) (Course Section: {self.course.section})"
