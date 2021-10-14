@@ -1,5 +1,6 @@
 from django.test import TestCase
-from datetime import datetime, timedelta
+from django.utils import timezone
+from datetime import timedelta
 import copy
 
 from ..models import Student
@@ -19,7 +20,7 @@ class StudentTests(TestCase):
             email="johndoe@unb.ca",
             campus="FR",
             program="SWE",
-            start_date=us.upload_date,
+            start_date=us.upload_datetime,
             upload_set=us,
         )
         s.save()
@@ -31,7 +32,7 @@ class StudentTests(TestCase):
         self.assertEqual(s.email, "johndoe@unb.ca")
         self.assertEqual(s.campus, "FR")
         self.assertEqual(s.program, "SWE")
-        self.assertEqual(s.start_date, us.upload_date)
+        self.assertEqual(s.start_date, us.upload_datetime)
         self.assertEqual(s.upload_set, us)
 
         return s
@@ -72,9 +73,9 @@ class StudentTests(TestCase):
         # Create two different upload sets
         us_tester = UploadSetTests()
         us1 = us_tester.test_create_empty_upload_set(
-            today=datetime.now() - timedelta(days=1)
+            upload_datetime=timezone.now() - timedelta(days=1)
         )
-        us2 = us_tester.test_create_empty_upload_set(upload_datetime=datetime.now())
+        us2 = us_tester.test_create_empty_upload_set(upload_datetime=timezone.now())
 
         # Create two students with same info, but different upload sets
         student_info = Student(

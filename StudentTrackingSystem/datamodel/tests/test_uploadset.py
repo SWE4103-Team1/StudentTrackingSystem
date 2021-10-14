@@ -1,6 +1,6 @@
 from django.test import TestCase
 from django.core.files import File as DjangoFile
-from datetime import datetime
+from django.utils import timezone
 from tempfile import NamedTemporaryFile
 import os
 
@@ -15,7 +15,7 @@ def mktemp():
 
 class UploadSetTests(TestCase):
     def test_create_null_upload_set(self):
-        today = datetime.now()
+        today = timezone.now()
         us = UploadSet(upload_datetime=today)
         us.save()
         self.assertEqual(us.upload_datetime, today)
@@ -24,7 +24,7 @@ class UploadSetTests(TestCase):
         self.assertFalse(us.transfer_data_file)
         return us
 
-    def test_create_empty_upload_set(self, upload_datetime=datetime.now()):
+    def test_create_empty_upload_set(self, upload_datetime=timezone.now()):
         with mktemp() as course_file, mktemp() as person_file, mktemp() as transfer_file:
             us = UploadSet(upload_datetime=upload_datetime)
             us.course_data_file.save("course_test_file", course_file)
@@ -39,7 +39,7 @@ class UploadSetTests(TestCase):
 
         return us
 
-    def test_create_upload_set(self, upload_datetime=datetime.now()):
+    def test_create_upload_set(self, upload_datetime=timezone.now()):
         with mktemp() as course_file, mktemp() as person_file, mktemp() as transfer_file:
             course_file.write(course_contents := "course file contents")
             person_file.write(person_contents := "person file contents")
@@ -50,7 +50,7 @@ class UploadSetTests(TestCase):
             us.person_data_file.save("person_test_file", person_file)
             us.transfer_data_file.save("transfer_test_file", transfer_file)
 
-            self.assertEqual(us.upload_date, upload_datetime)
+            self.assertEqual(us.upload_datetime, upload_datetime)
             self.assertEqual(
                 us.course_data_file.read(), bytearray(course_contents, "utf-8")
             )
@@ -64,7 +64,7 @@ class UploadSetTests(TestCase):
         return us
 
     def test_query_upload_set(self):
-        today = datetime.now()
+        today = timezone.now()
         us = self.test_create_upload_set(today)
 
         # query it from DB

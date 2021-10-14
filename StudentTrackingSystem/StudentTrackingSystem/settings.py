@@ -58,9 +58,8 @@ ROOT_URLCONF = "StudentTrackingSystem.urls"
 
 TEMPLATES = [
     {
-
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        'DIRS': [os.path.join(BASE_DIR/'StudentTrackingSystemApp', 'templates')],
+        "DIRS": [os.path.join(BASE_DIR / "StudentTrackingSystemApp", "templates")],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -79,24 +78,16 @@ WSGI_APPLICATION = "StudentTrackingSystem.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
-# DATABASES = {
-#     "default": {
-#         "ENGINE": "django.db.backends.mysql",
-#         "NAME": "team1db",
-#         "USER": "admin",
-#         "PASSWORD": "tJbsbKrk7!%m",
-#         "HOST": "mysql-1.cfjvavoil0w7.us-east-2.rds.amazonaws.com",
-#         "PORT": "3306",
-#     }
-# }
-# Temporary DB connection set to SQLite
 DATABASES = {
-    'default':{
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3'
+    "default": {
+        "ENGINE": "django.db.backends.mysql",
+        "NAME": "team1db",
+        "USER": "admin",
+        "PASSWORD": "tJbsbKrk7!%m",
+        "HOST": "mysql-1.cfjvavoil0w7.us-east-2.rds.amazonaws.com",
+        "PORT": "3306",
     }
 }
-
 
 
 # Password validation
@@ -136,11 +127,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
 
-STATIC_URL = 'StudentTrackingSystemApp/static/'
+STATIC_URL = "StudentTrackingSystemApp/static/"
 
-STATICFILES_DIRS = [
-   os.path.join(BASE_DIR/'StudentTrackingSystemApp', 'static')
-]
+STATICFILES_DIRS = [os.path.join(BASE_DIR / "StudentTrackingSystemApp", "static")]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
