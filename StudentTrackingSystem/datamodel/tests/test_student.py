@@ -53,7 +53,6 @@ class StudentTests(TestCase):
 
         # test query enrollment
         self.assertIsNotNone(db_student)
-        self.assertEqual(db_student.student_number, s.student_number)
         self.assertEquals(db_student.name, s.name)
         self.assertEqual(db_student.gender, s.gender)
         self.assertEqual(db_student.address, s.address)

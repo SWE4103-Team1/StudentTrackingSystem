@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     "StudentTrackingSystemApp",
     "users",
     "datamodel",
+    "dataloader",
 ]
 
 MIDDLEWARE = [
@@ -57,6 +58,7 @@ ROOT_URLCONF = "StudentTrackingSystem.urls"
 
 TEMPLATES = [
     {
+
         "BACKEND": "django.template.backends.django.DjangoTemplates",
         'DIRS': [os.path.join(BASE_DIR/'StudentTrackingSystemApp', 'templates')],
         "APP_DIRS": True,
@@ -124,6 +126,7 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
+
 
 STATIC_URL = 'StudentTrackingSystemApp/static/'
 

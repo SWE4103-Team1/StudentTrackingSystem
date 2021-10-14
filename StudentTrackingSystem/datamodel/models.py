@@ -35,7 +35,8 @@ class Student(models.Model):
         ]
 
     def __str__(self):
-        return f"sid: {self.sid}, name: {self.name}, gender: {self.gender}, address: {self.address}, email: {self.email}"
+        return f"sid: {self.id}, name: {self.name}, gender: {self.gender}, address: {self.address}, email: {self.email}"
+
 
 
 class Course(models.Model):
@@ -78,4 +79,4 @@ class Enrolment(models.Model):
         ]
 
     def __str__(self):
-        return f"Enrolment: {self.id} (Student: {self.sid}) (Course Section: {self.section})"
+        return f"Enrolment: {self.id} (Student: {self.student.student_number}) (Course Section: {self.course.section})"
