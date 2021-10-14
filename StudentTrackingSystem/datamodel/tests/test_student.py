@@ -1,5 +1,5 @@
 from django.test import TestCase
-from datetime import date, timedelta
+from datetime import datetime, timedelta
 import copy
 
 from ..models import Student
@@ -72,9 +72,9 @@ class StudentTests(TestCase):
         # Create two different upload sets
         us_tester = UploadSetTests()
         us1 = us_tester.test_create_empty_upload_set(
-            today=date.today() - timedelta(days=1)
+            today=datetime.now() - timedelta(days=1)
         )
-        us2 = us_tester.test_create_empty_upload_set(today=date.today())
+        us2 = us_tester.test_create_empty_upload_set(upload_datetime=datetime.now())
 
         # Create two students with same info, but different upload sets
         student_info = Student(
@@ -85,11 +85,11 @@ class StudentTests(TestCase):
             email="johndoe@unb.ca",
             campus="FR",
             program="SWE",
-            start_date=us1.upload_date,
+            start_date=us1.upload_datetime.date(),
         )
 
         s1 = copy.copy(student_info)
-        s1.start_date = us1.upload_date
+        s1.start_date = us1.upload_datetime.date()
         s1.upload_set = us1
         s1.save()
         self.assertEqual(s1.student_number, student_info.student_number)
