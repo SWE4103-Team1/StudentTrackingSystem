@@ -49,7 +49,6 @@ def loginPage(request):
 
 # able to read in files
 def homePage(request):
-
     if request.method == "POST":
         # files will hold all the files that are read in
         files = request.FILES.getlist("input_files")
@@ -62,7 +61,7 @@ def homePage(request):
                 transferData = f
 
 		uploader = DataFileExtractor()
-        _uploadAllFiles(personData, courseData, transferData)
+		uploader.uploadAllFiles(personData, courseData, transferData)
 
     context = {}
     return render(request, "StudentTrackingSystemApp/homepage.html", context)
