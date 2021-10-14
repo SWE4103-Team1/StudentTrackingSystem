@@ -12,6 +12,8 @@ media
 ### Django.Python Stack ###
 # Byte-compiled / optimized / DLL files
 *.py[cod]
+uploads/
+.idea/
 *$py.class
 
 # C extensions

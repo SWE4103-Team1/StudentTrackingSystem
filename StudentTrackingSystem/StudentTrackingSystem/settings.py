@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "StudentTrackingSystemApp",
     "users",
+    "datamodel",
 ]
 
 MIDDLEWARE = [
