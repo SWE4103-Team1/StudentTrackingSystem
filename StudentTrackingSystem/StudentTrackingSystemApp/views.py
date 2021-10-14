@@ -59,7 +59,7 @@ def homePage(request):
                 courseData = f
             elif f.name == 'transferData.txt':
                 transferData = f
-
+	
         _uploadAllFiles(personData, courseData, transferData)
 
     context = {}
