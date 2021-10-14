@@ -1,5 +1,6 @@
-from django.shortcuts import render
 from dataloader.load_extract import _uploadAllFiles
+from django.shortcuts import render
+
 
 def loginPage(request):
     if request.method == 'POST':
@@ -36,13 +37,34 @@ def homePage(request):
     return render(request, 'StudentTrackingSystemApp/homepage.html', context)
 
 
-def view_data(request):
+def student_data(request):
     from datamodel.models import Student
 
     all_entries = Student.objects.all()
     print(all_entries)
     context = {
         "object_list": all_entries
+
     }
-    return render(request, 'StudentTrackingSystemApp/data.html', context)
+    return render(request, 'StudentTrackingSystemApp/student_data.html', context)
+
+def course_data(request):
+    from datamodel.models import Course
+
+    all_entries = Course.objects.all()
+    print(all_entries)
+    context = {
+        "object_list": all_entries
+    }
+    return render(request, 'StudentTrackingSystemApp/course_data.html', context)
+
+def enrolment_data(request):
+    from datamodel.models import Enrolment
+
+    all_entries = Enrolment.objects.all()
+    print(all_entries)
+    context = {
+        "object_list": all_entries
+    }
+    return render(request, 'StudentTrackingSystemApp/Enrolment_data.html', context)
     
