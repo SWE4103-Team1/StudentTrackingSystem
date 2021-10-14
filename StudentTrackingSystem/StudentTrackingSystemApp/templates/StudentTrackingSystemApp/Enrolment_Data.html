@@ -14,12 +14,14 @@
                 <th>Grade</th>
             </thead>
             <tbody>
-                {% for obj in object_list %}
+                {% for obj in object_list.all %}
                 <tr>
                     <td><strong>{{ obj.id }} </strong></td>
-                    <td><strong>{{ obj.student.student_number}}</strong></td> 
-                    <td>{{ obj.course.course_code}} </td> 
-                    <td>{{ obj.Course.name}} </td>
+                    <!-- Could not access the children (To Be Fixed)
+                    <td>{{ obj.Student.student_number}}</td>
+                    <td>{{ obj.Course.course_code}} </td> 
+                    <td>{{ obj.Course.course_code}} </td>
+                    -->
                     <td>{{ obj.term}} </td>
                     <td>{{ obj.grade}} </td>
                 </tr>
