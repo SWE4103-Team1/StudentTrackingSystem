@@ -75,7 +75,7 @@ def student_data(request):
         "object_list": all_entries
 
     }
-    return render(request, 'StudentTrackingSystemApp/student_data.html', context)
+    return render(request, 'StudentTrackingSystemApp/Student_data.html', context)
 
 def course_data(request):
     from datamodel.models import Course
@@ -85,15 +85,37 @@ def course_data(request):
     context = {
         "object_list": all_entries
     }
-    return render(request, 'StudentTrackingSystemApp/course_data.html', context)
+    return render(request, 'StudentTrackingSystemApp/Course_data.html', context)
 
 def enrolment_data(request):
     from datamodel.models import Enrolment
 
     all_entries = Enrolment.objects.all()
+    # students_list_student_number = all_entries.values('student__student_number')
+    # course_list_course_code = all_entries.values('course__course_code')
+    # course_list_course_name = all_entries.values('course__name')
+
+    # student_number_list = []
+    # course_code_list = []
+    # course_name_list = []
+	
+    # for s in students_list_student_number:
+	#     student_number_list.append((s.get('student__student_number')))
+
+
+    # for c in course_list_course_code:
+	#     course_code_list.append((c.get('course__course_code')))
+
+    # for c in course_list_course_name:
+	#     course_code_list.append((c.get('course__course_name')))
+
     print(all_entries)
+	
     context = {
-        "object_list": all_entries
+		"all_objects" : all_entries,
+		# "student_numbers" : student_number_list,
+		# "course_code" : course_code_list,
+		# "course_name" : course_name_list
     }
     return render(request, 'StudentTrackingSystemApp/enrolment_data.html', context)
     
