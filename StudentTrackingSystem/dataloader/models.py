@@ -1,15 +1,14 @@
 # from django.db import models
-# from django.db.models import indexes
-
-
+#
+#
 # class UploadSet(models.Model):
-#     upload_date = models.DateField(primary_key=True)
+#     upload_datetime = models.DateTimeField(primary_key=True)
 #     # ensure nefarious scripts aren't uploaded
 #     person_data_file = models.FileField(upload_to="uploads/", blank=True, null=True)
 #     course_data_file = models.FileField(upload_to="uploads/", blank=True, null=True)
 #     transfer_data_file = models.FileField(upload_to="uploads/", blank=True, null=True)
-
-
+#
+#
 # class Student(models.Model):
 #     id = models.BigAutoField(primary_key=True)
 #     student_number = models.IntegerField()
@@ -21,7 +20,7 @@
 #     program = models.CharField(max_length=10)
 #     start_date = models.DateField(max_length=8)
 #     upload_set = models.ForeignKey(UploadSet, on_delete=models.CASCADE)
-
+#
 #     class Meta:
 #         _index_fields = ["student_number", "upload_set"]
 #         indexes = [
@@ -33,11 +32,11 @@
 #                 name="unique student index constraint",
 #             )
 #         ]
-
+#
 #     def __str__(self):
-#         return f"sid: {self.sid}, name: {self.name}, gender: {self.gender}, address: {self.address}, email: {self.email}"
-
-
+#         return f"sid: {self.id}, name: {self.name}, gender: {self.gender}, address: {self.address}, email: {self.email}"
+#
+#
 # class Course(models.Model):
 #     id = models.BigAutoField(primary_key=True)
 #     course_code = models.CharField(max_length=20)
@@ -45,7 +44,7 @@
 #     credit_hours = models.IntegerField()
 #     name = models.CharField(max_length=75)
 #     upload_set = models.ForeignKey(UploadSet, on_delete=models.CASCADE)
-
+#
 #     class Meta:
 #         _index_fields = ["course_code", "section", "upload_set"]
 #         indexes = [
@@ -57,8 +56,8 @@
 #                 name="unique_course_index_constraint",
 #             )
 #         ]
-
-
+#
+#
 # class Enrolment(models.Model):
 #     id = models.BigAutoField(primary_key=True)
 #     student = models.ForeignKey(Student, on_delete=models.CASCADE)
@@ -66,7 +65,7 @@
 #     term = models.CharField(max_length=10)
 #     grade = models.CharField(max_length=5)
 #     upload_set = models.ForeignKey(UploadSet, on_delete=models.CASCADE)
-
+#
 #     class Meta:
 #         indexes = [
 #             models.Index(fields=["term"], name="enrolment_index"),
@@ -76,6 +75,6 @@
 #                 fields=["student_id", "course_id"], name="unique_enrolment_constraint"
 #             )
 #         ]
-
+#
 #     def __str__(self):
-#         return f"Enrolment: {self.id} (Student: {self.sid}) (Course Section: {self.section})"
+#         return f"Enrolment: {self.id} (Student: {self.student.student_number}) (Course Section: {self.course.section})"

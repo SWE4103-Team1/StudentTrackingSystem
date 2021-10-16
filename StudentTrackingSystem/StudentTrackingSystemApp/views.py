@@ -60,8 +60,8 @@ def homePage(request):
             elif f.name == "transferData.txt":
                 transferData = f
 
-		uploader = DataFileExtractor()
-		uploader.uploadAllFiles(personData, courseData, transferData)
+        uploader = DataFileExtractor()
+        uploader.uploadAllFiles(personData, courseData, transferData)
 
     context = {}
     return render(request, "StudentTrackingSystemApp/homepage.html", context)
