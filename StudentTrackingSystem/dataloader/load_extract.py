@@ -6,7 +6,6 @@ from django.core.exceptions import ObjectDoesNotExist
 
 from datamodel.models import Student,Course,Enrolment,UploadSet
 
-from datamodel.models import Student, Course, Enrolment, UploadSet
 
 import pandas as pd
 from pandas.io import sql
