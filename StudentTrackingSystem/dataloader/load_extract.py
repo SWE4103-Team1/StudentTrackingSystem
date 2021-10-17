@@ -4,6 +4,9 @@ import copy
 from django.utils import timezone
 from django.core.exceptions import ObjectDoesNotExist
 
+import django
+django.setup()
+
 from datamodel.models import Student,Course,Enrolment,UploadSet
 
 import pandas as pd
@@ -20,7 +23,7 @@ class DataFileExtractor:
     _upload_set: UploadSet = None
 
     def __init__(self, upload_set: UploadSet = None):
-        if self._upload_set == None:
+        if upload_set == None:
             upload_set = UploadSet(upload_datetime=timezone.now())
             upload_set.save()
 
@@ -29,20 +32,19 @@ class DataFileExtractor:
     def get_upload_set(self):
             return self._upload_set
 
-    def  uploadAllFiles(self,personfile,coursefile,transferfile):
+    def uploadAllFiles(self,personfile,coursefile,transferfile):
         with ThreadPoolExecutor(max_workers=53) as e:
             e.submit(self.uploadPersonDataFile,personfile)
             e.submit(self.uploadCourseDataFile,coursefile)
             e.submit(self.uploadTransferDataFile,transferfile)
 
-
-
     #**Upload PersonData File : creates Student Models**
     def uploadPersonDataFile(self,personfile):
-        dfp=pd.read_table(personfile,header=0,squeeze=True) #Read PersonData.txt into DataFrame
+        dfp = pd.read_table(personfile,header=0,squeeze=True) #Read PersonData.txt into DataFrame
         dfp = dfp.loc[:, ~dfp.columns.str.contains('^Unnamed')]
-        studentList= self.IterStudents(dfp)
+        studentList = self.IterStudents(dfp)
         Student.objects.bulk_create(studentList)
+
     def IterStudents(self,dfp):
         dfp.drop_duplicates(subset=['Student_ID'],keep='last',inplace=True)
         dfp = dfp.values.tolist()
@@ -54,6 +56,7 @@ class DataFileExtractor:
         except ObjectDoesNotExist:
             pass # There are no None types
         return studentList
+
     def makeStudent(self,dfp):
         if Student.objects.filter(
             student_number=dfp[0]
@@ -81,6 +84,7 @@ class DataFileExtractor:
         Course.objects.bulk_create(courseList)
         enrolmentList = self.IterEnrolments(dfe)
         Enrolment.objects.bulk_create(enrolmentList)
+
     def IterCourses(self,dfc):
         dfc.drop_duplicates(subset=['Course','Section'],keep='last',inplace=True)
         dfc = dfc.values.tolist()
@@ -92,6 +96,7 @@ class DataFileExtractor:
         except ObjectDoesNotExist:
             pass ## Error is thrown if there are No "None types"
         return courseList
+
     def makeCourse(self,dfc):
         if Course.objects.filter(
             course_code=dfc[3],section=dfc[8]
@@ -106,6 +111,7 @@ class DataFileExtractor:
                 upload_set=self.get_upload_set()
             )
         return course
+
     def IterEnrolments(self,dfe):
         dfe.drop_duplicates(subset=['Course','Student_ID','Section'],keep='last',inplace=True)
         dfe = dfe.values.tolist()
@@ -117,6 +123,7 @@ class DataFileExtractor:
         except ObjectDoesNotExist:
             pass ## Error is thrown if there are No "None types"
         return enrolmentList
+
     def makeEnrolments(self,dfe):
         if Enrolment.objects.filter(
             course=Course.objects.filter(
@@ -149,6 +156,7 @@ class DataFileExtractor:
         Course.objects.bulk_create(courseList)
         enrolmentList = self.IterTransferEnrolments(dft)
         Enrolment.objects.bulk_create(enrolmentList)
+
     def IterTransferCourse(self,dft):
         dft['Course'].fillna(dft['Title']+"**",inplace = True)
         dft.drop_duplicates(subset=['Course'],keep='last',inplace=True)
@@ -162,6 +170,7 @@ class DataFileExtractor:
         except (ObjectDoesNotExist):
             pass ## There are no None types
         return courseList
+
     def makeTransferCourse(self,dft):
         if Course.objects.filter(
             course_code=dft[1],
@@ -177,6 +186,7 @@ class DataFileExtractor:
                 section="**"
             )
         return course
+
     def IterTransferEnrolments(self,dft):
         dft['Course'].fillna(dft['Title']+"**",inplace = True)
         dft.drop_duplicates(subset=['Student_ID','Course'],keep='last',inplace=True)
@@ -190,6 +200,7 @@ class DataFileExtractor:
         except (ObjectDoesNotExist):
             pass ## There are no None types
         return enrolmentList
+
     def makeTransferEnrolments(self,dft):
         if Enrolment.objects.filter(
             course=Course.objects.get(

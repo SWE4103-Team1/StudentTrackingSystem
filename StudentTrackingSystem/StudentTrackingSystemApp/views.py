@@ -36,7 +36,6 @@ def loginPage(request):
             user = authenticate(request, username=email, password=password)
             if user is not None:
                 print(f"Successfully logged in user: {user}")
-                # Here is where we need to redirect the user to landing page
                 return redirect("homepage")
             else:
                 print(f"{user} does not exist")
