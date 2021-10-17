@@ -1,9 +1,8 @@
 from django.db import models
-from django.db.models import indexes
 
 
 class UploadSet(models.Model):
-    upload_date = models.DateField(primary_key=True)
+    upload_datetime = models.DateTimeField(primary_key=True)
     # ensure nefarious scripts aren't uploaded
     person_data_file = models.FileField(upload_to="uploads/", blank=True, null=True)
     course_data_file = models.FileField(upload_to="uploads/", blank=True, null=True)
@@ -36,7 +35,6 @@ class Student(models.Model):
 
     def __str__(self):
         return f"sid: {self.id}, name: {self.name}, gender: {self.gender}, address: {self.address}, email: {self.email}"
-
 
 
 class Course(models.Model):

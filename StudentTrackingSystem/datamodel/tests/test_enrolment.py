@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from ..models import Enrolment, UploadSet
+from ..models import Enrolment
 from .test_uploadset import UploadSetTests
 from .test_course import CourseTests
 from .test_student import StudentTests
