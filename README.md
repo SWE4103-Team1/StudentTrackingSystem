@@ -1,4 +1,10 @@
 # Student Tracking System
+## 10.19-update
+Now our repo has successfully deployed Django CI through Github Action!
+-This will automatically run Django Test when you push or merge and return a result to tell you whether your project successfully ran this test.
+-If you get a failed result, click the **Action** button to view the log.
+-This branch is merged from the **dev** branch because this is the latest branch after sprint1.
+********
 ## fetch, push & merge
 For coding, please
 - choose one dev branch from the lists

@@ -1,0 +1,21 @@
+.file_upload_container{
+    padding:20px;
+}
+
+.file_upload_container input.input_files{
+    padding:20px;
+    border-radius: 4px;
+}
+.nav_button{
+    width:160px;
+    margin:20px;
+}
+
+.nav_button_container{
+    padding:10px;
+    display:flex;
+    align-items: center;
+    justify-content:center;
+    flex-direction: row;
+    margin:20px;
+}
