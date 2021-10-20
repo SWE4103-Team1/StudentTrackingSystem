@@ -9,8 +9,6 @@ from datamodel.models import Student, Course, Enrolment, UploadSet
 import pandas as pd
 from pandas.io import sql
 
-
-from concurrent.futures import ProcessPoolExecutor
 from concurrent.futures import ThreadPoolExecutor
 
 
@@ -18,7 +16,7 @@ class DataFileExtractor:
     _upload_set: UploadSet = None
 
     def __init__(self, upload_set: UploadSet = None):
-        if self._upload_set == None:
+        if upload_set == None:
             upload_set = UploadSet(upload_datetime=timezone.now())
             upload_set.save()
 
