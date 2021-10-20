@@ -29,5 +29,4 @@ jobs:
     - name: Run Tests
       run: |
         cd StudentTrackingSystem
-        python manage.py test
-        yes
+        python manage.py test syncdb
