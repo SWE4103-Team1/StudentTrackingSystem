@@ -12,7 +12,6 @@ from pandas.io import sql
 
 from concurrent.futures import ProcessPoolExecutor
 from concurrent.futures import ThreadPoolExecutor
-from concurrent.futures import as_completed
 
 
 class DataFileExtractor:
@@ -32,6 +31,8 @@ class DataFileExtractor:
         with ThreadPoolExecutor() as e:
             e.submit(self.uploadPersonDataFile,personfile)
             e.submit(self.uploadCourseDataFile,coursefile)
+            e.shutdown()
+        with ThreadPoolExecutor() as e:
             e.submit(self.uploadTransferDataFile,transferfile)
 
 
@@ -101,13 +102,15 @@ class DataFileExtractor:
     def makeEnrolments(self,dfe):
         enrolment=Enrolment(
             student=Student.objects.filter(
-                student_number=dfe[0]
+                student_number=dfe[0],
+                upload_set=self.get_upload_set()
             )[0],
             term=dfe[2],
             grade=dfe[5],
             course=Course.objects.filter(
                 course_code=dfe[3],
-                section=dfe[8]
+                section=dfe[8],
+                upload_set=self.get_upload_set()
             )[0],
             upload_set=self.get_upload_set()
         )
@@ -146,16 +149,20 @@ class DataFileExtractor:
         dft.dropna(axis=0,how='all',inplace=True)
         dft = dft.values.tolist()
         enrolmentList = []
-        with ProcessPoolExecutor() as exe:
+        with ThreadPoolExecutor() as exe:
             enrolmentList = exe.map(self.makeTransferEnrolments,dft)
         return enrolmentList
 
     def makeTransferEnrolments(self,dft):
         enrolment=Enrolment(
-            student=Student.objects.filter(student_number=dft[0])[0],
+            student=Student.objects.filter(
+                student_number=dft[0],
+                upload_set=self.get_upload_set()
+            )[0],
             course=Course.objects.filter(
                 course_code=dft[1],
-                credit_hours=dft[3]
+                credit_hours=dft[3],
+                upload_set=self.get_upload_set()
             )[0],
             upload_set=self.get_upload_set(),
             term="Transfer",grade="**"
