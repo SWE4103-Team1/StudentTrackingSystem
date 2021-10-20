@@ -29,4 +29,4 @@ jobs:
     - name: Run Tests
       run: |
         cd StudentTrackingSystem
-        python manage.py test --noinput
+        python manage.py test
