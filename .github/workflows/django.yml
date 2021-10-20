@@ -30,3 +30,4 @@ jobs:
       run: |
         cd StudentTrackingSystem
         python manage.py test
+        yes
