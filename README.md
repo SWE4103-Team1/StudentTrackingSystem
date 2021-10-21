@@ -1,3 +1,4 @@
+[![Django CI](https://github.com/SWE4103-Team1/StudentTrackingSystem/actions/workflows/django.yml/badge.svg)](https://github.com/SWE4103-Team1/StudentTrackingSystem/actions/workflows/django.yml)
 # Student Tracking System
 ## 10.19-update
 Now our repo has successfully deployed Django CI through Github Action!
@@ -5,7 +6,6 @@ Now our repo has successfully deployed Django CI through Github Action!
 - If you get a failed result, click the **Action** button to view the log.
 - This branch is merged from the **dev** branch because this is the latest branch after sprint1.
 ********
-[![Django CI](https://github.com/SWE4103-Team1/StudentTrackingSystem/actions/workflows/django.yml/badge.svg)](https://github.com/SWE4103-Team1/StudentTrackingSystem/actions/workflows/django.yml)
 ## fetch, push & merge
 For coding, please
 - choose one dev branch from the lists
