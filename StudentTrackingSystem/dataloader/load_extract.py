@@ -16,9 +16,8 @@ from concurrent.futures import ThreadPoolExecutor
 
 class DataFileExtractor:
     _upload_set: UploadSet = None
-
     def __init__(self, upload_set: UploadSet = None):
-        if self._upload_set == None:
+        if upload_set == None:
             upload_set = UploadSet(upload_datetime=timezone.now())
             upload_set.save()
 
@@ -29,11 +28,12 @@ class DataFileExtractor:
 
     def  uploadAllFiles(self,personfile,coursefile,transferfile):
         with ThreadPoolExecutor() as e:
-            e.submit(self.uploadPersonDataFile,personfile)
-            e.submit(self.uploadCourseDataFile,coursefile)
-            e.shutdown()
-        with ThreadPoolExecutor() as e:
-            e.submit(self.uploadTransferDataFile,transferfile)
+            thread1 = e.submit(self.uploadPersonDataFile,personfile)
+            thread2= e.submit(self.uploadCourseDataFile,coursefile)
+            while not thread1.done():
+                sleep(0.001)
+            thread3 = e.submit(self.uploadTransferDataFile,transferfile)
+            e.shutdown(wait=True)
 
 
 
@@ -48,8 +48,9 @@ class DataFileExtractor:
         dfp.drop_duplicates(subset=['Student_ID'],keep='last',inplace=True)
         dfp = dfp.values.tolist()
         studentList = []
-        with ThreadPoolExecutor() as exe:
-            studentList = exe.map(self.makeStudent,dfp)
+        with ThreadPoolExecutor() as e:
+            studentList =e.map(self.makeStudent,dfp)
+            e.shutdown(wait=True)
         return studentList
 
     def makeStudent(self,dfp):
@@ -76,8 +77,9 @@ class DataFileExtractor:
         dfc.drop_duplicates(subset=['Course','Section'],keep='last',inplace=True) #Look into inplace True
         dfc = dfc.values.tolist()
         courseList =[]
-        with ThreadPoolExecutor() as exe:
-            courseList = exe.map(self.makeCourse,dfc)
+        with ThreadPoolExecutor() as e:
+            courseList = e.map(self.makeCourse,dfc)
+            e.shutdown(wait=True)
         return courseList
 
 
@@ -95,8 +97,9 @@ class DataFileExtractor:
         dfe.drop_duplicates(subset=['Course','Student_ID','Section'],keep='last',inplace=True)
         dfe = dfe.values.tolist()
         enrolmentList=[]
-        with ThreadPoolExecutor() as exe:
-            enrolmentList = exe.map(self.makeEnrolments,dfe)
+        with ThreadPoolExecutor() as e:
+            enrolmentList = e.map(self.makeEnrolments,dfe)
+            e.shutdown(wait=True)
         return enrolmentList
 
     def makeEnrolments(self,dfe):
@@ -119,20 +122,26 @@ class DataFileExtractor:
     #**Upload TransferDataFile,creates Enrolment Models and some etxra Courses
     def uploadTransferDataFile(self,transferfile):
         dft = pd.read_table(transferfile,header=0,squeeze=True)
+        dft = dft.loc[:, ~dft.columns.str.contains('^Unnamed')]
+        dft['Course'].fillna(dft['Title'],inplace = True)
+        dft.dropna(axis=0,how='all',inplace=True)
+        dft_e = copy.deepcopy(dft)
         courseList = self.IterTransferCourse(dft)
         Course.objects.bulk_create(courseList)
-        enrolmentList = self.IterTransferEnrolments(dft)
+        enrolmentList = self.IterTransferEnrolments(dft_e)
+
         Enrolment.objects.bulk_create(enrolmentList)
 
     def IterTransferCourse(self,dft):
-        dft['Course'].fillna(dft['Title']+"**",inplace = True)
         dft.drop_duplicates(subset=['Course'],keep='last',inplace=True)
         dft.dropna(axis=0,how='all',inplace=True)
         dft = dft.values.tolist()
         courseList=[]
-        with ThreadPoolExecutor() as exe:
-            courseList = exe.map(self.makeTransferCourse,dft)
+        with ThreadPoolExecutor() as e:
+            courseList = e.map(self.makeTransferCourse,dft)
+            e.shutdown(wait=True)
         return courseList
+
     def makeTransferCourse(self,dft):
         course=Course(
             course_code=dft[1],
@@ -143,29 +152,49 @@ class DataFileExtractor:
         )
         return course
 
-    def IterTransferEnrolments(self,dft):
-        dft['Course'].fillna(dft['Title']+"**",inplace = True)
-        dft.drop_duplicates(subset=['Student_ID','Course'],keep='last',inplace=True)
-        dft.dropna(axis=0,how='all',inplace=True)
-        dft = dft.values.tolist()
+    def IterTransferEnrolments(self,dft_e):
+        dft_e.drop_duplicates(subset=['Student_ID','Course'],keep='last',inplace=True)
+        dft_e.dropna(axis=0,how='all',inplace=True)
+        dft_e = dft_e.values.tolist()
         enrolmentList = []
-        with ThreadPoolExecutor() as exe:
-            enrolmentList = exe.map(self.makeTransferEnrolments,dft)
+        with ThreadPoolExecutor() as e:
+            enrolmentList = e.map(self.makeTransferEnrolments,dft_e)
+            e.shutdown(wait=True)
+        try:
+            enrolmentList = list(filter(None, enrolmentList))
+        except ObjectDoesNotExist:
+            pass
         return enrolmentList
 
-    def makeTransferEnrolments(self,dft):
-        enrolment=Enrolment(
-            student=Student.objects.filter(
-                student_number=dft[0],
+    def makeTransferEnrolments(self,dft_e):
+        if not (
+            Student.objects.filter(
+                student_number=dft_e[0],
                 upload_set=self.get_upload_set()
-            )[0],
-            course=Course.objects.filter(
-                course_code=dft[1],
-                credit_hours=dft[3],
-                upload_set=self.get_upload_set()
-            )[0],
-            upload_set=self.get_upload_set(),
-            term="Transfer",grade="**"
-        )
+                ).exists() and
+            Course.objects.filter(
+                course_code=dft_e[1],
+                name = dft_e[2],
+                credit_hours=dft_e[3],
+                upload_set=self.get_upload_set(),
+                section="**"
+            ).exists()
+        ):
+            return None
+
+        else:
+            enrolment=Enrolment(
+                student=Student.objects.filter(
+                    student_number=dft_e[0],
+                    upload_set=self.get_upload_set()
+                    )[0],
+                    course=Course.objects.filter(
+                    course_code=dft_e[1],
+                    credit_hours=dft_e[3],
+                    upload_set=self.get_upload_set()
+                    )[0],
+                    upload_set=self.get_upload_set(),
+                    term="Transfer",grade="**"
+            )
 
         return enrolment
