@@ -66,6 +66,12 @@ def homePage(request):
     return render(request, 'StudentTrackingSystemApp/homepage.html', context)
 
 
+def dashboard(request):
+
+    context = {}
+    return render(request, 'StudentTrackingSystemApp/dashboard.html', context)
+
+
 def student_data(request):
     from datamodel.models import Student
 
