@@ -9,8 +9,6 @@ from datamodel.models import Student, Course, Enrolment, UploadSet
 import pandas as pd
 from pandas.io import sql
 
-
-from concurrent.futures import ProcessPoolExecutor
 from concurrent.futures import ThreadPoolExecutor
 
 
