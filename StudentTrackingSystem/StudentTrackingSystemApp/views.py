@@ -1,4 +1,4 @@
-from django.contrib.auth import authenticate, get_user_model, logout
+from django.contrib.auth import authenticate, get_user_model, logout, login
 from django.shortcuts import redirect, render
 from users.managers import UserManager
 from users.roles import UserRole
@@ -28,7 +28,7 @@ def registerPage(request):
 
 
 def loginPage(request):
-	context = {}
+	context = {'error': ""}
 	if request.method == 'POST':
 		email = request.POST.get('email')
 		password = request.POST.get('password')
@@ -36,15 +36,24 @@ def loginPage(request):
 			user = authenticate(request, username=email, password=password)
 			if user is not None:
 				print(f'Successfully logged in user: {user}')
+				login(request, user)
 				# Here is where we need to redirect the user to landing page
 				return redirect('homepage')
 			else:
 				print(f'{user} does not exist')
-				return redirect('registerPage')
+				context = {'error': "Invalid login credentials. Please try again."}
+				return  render(request, 'StudentTrackingSystemApp/login.html', context)
 		except Exception as e:
 			print(f'ERROR: {e}')
 	
 	return render(request, 'StudentTrackingSystemApp/login.html', context)
+
+def logout_view(request):
+	context = {'error': "Logged out successfully"}
+
+	logout(request)
+			
+	return redirect('loginPage')
 
 #able to read in files
 def homePage(request):
