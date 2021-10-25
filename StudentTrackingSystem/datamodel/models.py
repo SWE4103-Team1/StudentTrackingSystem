@@ -4,9 +4,12 @@ from django.db import models
 class UploadSet(models.Model):
     upload_datetime = models.DateTimeField(primary_key=True)
     # ensure nefarious scripts aren't uploaded
-    person_data_file = models.FileField(upload_to="uploads/", blank=True, null=True)
-    course_data_file = models.FileField(upload_to="uploads/", blank=True, null=True)
-    transfer_data_file = models.FileField(upload_to="uploads/", blank=True, null=True)
+    person_data_file = models.FileField(
+        upload_to="uploads/", blank=True, null=True)
+    course_data_file = models.FileField(
+        upload_to="uploads/", blank=True, null=True)
+    transfer_data_file = models.FileField(
+        upload_to="uploads/", blank=True, null=True)
 
 
 class Student(models.Model):
@@ -77,6 +80,8 @@ class Enrolment(models.Model):
     def __str__(self):
         return f"Enrolment: {self.id} (Student: {self.student.student_number}) (Course Section: {self.course.section})"
 
+
 class PreReq(models.Model):
     id = models.BigAutoField(primary_key=True)
     course_code = models.CharField(max_length=10)
+    rank = models.CharField(max_length=3)
