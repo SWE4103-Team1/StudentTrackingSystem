@@ -58,11 +58,14 @@ def calculateRank(student_number):
             an int score of the given student
     '''
     enrolment_list = Enrolment.objects.all()
+
     # keeps the count of rank of courses they have taken
     FIR, SOP, JUN, SEN = 0, 0, 0, 0
 
+    # keeps the count of number of pre-reqs in each ranks
     FIR_count, JUN_count, SOP_count, SEN_count = 0, 0, 0, 0
 
+    # this for loop goes through the pre-req table to get the ranks of each course and add it to the count of the rank
     for course in prereq.values():
         if course == 'FIR':
             FIR_count += 1
@@ -73,9 +76,15 @@ def calculateRank(student_number):
         elif course == 'SEN':
             SEN_count += 1
 
+    # takes each enrolment from the enrolmentlist
     for enrolment in enrolment_list:
+
+        # seperates the course code from the enrolment course
         course_code = enrolment.course.course_code
+
+        # checks if the enrolment student number is the same as the input student number, then checks if the course code of that enrolment is in the prereq table
         if enrolment.student.student_number == student_number and course_code in prereq:
+            # depending on the course rank that is in the pre-req table, add the count to the specified rank of the course
             if prereq[course_code] == 'FIR':
                 FIR += 1
             elif prereq[course_code] == 'SOP':
@@ -85,11 +94,14 @@ def calculateRank(student_number):
             elif prereq[course_code] == 'SEN':
                 SEN += 1
 
-    if FIR < FIR_count:
+    # return the coresponding rank depending on whether they completed all the courses in that rank
+    # EX: if the student's courses with the rank of 'FIR' is the same length as the FIR pre-req length, then return FIR
+    # EX: if the student needs 1 more FIR course, but completed all JUN courses, it will still return as first year since they are still missing FIR courses
+    if FIR <= FIR_count:
         return 'FIR'
-    elif JUN < JUN_count:
+    elif JUN <= JUN_count:
         return 'JUN'
-    elif SOP < SOP_count:
+    elif SOP <= SOP_count:
         return 'SOP'
-    elif SEN < SEN_count:
+    elif SEN <= SEN_count:
         return 'SEN'
