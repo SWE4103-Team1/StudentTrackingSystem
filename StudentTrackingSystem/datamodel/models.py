@@ -31,7 +31,7 @@ class Student(models.Model):
         ]
 
     def __str__(self):
-        return f"sid: {self.id}, name: {self.name}, gender: {self.gender}, address: {self.address}, email: {self.email}"
+        return f"sid: {self.id}, name: {self.name}, student number: {self.student_number}, campus: {self.campus}, program: {self.program}, start_date: {self.start_date},upload_set: {self.upload_set.upload_datetime}"
 
 
 class Course(models.Model):
