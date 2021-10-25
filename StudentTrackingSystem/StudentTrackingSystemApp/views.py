@@ -75,6 +75,12 @@ def homePage(request):
     return render(request, 'StudentTrackingSystemApp/homepage.html', context)
 
 
+def dashboard(request):
+
+    context = {}
+    return render(request, 'StudentTrackingSystemApp/dashboard.html', context)
+
+
 def student_data(request):
     from datamodel.models import Student
 
@@ -128,5 +134,15 @@ def enrolment_data(request):
     }
     return render(request, 'StudentTrackingSystemApp/enrolment_data.html', context)
     
+def get_student_data_api(request):
+	from django.shortcuts import HttpResponse
+	from django.core import serializers
+	from datamodel.models import Student
+	
 
+
+	serializedData = serializers.serialize("json", Student.objects.all())
+
+	
+	return HttpResponse(serializedData)
 

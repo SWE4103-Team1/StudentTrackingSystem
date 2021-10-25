@@ -25,5 +25,7 @@ urlpatterns = [
     path('homepage/', views.homePage, name='homepage'),
     path('student_data/', views.student_data, name = 'student_data'),
     path('course_data/', views.course_data, name = 'course_data'),
-    path('enrolment_data/', views.enrolment_data, name = 'enrolment_data')
+    path('enrolment_data/', views.enrolment_data, name = 'enrolment_data'),
+    path('dashboard/', views.dashboard, name = 'dashboard'),
+    path('api/student_data', views.get_student_data_api, name = 'get_student_data_api')   
 ]
