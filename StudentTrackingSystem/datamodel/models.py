@@ -4,18 +4,26 @@ from django.db import models
 class UploadSet(models.Model):
     upload_datetime = models.DateTimeField(primary_key=True)
     # ensure nefarious scripts aren't uploaded
-    person_data_file = models.FileField(upload_to="uploads/", blank=True, null=True)
-    course_data_file = models.FileField(upload_to="uploads/", blank=True, null=True)
-    transfer_data_file = models.FileField(upload_to="uploads/", blank=True, null=True)
+    person_data_file = models.FileField(
+        upload_to="uploads/", blank=True, null=True)
+    course_data_file = models.FileField(
+        upload_to="uploads/", blank=True, null=True)
+    transfer_data_file = models.FileField(
+        upload_to="uploads/", blank=True, null=True)
 
 
 class Student(models.Model):
     id = models.BigAutoField(primary_key=True)
     student_number = models.IntegerField()
     name = models.TextField(max_length=70)
+<<<<<<< HEAD
+=======
+    email = models.EmailField(max_length=50)
+>>>>>>> origin/feature_calculate-rank
     campus = models.CharField(max_length=2)
     program = models.CharField(max_length=10)
     start_date = models.DateField(max_length=8)
+    rank = models.CharField(max_length=3)
     upload_set = models.ForeignKey(UploadSet, on_delete=models.CASCADE)
 
     class Meta:
@@ -75,3 +83,9 @@ class Enrolment(models.Model):
 
     def __str__(self):
         return f"Enrolment: {self.id} (Student: {self.student.student_number}) (Course Section: {self.course.section})"
+
+
+class PreReq(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    course_code = models.CharField(max_length=10)
+    rank = models.CharField(max_length=3)
