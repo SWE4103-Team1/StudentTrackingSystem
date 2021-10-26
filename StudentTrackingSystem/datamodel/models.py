@@ -31,7 +31,7 @@ class Student(models.Model):
         ]
 
     def __str__(self):
-        return f"sid: {self.id}, name: {self.name}"
+        return f"sid: {self.student_number}, name: {self.name}"
 
 
 class Course(models.Model):
