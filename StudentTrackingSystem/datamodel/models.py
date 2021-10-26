@@ -8,6 +8,9 @@ class UploadSet(models.Model):
     course_data_file = models.FileField(upload_to="uploads/", blank=True, null=True)
     transfer_data_file = models.FileField(upload_to="uploads/", blank=True, null=True)
 
+    def __str__(self):
+        return str(self.upload_datetime)
+
 
 class Student(models.Model):
     id = models.BigAutoField(primary_key=True)
@@ -54,6 +57,9 @@ class Course(models.Model):
             )
         ]
 
+    def __str__(self):
+        return f"course code: {self.course_code}, section: {self.section}"
+
 
 class Enrolment(models.Model):
     id = models.BigAutoField(primary_key=True)
@@ -74,4 +80,4 @@ class Enrolment(models.Model):
         ]
 
     def __str__(self):
-        return f"Enrolment: {self.id} (Student: {self.student.student_number}) (Course Section: {self.course.section})"
+        return f"Enrolment: {self.id} (Student: {str(self.student)}) (Course Section: {str(self.course)})"
