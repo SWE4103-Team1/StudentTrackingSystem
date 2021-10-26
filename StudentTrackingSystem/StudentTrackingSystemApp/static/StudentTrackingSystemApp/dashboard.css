@@ -11,6 +11,13 @@
     
 
 }
+.div-table
+{
+    border: 1px solid red;
+    width: 100px;
+    height: 50px;
+    overflow: auto;
+}
 
 h2{
     color: white;
@@ -31,6 +38,9 @@ h2{
 }
 
 .masterList_List{
+    width: 100px;
+    height: 50px;
+    overflow: auto;
     color: black;
     background-color: white;
 }
