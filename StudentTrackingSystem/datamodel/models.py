@@ -16,10 +16,6 @@ class Student(models.Model):
     id = models.BigAutoField(primary_key=True)
     student_number = models.IntegerField()
     name = models.TextField(max_length=70)
-<<<<<<< HEAD
-=======
-    email = models.EmailField(max_length=50)
->>>>>>> origin/feature_calculate-rank
     campus = models.CharField(max_length=2)
     program = models.CharField(max_length=10)
     start_date = models.DateField(max_length=8)
