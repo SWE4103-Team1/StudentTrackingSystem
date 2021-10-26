@@ -3,6 +3,7 @@ from django.utils import timezone
 from django.test import TestCase
 
 import os
+import time
 from tempfile import NamedTemporaryFile
 
 from dataloader.load_extract import DataFileExtractor
@@ -34,11 +35,16 @@ class DataLoaderTests(TestCase):
             self.assertTrue(uploader.get_upload_set().transfer_data_file)
 
     def test_sample_upload_set(self):
+        print("starting")
         personfile = open("../data/personData.txt", "r")
         transferfile = open("../data/transferData.txt", "r")
         coursefile = open("../data/courseData.txt", "r")
+        start_time = time.time()
         uploader = DataFileExtractor()
         uploader.uploadAllFiles(personfile, coursefile, transferfile)
+        end_time = time.time()
+        duration = end_time - start_time
+        print(duration)
 
     def test_upload_all_files(self):
         with mktemp() as course_file, mktemp() as person_file, mktemp() as transfer_file:
