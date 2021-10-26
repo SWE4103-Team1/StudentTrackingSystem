@@ -78,7 +78,7 @@ def homePage(request):
 def dashboard(request):
 
     context = {}
-    return render(request, 'StudentTrackingSystemApp\Dashboard\index.html', context)
+    return render(request, 'StudentTrackingSystemApp/Dashboard/index.html', context)
 
 
 def student_data(request):
