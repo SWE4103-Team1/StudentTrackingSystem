@@ -34,7 +34,8 @@ class DataLoaderTests(TestCase):
             self.assertTrue(uploader.get_upload_set().person_data_file)
             self.assertTrue(uploader.get_upload_set().transfer_data_file)
 
-    def test_sample_upload_set(self):
+    # NOT CURRENTLY RUN AUTOMATICALLY
+    def _sample_upload_set(self):
         print("starting")
         personfile = open("../data/personData.txt", "r")
         transferfile = open("../data/transferData.txt", "r")
@@ -44,7 +45,6 @@ class DataLoaderTests(TestCase):
         uploader.uploadAllFiles(personfile, coursefile, transferfile)
         end_time = time.time()
         duration = end_time - start_time
-        print(duration)
 
     def test_upload_all_files(self):
         with mktemp() as course_file, mktemp() as person_file, mktemp() as transfer_file:
