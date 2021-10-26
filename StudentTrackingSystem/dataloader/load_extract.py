@@ -8,7 +8,7 @@ from datamodel.models import Student, Course, Enrolment, UploadSet
 
 import pandas as pd
 from pandas.io import sql
-
+import concurrent.futures
 from concurrent.futures import ThreadPoolExecutor
 
 
@@ -26,13 +26,15 @@ class DataFileExtractor:
 
     def  uploadAllFiles(self,personfile,coursefile,transferfile):
         with ThreadPoolExecutor() as e:
-            thread1 = e.submit(self.uploadPersonDataFile,personfile)
-            thread2= e.submit(self.uploadCourseDataFile,coursefile)
-            while not thread1.done():
-                sleep(0.001)
-            thread3 = e.submit(self.uploadTransferDataFile,transferfile)
-            e.shutdown(wait=True)
-
+            futureList = []
+            future1 = e.submit(self.uploadPersonDataFile,personfile)
+            futureList.append(future1)
+            future2= e.submit(self.uploadCourseDataFile,coursefile)
+            futureList.append(future2)
+            future3 = e.submit(self.uploadTransferDataFile,transferfile)
+            futureList.append(future3)
+            for future in concurrent.futures.as_completed(futureList):
+                future.result()
 
 
     #**Upload PersonData File : creates Student Models**
@@ -48,7 +50,6 @@ class DataFileExtractor:
         studentList = []
         with ThreadPoolExecutor() as e:
             studentList =e.map(self.makeStudent,dfp)
-            e.shutdown(wait=True)
         return studentList
 
     def makeStudent(self,dfp):
@@ -77,7 +78,6 @@ class DataFileExtractor:
         courseList =[]
         with ThreadPoolExecutor() as e:
             courseList = e.map(self.makeCourse,dfc)
-            e.shutdown(wait=True)
         return courseList
 
 
@@ -97,7 +97,6 @@ class DataFileExtractor:
         enrolmentList=[]
         with ThreadPoolExecutor() as e:
             enrolmentList = e.map(self.makeEnrolments,dfe)
-            e.shutdown(wait=True)
         return enrolmentList
 
     def makeEnrolments(self,dfe):

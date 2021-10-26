@@ -36,7 +36,7 @@ class Student(models.Model):
 
 class Course(models.Model):
     id = models.BigAutoField(primary_key=True)
-    course_code = models.CharField(max_length=20)
+    course_code = models.CharField(max_length=75)
     section = models.CharField(max_length=10)
     credit_hours = models.IntegerField()
     name = models.CharField(max_length=75)

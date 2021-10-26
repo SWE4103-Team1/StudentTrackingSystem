@@ -2,7 +2,7 @@ import os
 from tempfile import NamedTemporaryFile
 from dataloader.load_extract import DataFileExtractor
 from datamodel.models import UploadSet
-from django.test import TestCase
+import unittest
 from django.core.files import File as DjangoFile
 from django.utils import timezone
 
@@ -11,7 +11,7 @@ def mktemp():
     dj_file = DjangoFile(tmp_file)
     return dj_file
 
-class DataLoaderTests(TestCase):
+class DataLoaderTests(unittest.TestCase):
 	def test_get_upload_set(self):
 		with mktemp() as course_file, mktemp() as person_file, mktemp() as transfer_file:
 			time = timezone.now()
@@ -34,6 +34,7 @@ class DataLoaderTests(TestCase):
 			course_data = [
 				"Student_ID\tProgram\tTerm\tCourse\tTitle\tGrade\tCredit_Hrs\tGrade_Pts\tSection\tInt_Transfers\tNotes_Codes\n",
 				"5773669\tBSSWE\t2021/WI\tCHEM*1982\tGENERAL APPLIED CHEMISTRY\tA\t3.00\t12.0\tFR01B\n"
+
 			]
 
 			course_file.writelines(course_data)
@@ -57,23 +58,12 @@ class DataLoaderTests(TestCase):
 
 			uploader = DataFileExtractor()
 
-			# uploader.uploadAllFiles(person_file, course_file, transfer_file)
-			uploader.uploadPersonDataFile(person_file)
-			#uploader.uploadCourseDataFile(course_file)
+			uploader.uploadAllFiles(person_file, course_file, transfer_file)
+			print(Student.objects.filter(), end = "\n")
+			self.assertTrue(Student.objects.filter())
 
-			studentEntries = Student.objects.all()
-			for student in studentEntries:
-				print(student)
-			self.assertTrue(studentEntries)
+			print(Course.objects.filter() , end = "\n")
+			self.assertTrue(Course.objects.filter())
 
-			#courseEntries = Course.objects.all()
-			#self.assertTrue(courseEntries)
-
-			#enrolmentEntries = Enrolment.objects.all()
-			#self.assertTrue(enrolmentEntries)
-
-		
-
-
-
-		
+			print(Enrolment.objects.filter(), end = "\n")
+			self.assertTrue(Enrolment.objects.filter())
