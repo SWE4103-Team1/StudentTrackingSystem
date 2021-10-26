@@ -10,8 +10,6 @@ def registerPage(request):
 		email = request.POST.get('email')
 		password = request.POST.get('psw')
 		try:
-			# This is most likely temporary as we will 
-			# use Justen's models I assume?
 			User = get_user_model()
 			user = User.objects.create_user(
 				email=email,
@@ -22,7 +20,7 @@ def registerPage(request):
 			return redirect('loginPage')
 		except Exception as e:
 			print(f'ERROR: {e}')
-			context = {'error': "An account with that email already exists"}
+			context = {'error': "An account with that email already exists. Please create another account."}
 			return  render(request, 'StudentTrackingSystemApp/register.html', context)
 
 	context = {'error': ""}

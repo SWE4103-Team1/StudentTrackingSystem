@@ -66,14 +66,17 @@ button {
     width: 50%;
     border-radius: 20px;
 }
+
 button:hover{
     opacity: 0.8;
 }
+
 .links{
     margin: auto;
     display: block;
     width: 50%;
 }
+
 span.accnt{
     text-align: center;
     display: block;
@@ -83,9 +86,4 @@ span.accnt{
 
 a:link{
     color: white;
-}
-
-.error_message{
-    text-align: center;
-    color: red;
 }
