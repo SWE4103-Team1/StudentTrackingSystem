@@ -6,7 +6,6 @@ from dataloader.load_extract import _uploadAllFiles
 
 
 def registerPage(request):
-	context = {}
 	if request.method == 'POST':
 		email = request.POST.get('email')
 		password = request.POST.get('psw')
@@ -23,7 +22,10 @@ def registerPage(request):
 			return redirect('loginPage')
 		except Exception as e:
 			print(f'ERROR: {e}')
+			context = {'error': "An account with that email already exists"}
+			return  render(request, 'StudentTrackingSystemApp/register.html', context)
 
+	context = {'error': ""}
 	return render(request, 'StudentTrackingSystemApp/register.html', context)
 
 

@@ -27,16 +27,15 @@
     <h1>
         Dashboard
     </h1>
+    <a href="{% url 'homepage' %}" style="text-decoration:none">
+        <button class="nav_button">homepage</button>
+    </a>
     <div class="columns">
         <div class="masterList">
             <h2>
                 Master List
             </h2>
             <div class="div-table" id="root"></div>
-            <!-- Masterlist React Component
-                Just remove this table, just put it there as a place holder
-            -->
-
         </div>
         <div class="counts">
             <h2>
@@ -44,9 +43,6 @@
             </h2>
         </div>
     </div>
-    <a href="{% url 'homepage' %}" style="text-decoration:none">
-        <button class="nav_button">homepage</button>
-    </a>
 
 </body>
 
