@@ -1,10 +1,12 @@
-import os
-from tempfile import NamedTemporaryFile
-from dataloader.load_extract import DataFileExtractor
-from datamodel.models import UploadSet, Student, Course, Enrolment
-import unittest
 from django.core.files import File as DjangoFile
 from django.utils import timezone
+from django.test import TestCase
+
+import os
+from tempfile import NamedTemporaryFile
+
+from dataloader.load_extract import DataFileExtractor
+from datamodel.models import UploadSet, Student, Course, Enrolment
 
 
 def mktemp():
@@ -15,7 +17,7 @@ def mktemp():
     return dj_file
 
 
-class DataLoaderTests(unittest.TestCase):
+class DataLoaderTests(TestCase):
     def test_get_upload_set(self):
         with mktemp() as course_file, mktemp() as person_file, mktemp() as transfer_file:
             time = timezone.now()
@@ -31,7 +33,7 @@ class DataLoaderTests(unittest.TestCase):
             self.assertTrue(uploader.get_upload_set().person_data_file)
             self.assertTrue(uploader.get_upload_set().transfer_data_file)
 
-    def test_upload_sample_upload_set(self):
+    def test_sample_upload_set(self):
         personfile = open("../data/personData.txt", "r")
         transferfile = open("../data/transferData.txt", "r")
         coursefile = open("../data/courseData.txt", "r")
