@@ -21,6 +21,9 @@
         </form>
     </div>
     <div class="nav_button_container">
+        <a href="{% url 'dashboard' %}" style="text-decoration:none">
+            <button class="nav_button">Dashboard</button>
+        </a>
         <a href="{% url 'student_data' %}" style="text-decoration:none">
             <button class="nav_button">Student Data</button>
         </a>
@@ -29,6 +32,11 @@
         </a>
         <a href="{% url 'course_data' %}" style="text-decoration:none">
             <button class="nav_button">Course Data</button>
+        </a>
+    </div>
+    <div class="nav_button_container">
+        <a href="{% url 'logout' %}" style="text-decoration:none">
+            <button class="nav_button">Logout</button>
         </a>
     </div>
 </body>

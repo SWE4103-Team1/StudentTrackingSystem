@@ -19,6 +19,7 @@ class Student(models.Model):
     campus = models.CharField(max_length=2)
     program = models.CharField(max_length=10)
     start_date = models.DateField(max_length=8)
+    rank = models.CharField(max_length=3)
     upload_set = models.ForeignKey(UploadSet, on_delete=models.CASCADE)
 
     class Meta:
@@ -81,3 +82,9 @@ class Enrolment(models.Model):
 
     def __str__(self):
         return f"Enrolment: {self.id} (Student: {str(self.student)}) (Course Section: {str(self.course)})"
+
+
+class PreReq(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    course_code = models.CharField(max_length=10)
+    rank = models.CharField(max_length=3)
