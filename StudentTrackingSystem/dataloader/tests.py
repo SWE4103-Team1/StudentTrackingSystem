@@ -1,6 +1,7 @@
 from django.core.files import File as DjangoFile
 from django.utils import timezone
 from django.test import TestCase
+import unittest
 
 import os
 import time
@@ -18,7 +19,7 @@ def mktemp():
     return dj_file
 
 
-class DataLoaderTests(TestCase):
+class DataLoaderTests(unittest.TestCase):
     def test_get_upload_set(self):
         with mktemp() as course_file, mktemp() as person_file, mktemp() as transfer_file:
             time = timezone.now()
@@ -76,3 +77,4 @@ class DataLoaderTests(TestCase):
             self.assertTrue(Student.objects.filter())
             self.assertTrue(Course.objects.filter())
             self.assertTrue(Enrolment.objects.filter())
+            self.assertTrue(Student.objects.filter()[0].rank == 'FIR')

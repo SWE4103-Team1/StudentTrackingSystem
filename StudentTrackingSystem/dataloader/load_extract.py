@@ -6,7 +6,7 @@ import copy
 import itertools
 
 from datamodel.models import Student, Course, Enrolment, UploadSet
-
+from StudentTrackingSystemApp.rankings import calculateRank
 
 def bulk_save(models):
     with transaction.atomic():
@@ -68,6 +68,16 @@ class DataFileExtractor:
         )
 
         Enrolment.objects.bulk_create(itertools.chain(enrolments, transfer_enrolments))
+
+        allStudents = Student.objects.all()
+
+
+        for student in allStudents:
+            student.rank= calculateRank(student.student_number)
+            print(student.rank)
+            student.save()
+
+
 
     def get_upload_set(self):
         return self._upload_set
