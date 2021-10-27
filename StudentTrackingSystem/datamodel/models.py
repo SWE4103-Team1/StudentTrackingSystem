@@ -19,7 +19,7 @@ class Student(models.Model):
     campus = models.CharField(max_length=2)
     program = models.CharField(max_length=10)
     start_date = models.DateField(max_length=8)
-    rank = models.CharField(max_length=3,null=True)
+    rank = models.CharField(max_length=3,blank=True)
     upload_set = models.ForeignKey(UploadSet, on_delete=models.CASCADE)
 
     class Meta:
