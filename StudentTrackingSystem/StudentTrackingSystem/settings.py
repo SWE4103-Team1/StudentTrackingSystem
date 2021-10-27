@@ -80,16 +80,23 @@ WSGI_APPLICATION = "StudentTrackingSystem.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.mysql",
-        "NAME": "team1db",
-        "USER": "admin",
-        "PASSWORD": "tJbsbKrk7!%m",
-        "HOST": "mysql-1.cfjvavoil0w7.us-east-2.rds.amazonaws.com",
-        "PORT": "3306",
+use_sqlite = os.environ["USE_SQLITE"]
+DATABASES = {}
+if use_sqlite == "TRUE":
+    print("Using SQLite")
+    DATABASES = {"default": {"ENGINE": "django.db.backends.sqlite3", "NAME": "team1db"}}
+else:
+    print("Using MySQL")
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.mysql",
+            "NAME": "team1db",
+            "USER": "admin",
+            "PASSWORD": "tJbsbKrk7!%m",
+            "HOST": "mysql-1.cfjvavoil0w7.us-east-2.rds.amazonaws.com",
+            "PORT": "3306",
+        }
     }
-}
 
 
 # Password validation

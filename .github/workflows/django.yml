@@ -5,6 +5,7 @@ on:
     branches:
     - main
     - dev
+    - dev_*
   pull_request:
     branches:
     - main
@@ -12,7 +13,6 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
     strategy:
       max-parallel: 4
@@ -32,4 +32,6 @@ jobs:
     - name: Run Tests
       run: |
         cd StudentTrackingSystem
-        python manage.py test --keepdb
+        export USE_SQLITE=TRUE
+        python manage.py migrate
+        python manage.py test --noinput --failfast --force-color
