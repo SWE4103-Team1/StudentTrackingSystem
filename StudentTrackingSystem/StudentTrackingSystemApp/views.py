@@ -59,6 +59,10 @@ def logout_view(request):
     return redirect("loginPage")
 
 
+def redirectLogin(request):
+	context = {}
+	return redirect("loginPage")
+
 # able to read in files
 def homePage(request):
     if request.method == "POST":
