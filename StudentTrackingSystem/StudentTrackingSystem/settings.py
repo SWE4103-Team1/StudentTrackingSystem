@@ -83,10 +83,10 @@ WSGI_APPLICATION = "StudentTrackingSystem.wsgi.application"
 use_sqlite = os.environ["USE_SQLITE"]
 DATABASES = {}
 if use_sqlite == "TRUE":
-    print("using sqlite")
+    print("Using SQLite")
     DATABASES = {"default": {"ENGINE": "django.db.backends.sqlite3", "NAME": "team1db"}}
 else:
-    print("using real DB")
+    print("Using MySQL")
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.mysql",

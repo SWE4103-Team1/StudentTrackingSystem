@@ -5,7 +5,7 @@ on:
     branches:
     - main
     - dev
-    - test-with-local-db
+    - dev_*
   pull_request:
     branches:
     - main
@@ -33,6 +33,5 @@ jobs:
       run: |
         cd StudentTrackingSystem
         export USE_SQLITE=TRUE
-        python manage.py makemigrations
         python manage.py migrate
         python manage.py test --noinput --failfast --force-color
