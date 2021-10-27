@@ -1,7 +1,8 @@
-[![Django CI](https://github.com/SWE4103-Team1/StudentTrackingSystem/actions/workflows/django.yml/badge.svg?branch=dev)](https://github.com/SWE4103-Team1/StudentTrackingSystem/actions/workflows/django.yml)
-[![Jenkins CD Build Status](http://3.86.91.241:8080/buildStatus/icon?job=git_test)](http://3.86.91.241:8080/job/git_test/)
-
 # Student Tracking System
+
+[![Django CI](https://github.com/SWE4103-Team1/StudentTrackingSystem/actions/workflows/django.yml/badge.svg?branch=dev)](https://github.com/SWE4103-Team1/StudentTrackingSystem/actions/workflows/django.yml)
+
+[![Jenkins CD Build Status](http://3.86.91.241:8080/buildStatus/icon?job=git_test)](http://3.86.91.241:8080/job/git_test/)
 
 ## Dependencies
 
@@ -53,8 +54,12 @@ SQLite can be used by setting the environment variable USE_SQLITE to TRUE, and t
 
 If you're unfamiliar with environment variables, an exported evironment variable in a shell session will persist for the extent of the shell session, but on a different shell session, you will have to export the variable, again.
 
+Environment variable examples on MacOS & Linux:
+
 ```bash
-export USE_SQLITE=TRUE # set env. var. on MacOS & Linux
+export USE_SQLITE=TRUE  # set to TRUE (use SQLite)
+export USE_SQLITE=FALSE # set to FALSE (disable SQLite)
+unset USE_SQLITE        # unset (disable SQLite & remove var)
 ```
 
 If this is the first invocation using the SQLite database, you first need to create the database schema. Do this with the following Django command, from the same directory as *manage.py*:
