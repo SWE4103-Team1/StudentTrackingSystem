@@ -23,26 +23,23 @@
 </head>
 
 <body>
-    <h1>
-        Dashboard
-    </h1>
-    <a href="{% url 'homepage' %}" style="text-decoration:none">
-        <button class="nav_button">homepage</button>
-    </a>
-    <div class="columns">
-        <div class="masterList">
-            <h2>
-                Master List
-            </h2>
+    <div class="container-dashboard">
+        <div class="column-dashboard column-one">
+            <div></div>
+            <h2>Master List</h2>
             <div id="root"></div>
         </div>
-        <div class="counts">
-            <h2>
-                Counts
-            </h2>
+        <div class="column-dashboard column-two">
+            <h1>Dashboard</h1>
+            <a href="{% url 'homepage' %}" style="text-decoration:none">
+                <button class="nav_button">Homepage</button>
+            </a>
+        </div>
+        <div class="column-dashboard column-three">
+            <div></div>
+            <h2>Counts</h2>
         </div>
     </div>
-
 </body>
 
 

@@ -3,7 +3,7 @@ from django.shortcuts import redirect, render
 from users.managers import UserManager
 from users.roles import UserRole
 from dataloader.load_extract import _uploadAllFiles
-
+from generateCounts import *
 
 def registerPage(request):
 	if request.method == 'POST':
@@ -138,11 +138,8 @@ def get_student_data_api(request):
 	from django.shortcuts import HttpResponse
 	from django.core import serializers
 	from datamodel.models import Student
-	
-
 
 	serializedData = serializers.serialize("json", Student.objects.all())
 
-	
 	return HttpResponse(serializedData)
 
