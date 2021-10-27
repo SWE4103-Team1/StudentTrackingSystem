@@ -42,6 +42,20 @@ input[type=text], input[type=password], input[type=email] {
     border-radius: 25px;
 }
 
+input[type=search] {
+    width: 50%;
+    text-align: left;
+    font-size: 16px;
+    padding: 12px;
+    margin-top: 10px;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+    border-radius: 25px;
+}
+
 label{
     color: white;
     text-align: center;
@@ -83,21 +97,21 @@ button:hover{
 .column-dashboard {
     flex: 1;
     text-align: center;
-    
-    /*for demo purposes only */
-
 }
 
 .column-one {
     order: 1;
     padding-top: 10%;
 }
+
 .column-two {
     order: 2;
 }
+
 .column-three {
     order: 3;
     padding-top: 10%;
+    color: white
 }
 
 .links{
@@ -116,3 +130,4 @@ span.accnt{
 a:link{
     color: white;
 }
+

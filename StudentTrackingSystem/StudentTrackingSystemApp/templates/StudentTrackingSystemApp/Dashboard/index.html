@@ -38,10 +38,28 @@
         <div class="column-dashboard column-three">
             <div></div>
             <h2>Counts</h2>
+            <form method="POST" style="background-color: transparent;">
+            {% csrf_token %}
+                <div class="container">
+                    <label for="semester">Semester:</label>
+                    <input type="search" id="semester" name="semester">
+                    <label for="start_date">Start Date:</label>
+                    <input type="search" id="start_date" name="start_date"><br><br>
+                    <button type="submit">Query</button>
+                </div>
+            </form>
+            
+
+            <!-- wow! this isn't cool -->
+            <p>Count of students currently in coop during above semester: {{ coopSemester }}</p>
+            <p>Count of students enrolled during above semester: {{ totalSemester }}</p>
+            <p>Count of students currently in coop at above start date: {{ coopStartDate }}</p>
+            <p>Count of students enrolled from above start date: {{ totalStartDate }}</p>
+            <p>Count of students in each rank during above semester: {{ rankSemester }}</p>
+        
         </div>
     </div>
 </body>
-
 
 <noscript>You need to enable JavaScript to run this app.</noscript>
 

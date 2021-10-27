@@ -3,7 +3,7 @@ from django.shortcuts import redirect, render
 from users.managers import UserManager
 from users.roles import UserRole
 from dataloader.load_extract import _uploadAllFiles
-from generateCounts import *
+from generateCounts.counts import *
 
 def registerPage(request):
 	if request.method == 'POST':
@@ -76,9 +76,31 @@ def homePage(request):
 
 
 def dashboard(request):
+	context = {
+		"coopSemester": "",
+		"totalSemester": "",
+		"coopStartDate": "",
+		"totalStartDate": "",
+		"rankSemester": ""
+	}
 
-    context = {}
-    return render(request, 'StudentTrackingSystemApp/Dashboard/index.html', context)
+	if request.method == 'POST':
+		semester = request.POST.get('semester')
+		start_date = request.POST.get('start_date')
+
+		try:
+			context["coopSemester"] = str(count_coop_students_by_semester(semester))
+			context["totalSemester"] = str(count_total_students_by_semester(semester))
+			context["coopStartDate"] = str(count_coop_students_by_start_date(start_date))
+			context["totalStartDate"] = str(count_total_students_by_start_date(start_date))
+			context["rankSemester"] = str(count_students_by_rank(semester))
+
+			return render(request, 'StudentTrackingSystemApp/Dashboard/index.html', context)
+
+		except Exception as e:
+			print(f'ERROR: {e}')
+
+	return render(request, 'StudentTrackingSystemApp/Dashboard/index.html', context)
 
 
 def student_data(request):
@@ -142,4 +164,34 @@ def get_student_data_api(request):
 	serializedData = serializers.serialize("json", Student.objects.all())
 
 	return HttpResponse(serializedData)
+
+def get_counts_by_semester(request, semester):
+	from django.shortcuts import HttpResponse
+	from json import dumps
+	from generateCounts.counts import count_coop_students_by_semester, count_total_students_by_semester
+
+	countCoop = count_coop_students_by_semester(semester)
+	countTotal = count_total_students_by_semester(semester)
+
+	data = {
+		"countCoop": countCoop,
+		"countTotal": countTotal
+	}
+
+	return HttpResponse(dumps(data))
+
+def get_counts_by_start_date(request, start_date):
+	from django.shortcuts import HttpResponse
+	from json import dumps
+	from generateCounts.counts import count_coop_students_by_start_date, count_total_students_by_start_date
+
+	countCoop = count_coop_students_by_start_date(start_date)
+	countTotal = count_total_students_by_start_date(start_date)
+
+	data = {
+		"countCoop": countCoop,
+		"countTotal": countTotal
+	}
+
+	return HttpResponse(dumps(data))
 

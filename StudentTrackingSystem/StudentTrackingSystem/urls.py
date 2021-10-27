@@ -27,5 +27,7 @@ urlpatterns = [
     path('course_data/', views.course_data, name = 'course_data'),
     path('enrolment_data/', views.enrolment_data, name = 'enrolment_data'),
     path('dashboard/', views.dashboard, name = 'dashboard'),
-    path('api/student_data', views.get_student_data_api, name = 'get_student_data_api')   
+    path('api/student_data/', views.get_student_data_api, name = 'get_student_data_api'),
+    path('api/counts_semester/<path:semester>/', views.get_counts_by_semester, name = 'get_counts_by_semester_api'),
+    path('api/counts_start_date/<str:start_date>/', views.get_counts_by_start_date, name = 'get_counts_by_start_date_api')
 ]
