@@ -134,7 +134,6 @@ def enrolment_data(request):
     }
     return render(request, "StudentTrackingSystemApp/enrolment_data.html", context)
 
-
 def get_student_data_api(request):
     from django.shortcuts import HttpResponse
     from django.core import serializers

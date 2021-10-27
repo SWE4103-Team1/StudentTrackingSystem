@@ -8,14 +8,17 @@ body{
     font-family:"Avenir";
     background-color: #5B6770;
 }
+
 h1{
     color:white;
     text-align: center;
     padding: 50px 0 0 ;
 }
+
 h2{
     color:white;
 }
+
 form{
     background-color: white;
     width: 50%;
@@ -23,8 +26,8 @@ form{
     padding-bottom: 10px;
     margin: auto;
     border-radius: 25px;
-
 }
+
 input[type=text], input[type=password], input[type=email] {
     width: 90%;
     text-align: left;
@@ -48,11 +51,13 @@ label{
     margin-right: auto;
     display:block;
 }
+
 select{
     margin:auto;
     text-align:center;
     display:block;
 }
+
 button {
     background-color: #F00000;
     color: white;
@@ -69,6 +74,30 @@ button {
 
 button:hover{
     opacity: 0.8;
+}
+
+.container-dashboard {
+    display: flex;
+}
+
+.column-dashboard {
+    flex: 1;
+    text-align: center;
+    
+    /*for demo purposes only */
+
+}
+
+.column-one {
+    order: 1;
+    padding-top: 10%;
+}
+.column-two {
+    order: 2;
+}
+.column-three {
+    order: 3;
+    padding-top: 10%;
 }
 
 .links{
