@@ -1,4 +1,6 @@
 [![Django CI](https://github.com/SWE4103-Team1/StudentTrackingSystem/actions/workflows/django.yml/badge.svg?branch=main)](https://github.com/SWE4103-Team1/StudentTrackingSystem/actions/workflows/django.yml)
+[![Jenkis CD Build Status](http://3.86.91.241:8080/buildStatus/icon?job=git_test)](http://3.86.91.241:8080/job/git_test/)
+
 # Student Tracking System
 ## 10.19-update
 Now our repo has successfully deployed Django CI through Github Action!
