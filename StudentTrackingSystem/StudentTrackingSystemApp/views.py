@@ -1,4 +1,4 @@
-from django.contrib.auth import authenticate, get_user_model, logout
+from django.contrib.auth import authenticate, get_user_model, logout, login
 from django.shortcuts import redirect, render
 from users.managers import UserManager
 from users.roles import UserRole
@@ -6,13 +6,10 @@ from dataloader.load_extract import _uploadAllFiles
 
 
 def registerPage(request):
-	context = {}
 	if request.method == 'POST':
 		email = request.POST.get('email')
 		password = request.POST.get('psw')
 		try:
-			# This is most likely temporary as we will 
-			# use Justen's models I assume?
 			User = get_user_model()
 			user = User.objects.create_user(
 				email=email,
@@ -23,12 +20,15 @@ def registerPage(request):
 			return redirect('loginPage')
 		except Exception as e:
 			print(f'ERROR: {e}')
+			context = {'error': "An account with that email already exists. Please create another account."}
+			return  render(request, 'StudentTrackingSystemApp/register.html', context)
 
+	context = {'error': ""}
 	return render(request, 'StudentTrackingSystemApp/register.html', context)
 
 
 def loginPage(request):
-	context = {}
+	context = {'error': ""}
 	if request.method == 'POST':
 		email = request.POST.get('email')
 		password = request.POST.get('password')
@@ -36,15 +36,24 @@ def loginPage(request):
 			user = authenticate(request, username=email, password=password)
 			if user is not None:
 				print(f'Successfully logged in user: {user}')
+				login(request, user)
 				# Here is where we need to redirect the user to landing page
 				return redirect('homepage')
 			else:
 				print(f'{user} does not exist')
-				return redirect('registerPage')
+				context = {'error': "Invalid login credentials. Please try again."}
+				return  render(request, 'StudentTrackingSystemApp/login.html', context)
 		except Exception as e:
 			print(f'ERROR: {e}')
 	
 	return render(request, 'StudentTrackingSystemApp/login.html', context)
+
+def logout_view(request):
+	context = {'error': "Logged out successfully"}
+
+	logout(request)
+			
+	return redirect('loginPage')
 
 #able to read in files
 def homePage(request):
@@ -64,6 +73,12 @@ def homePage(request):
 
     context = {}
     return render(request, 'StudentTrackingSystemApp/homepage.html', context)
+
+
+def dashboard(request):
+
+    context = {}
+    return render(request, 'StudentTrackingSystemApp/Dashboard/index.html', context)
 
 
 def student_data(request):
@@ -119,5 +134,15 @@ def enrolment_data(request):
     }
     return render(request, 'StudentTrackingSystemApp/enrolment_data.html', context)
     
+def get_student_data_api(request):
+	from django.shortcuts import HttpResponse
+	from django.core import serializers
+	from datamodel.models import Student
+	
 
+
+	serializedData = serializers.serialize("json", Student.objects.all())
+
+	
+	return HttpResponse(serializedData)
 

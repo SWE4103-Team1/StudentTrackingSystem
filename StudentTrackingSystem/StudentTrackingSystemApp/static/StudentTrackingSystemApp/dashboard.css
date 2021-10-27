@@ -1,0 +1,46 @@
+.masterList{
+    
+    padding:10px;
+    
+    flex: 50%;
+   /* align-items: left; */
+    justify-content:left;
+    margin:20px;
+
+
+    
+
+}
+.div-table
+{
+    border: 1px solid red;
+    width: 100px;
+    height: 50px;
+    overflow: auto;
+}
+
+h2{
+    color: white;
+}
+
+.columns{
+    display: grid;
+    grid-template-columns: 50% 50%;
+}
+
+.counts{
+    padding:10px;
+    display:flex;
+    align-items: right;
+    justify-content:right;
+    margin:20px;
+    flex: 50%;
+}
+
+.masterList_List{
+    width: 100px;
+    height: 50px;
+    overflow: auto;
+    color: black;
+    background-color: white;
+}

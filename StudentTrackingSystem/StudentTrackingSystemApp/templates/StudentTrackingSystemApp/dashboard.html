@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+
+    {% load static %}
+    <head>
+        <title>
+             Dashboard
+        </title>
+        <meta charset="UTF-8">
+        <link rel="stylesheet" href="{% static 'StudentTrackingSystemApp/main.css' %}">
+        <link rel="stylesheet" href="{% static 'StudentTrackingSystemApp/dashboard.css' %}">
+        <noscript>You need JavaScript to run this application</noscript>
+    </head>
+
+    <body>
+        <h1>
+            Dashboard
+        </h1>
+        <div class = "columns">
+            <div class="masterList">
+                <h2>
+                    Master List
+                </h2>
+
+                <!-- Masterlist React Component
+                    Just remove this table, just put it there as a place holder
+                -->
+                <table class = "masterList_List">
+                    <tr>
+                      <th>Student Number</th>
+                      <th>Student Name</th>
+                      <th>Rank</th>
+                    </tr>
+                    <tr>
+                      <td>3371604</td>
+                      <td>OConnor M.</td>
+                      <td>Sen</td>
+                    </tr>
+                    <tr>
+                        <td>3371604</td>
+                        <td>OConnor M.</td>
+                        <td>Sen</td>
+                      </tr>
+                  </table>
+
+            </div>
+            <div class="counts">
+                <h2>
+                    Counts
+                </h2>
+            </div>
+        </div>
+        <a href="{% url 'homepage' %}" style="text-decoration:none">
+            <button class="nav_button">homepage</button>
+        </a>
+
+    </body>
+</html>

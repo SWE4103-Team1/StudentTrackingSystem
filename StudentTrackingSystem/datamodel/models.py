@@ -16,7 +16,6 @@ class Student(models.Model):
     id = models.BigAutoField(primary_key=True)
     student_number = models.IntegerField()
     name = models.TextField(max_length=70)
-    email = models.EmailField(max_length=50)
     campus = models.CharField(max_length=2)
     program = models.CharField(max_length=10)
     start_date = models.DateField(max_length=8)
@@ -36,7 +35,7 @@ class Student(models.Model):
         ]
 
     def __str__(self):
-        return f"sid: {self.id}, name: {self.name}, gender: {self.gender}, address: {self.address}, email: {self.email}"
+        return f"sid: {self.id}, name: {self.name}, student number: {self.student_number}, campus: {self.campus}, program: {self.program}, start_date: {self.start_date},upload_set: {self.upload_set.upload_datetime}"
 
 
 class Course(models.Model):
