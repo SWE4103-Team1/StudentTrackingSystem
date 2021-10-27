@@ -1,7 +1,8 @@
-[![Django CI](https://github.com/SWE4103-Team1/StudentTrackingSystem/actions/workflows/django.yml/badge.svg?branch=dev)](https://github.com/SWE4103-Team1/StudentTrackingSystem/actions/workflows/django.yml)
-[![Jenkins CD Build Status](http://3.86.91.241:8080/buildStatus/icon?job=git_test)](http://3.86.91.241:8080/job/git_test/)
-
 # Student Tracking System
+
+[![Django CI](https://github.com/SWE4103-Team1/StudentTrackingSystem/actions/workflows/django.yml/badge.svg?branch=dev)](https://github.com/SWE4103-Team1/StudentTrackingSystem/actions/workflows/django.yml)
+
+[![Jenkins CD Build Status](http://3.86.91.241:8080/buildStatus/icon?job=git_test)](http://3.86.91.241:8080/job/git_test/)
 
 ## Dependencies
 
@@ -40,39 +41,64 @@
 
 ## Database Connection
 
+There are 2 database options: SQLite and MySQL. MySQL connects to the hosted, "real" database in AWS. SQLite makes a local file and uses that as the datastore for a local database instance.
+
+### MySQL
+
 The database is currently publically accessible, but has a subnet group with source IP address restrictions to it. If you would like direct connection to the database, contact Justen.
 
-## 10.19-update
+### SQLite
+
+The current CI configuration uses the SQLite database.
+SQLite can be used by setting the environment variable USE_SQLITE to TRUE, and then starting the Django tests or server, as usual.
+
+If you're unfamiliar with environment variables, an exported evironment variable in a shell session will persist for the extent of the shell session, but on a different shell session, you will have to export the variable, again.
+
+Environment variable examples on MacOS & Linux:
+
+```bash
+export USE_SQLITE=TRUE  # set to TRUE (use SQLite)
+export USE_SQLITE=FALSE # set to FALSE (disable SQLite)
+unset USE_SQLITE        # unset (disable SQLite & remove var)
+```
+
+If this is the first invocation using the SQLite database, you first need to create the database schema. Do this with the following Django command, from the same directory as *manage.py*:
+
+```bash
+python manage.py migrate
+```
+
+## CI
 
 Now our repo has successfully deployed Django CI through Github Action!
+
 - This will automatically run Django Test when you push or merge and return a result to tell you whether your project successfully ran this test.
 - If you get a failed result, click the **Action** button to view the log.
 - This branch is merged from the **dev** branch because this is the latest branch after sprint1.
-********
+- Branches that start with dev_ will automatically run CI when pushed to GitHub
 
-## fetch, push & merge
+## Git Standards
+
+### fetch, push & merge
 
 For coding, please
+
 - choose one dev branch from the lists
 - create one new branch, like feature_Tom
 - checkout to your branch and code
 - commit and push to your branch
 - merge your branch into the latest dev branch and delete your feature branch
-******
 
-## differnences between dev and feature
+### differnences between dev and feature
 
 - **choose feature_xxxx** just for checkouting from dev_*** and ***delete*** it after merging
-- **choose dev_xxxx** for merging your code with others and **delete your feature** branch after that
-- delete old dev if you all are working on new dev
-*******
+- **choose dev_xxxx** for merging your code with others and **delete your feature** branch after that. delete old dev if you all are working on new dev
 
-## main
+### main
 
 After completing all development of a phase
+
 - merge all dev branches into the main branch
 - update the version number, like STS 1.0
 - delete all feature branches
 - write a document for this version
-
-
