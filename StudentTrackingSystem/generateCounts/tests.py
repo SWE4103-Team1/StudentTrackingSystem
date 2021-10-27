@@ -3,6 +3,7 @@ from datamodel.models import Student, Course, Enrolment, UploadSet
 import datetime
 from django.utils import timezone
 from generateCounts.counts import count_coop_students_by_semester,count_total_students_by_semester,count_total_students_by_start_date,count_coop_students_by_start_date,count_students_by_rank
+
 class countsTester(TestCase):
 
     def test_count_coop_students_by_semester(self):
@@ -113,8 +114,8 @@ class countsTester(TestCase):
 
         countWinter = count_coop_students_by_semester("2021/WI")
         countFall = count_coop_students_by_semester("2021/FA")
-        self.assertTrue(countWinter==3)
-        self.assertTrue(countFall==1)
+        self.assertTrue(countWinter == 3)
+        self.assertTrue(countFall == 1)
 
     def test_count_coop_students_by_start_date(self):
         _upload_set = UploadSet(upload_datetime=timezone.now())
@@ -223,7 +224,7 @@ class countsTester(TestCase):
         enrolment6.save()
 
         count = count_coop_students_by_start_date("2019-01-01")
-        self.assertTrue(count==2)
+        self.assertTrue(count == 2)
 
     def test_count_total_students_by_semester(self):
         _upload_set = UploadSet(upload_datetime=timezone.now())
@@ -275,7 +276,7 @@ class countsTester(TestCase):
         enrolment2.save()
 
         count = count_total_students_by_semester("2021/WI")
-        self.assertTrue(count==2)
+        self.assertTrue(count == 2)
 
     def test_count_total_students_by_start_date(self):
         _upload_set = UploadSet(upload_datetime=timezone.now())
@@ -336,7 +337,7 @@ class countsTester(TestCase):
 
         count = count_total_students_by_start_date("2019-01-01")
 
-        self.assertTrue(count ==2)
+        self.assertTrue(count == 2)
 
     def test_count_students_by_rank(self):
         _upload_set = UploadSet(upload_datetime=timezone.now())
