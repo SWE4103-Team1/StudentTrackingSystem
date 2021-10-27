@@ -4,12 +4,12 @@ from django.db import models
 class UploadSet(models.Model):
     upload_datetime = models.DateTimeField(primary_key=True)
     # ensure nefarious scripts aren't uploaded
-    person_data_file = models.FileField(
-        upload_to="uploads/", blank=True, null=True)
-    course_data_file = models.FileField(
-        upload_to="uploads/", blank=True, null=True)
-    transfer_data_file = models.FileField(
-        upload_to="uploads/", blank=True, null=True)
+    person_data_file = models.FileField(upload_to="uploads/", blank=True, null=True)
+    course_data_file = models.FileField(upload_to="uploads/", blank=True, null=True)
+    transfer_data_file = models.FileField(upload_to="uploads/", blank=True, null=True)
+
+    def __str__(self):
+        return str(self.upload_datetime)
 
 
 class Student(models.Model):
@@ -35,12 +35,12 @@ class Student(models.Model):
         ]
 
     def __str__(self):
-        return f"sid: {self.id}, name: {self.name}, student number: {self.student_number}, campus: {self.campus}, program: {self.program}, start_date: {self.start_date},upload_set: {self.upload_set.upload_datetime}"
+        return f"sid: {self.student_number}, name: {self.name}"
 
 
 class Course(models.Model):
     id = models.BigAutoField(primary_key=True)
-    course_code = models.CharField(max_length=20)
+    course_code = models.CharField(max_length=75)
     section = models.CharField(max_length=10)
     credit_hours = models.IntegerField()
     name = models.CharField(max_length=75)
@@ -57,6 +57,9 @@ class Course(models.Model):
                 name="unique_course_index_constraint",
             )
         ]
+
+    def __str__(self):
+        return f"course code: {self.course_code}, section: {self.section}"
 
 
 class Enrolment(models.Model):
@@ -78,7 +81,7 @@ class Enrolment(models.Model):
         ]
 
     def __str__(self):
-        return f"Enrolment: {self.id} (Student: {self.student.student_number}) (Course Section: {self.course.section})"
+        return f"Enrolment: {self.id} (Student: {str(self.student)}) (Course Section: {str(self.course)})"
 
 
 class PreReq(models.Model):

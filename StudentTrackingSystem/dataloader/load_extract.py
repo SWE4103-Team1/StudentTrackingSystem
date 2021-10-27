@@ -1,153 +1,219 @@
-import os
-from django.db import IntegrityError
-
-# os.environ.setdefault('DJANGO_SETTINGS_MODULE','StudentTrackingSystem.settings')
 from django.utils import timezone
+from django.db import transaction
 
-# os.system("python3 manage.py flush")
-
-# import django
-# from django.core.exceptions import ObjectDoesNotExist
-# django.setup()
+import pandas as pd
+import copy
+import itertools
 
 from datamodel.models import Student, Course, Enrolment, UploadSet
 
-import pandas as pd
+
+def bulk_save(models):
+    with transaction.atomic():
+        for model in models:
+            model.save()
 
 
-# TODO
-# this cannot just be a global, static variable. With this, everytime the file
-# is imported, we create a new upload set in the actual DB.
-# Instead, it would
-# be better to have an DataFileUploader object, or something, which allows users
-# of this file to have a clearly defined session. We'd like to share the upload set
-# between the other entities which are uploaded, as they all refer to the same upload set.
-# However, we don't want this to be shared between every upload ever.
-# uploadSet = UploadSet(upload_datetime=timezone.now())
-# uploadSet.save()
+class DataFileExtractor:
+    _transfer_marker = "T"
 
+    @staticmethod
+    def _make_course_key(course_code, course_section):
+        return course_code + course_section
 
-def _uploadAllFiles(personfile, coursefile, transferfile):
-    uploadPersonDataFile(personfile)
-    uploadCourseDataFile(coursefile)
-    uploadTransferDataFile(transferfile)
+    @staticmethod
+    def _course_to_key(course):
+        return DataFileExtractor._make_course_key(course.course_code, course.section)
 
+    @staticmethod
+    def _make_student_key(student_number):
+        return str(student_number)
 
-def uploadPersonDataFile(personfile):
-    dfp = pd.read_table(
-        personfile, header=0, squeeze=True, index_col=[0]
-    )  # Read PersonData.txt into DataFrame
-    dfp = dfp.loc[:, ~dfp.columns.str.contains("^Unnamed")]
-    try:
-        for index, row in dfp.iterrows():
-            student = Student(
-                student_number=index,
-                name=row[0],
-                gender=row[1],
-                address=row[2],
-                email=row[5],
-                program=row[6],
-                campus=row[7],
-                start_date=row[8],
-                upload_set=uploadSet,
+    @staticmethod
+    def _student_to_key(student):
+        return DataFileExtractor._make_student_key(student.student_number)
+
+    def __init__(self, upload_set: UploadSet = None):
+        if upload_set == None:
+            upload_set = UploadSet(upload_datetime=timezone.now())
+            upload_set.save()
+
+        self._upload_set = upload_set
+        self._uploaded_courses = dict()
+        self._uploaded_students = dict()
+
+    def uploadAllFiles(self, person_file, course_file, transfer_file):
+        df_person = pd.read_table(person_file, squeeze=True)
+        df_course = pd.read_table(course_file, squeeze=True)
+        df_transfer_enrolment = pd.read_table(transfer_file, squeeze=True)
+        df_enrolment = copy.deepcopy(df_course)
+        df_transfer_course = copy.deepcopy(df_transfer_enrolment)
+
+        students = self._build_person_models(df_person)
+        courses = self._build_course_models(df_course)
+        transfer_courses = self._build_transfer_course_models(df_transfer_course)
+
+        bulk_save(itertools.chain(students, courses, transfer_courses))
+
+        # store created objects so creating enrolments doesn't need to query DB
+        for s in students:
+            self._uploaded_students[DataFileExtractor._student_to_key(s)] = s
+
+        for c in itertools.chain(courses, transfer_courses):
+            self._uploaded_courses[DataFileExtractor._course_to_key(c)] = c
+
+        enrolments = self._build_enrolment_models(df_enrolment)
+        transfer_enrolments = self._build_transfer_enrolment_models(
+            df_transfer_enrolment
+        )
+
+        Enrolment.objects.bulk_create(itertools.chain(enrolments, transfer_enrolments))
+
+    def get_upload_set(self):
+        return self._upload_set
+
+    def _build_person_models(self, dfp):
+        dfp.drop_duplicates(subset=["Student_ID"], keep="last", inplace=True)
+        dfp = dfp.values.tolist()
+        student_models = list(map(self._new_student_model, dfp))
+        return student_models
+
+    def _build_course_models(self, dfc):
+        dfc.drop_duplicates(subset=["Course", "Section"], keep="last", inplace=True)
+        dfc = dfc.values.tolist()
+        course_models = list(map(self._new_course_model, dfc))
+        return course_models
+
+    def _build_enrolment_models(self, dfe):
+        dfe.drop_duplicates(
+            subset=["Course", "Student_ID", "Section"], keep="last", inplace=True
+        )
+        dfe = dfe.values.tolist()
+        enrolment_models = list(map(self._new_enrolment_model, dfe))
+        return enrolment_models
+
+    def _build_transfer_course_models(self, dft):
+        # prepare transfer input data
+        dft = dft.loc[:, ~dft.columns.str.contains("^Unnamed")]
+        dft["Course"].fillna(dft["Title"], inplace=True)
+        dft.dropna(axis=0, how="all", inplace=True)
+
+        # create transfer course models
+        dft.drop_duplicates(subset=["Course"], keep="last", inplace=True)
+        dft.dropna(axis=0, how="all", inplace=True)
+        dft = dft.values.tolist()
+        transfer_course_models = list(map(self._new_transfer_course, dft))
+        return transfer_course_models
+
+    def _build_transfer_enrolment_models(self, dft):
+        # prepare transfer input data
+        dft = dft.loc[:, ~dft.columns.str.contains("^Unnamed")]
+        dft["Course"].fillna(dft["Title"], inplace=True)
+        dft.dropna(axis=0, how="all", inplace=True)
+        dft_e = copy.deepcopy(dft)
+
+        # create transfer enrolment models
+        dft_e.drop_duplicates(
+            subset=["Student_ID", "Course"], keep="last", inplace=True
+        )
+        dft_e.dropna(axis=0, how="all", inplace=True)
+        dft_e = dft_e.values.tolist()
+        transfer_enrolment_models = list(map(self._new_transfer_enrolment_model, dft_e))
+        return transfer_enrolment_models
+
+    def _new_transfer_course(self, dft):
+        course = Course(
+            course_code=dft[1],
+            name=dft[2],
+            credit_hours=dft[3],
+            upload_set=self._upload_set,
+            section=DataFileExtractor._transfer_marker,
+        )
+        return course
+
+    def _new_course_model(self, dfc):
+        course = Course(
+            course_code=dfc[3],
+            credit_hours=dfc[6],
+            name=dfc[4],
+            section=dfc[8],
+            upload_set=self._upload_set,
+        )
+        return course
+
+    def _new_student_model(self, dfp):
+        student = Student(
+            student_number=dfp[0],
+            name=dfp[1],
+            program=dfp[7],
+            campus=dfp[8],
+            start_date=dfp[9],
+            upload_set=self._upload_set,
+        )
+        return student
+
+    def _new_enrolment_model(self, dfe):
+        student_number = dfe[0]
+        course_code = dfe[3]
+        course_section = dfe[8]
+
+        enrolled_student = self._uploaded_students.get(
+            DataFileExtractor._make_student_key(student_number)
+        )
+        enrolled_course = self._uploaded_courses.get(
+            DataFileExtractor._make_course_key(course_code, course_section)
+        )
+
+        if enrolled_student is None:
+            raise RuntimeError(
+                "cannot create enrolment without first creating student"
+                + str(student_number)
             )
-            student.save()
-    except IntegrityError:
-        pass
-
-
-# THIS LOOP CREATES AND POPULATES THE COURSE,and Enrolment Models
-def uploadCourseDataFile(coursefile):
-    course_dict = {}
-    enrolment_dict = {}
-    dfc = pd.read_table(coursefile, header=0, squeeze=True)  # Read Course Data
-    for index, row in dfc.iterrows():
-        try:
-            if (row[3], row[8]) in course_dict:
-                pass
-            else:
-                if Course.objects.filter(course_code=row[3], section=row[8]).exists():
-                    pass
-                else:
-                    course = Course(
-                        course_code=row[3],
-                        credit_hours=row[6],
-                        name=row[4],
-                        section=row[8],
-                        upload_set=uploadSet,
-                    )
-                    course.save()
-                    course_dict.update({(course.course_code, course.section): course})
-        except IntegrityError:
-            pass
-        try:
-            if (row[0], row[3]) in enrolment_dict:
-                pass
-            else:
-                if Enrolment.objects.filter(
-                    student=Student.objects.filter(student_number=row[0])[0],
-                    course=Course.objects.filter(course_code=row[3], section=row[8])[0],
-                ).exists():
-                    pass
-                else:
-                    enrolment = Enrolment.objects.create(
-                        student=Student.objects.filter(student_number=row[0])[0],
-                        term=row[2],
-                        grade=row[7],
-                        course=Course.objects.filter(
-                            course_code=row[3], section=row[8]
-                        )[0],
-                        upload_set=uploadSet,
-                    )
-                    enrolment_dict.update(
-                        {
-                            (
-                                enrolment.student.student_number,
-                                enrolment.course.course_code,
-                            ): enrolment
-                        }
-                    )
-        except IntegrityError:
-            pass
-
-
-def uploadTransferDataFile(transferfile):
-    uploadSet.transfer_data_file = transferfile
-    dft = pd.read_table(transferfile, header=0, squeeze=True)  # Read TransferData
-    for index, row in dft.iterrows():
-        try:
-            enrolment = Enrolment(
-                student=Student.objects.get_or_create(student_number=row[0])[0],
-                course=Course.objects.filter(course_code=row[1], upload_set=uploadSet)[
-                    0
-                ],
-                term="Transfer",
-                grade="**",
-                upload_set=uploadSet,
+        if enrolled_course is None:
+            raise RuntimeError(
+                "cannot create enrolment without first creating course"
+                + str(course_code)
             )
-            enrolment.save()
-        except (IntegrityError, IndexError):
-            pass
 
+        enrolment = Enrolment(
+            student=enrolled_student,
+            term=dfe[2],
+            grade=dfe[5],
+            course=enrolled_course,
+            upload_set=self._upload_set,
+        )
+        return enrolment
 
-# def main():
-#     personfile = open('personData.txt','r')
-#     transferfile = open('transferData.txt','r')
-#     coursefile = open('courseData.txt','r')
-#     _uploadAllFiles(personfile,coursefile,transferfile)
-# if __name__ == "__main__":
-#     main()
-# ****************************************************************************************************************************************
+    def _new_transfer_enrolment_model(self, dft_e):
+        student_number = dft_e[0]
+        course_code = dft_e[1]
 
+        enrolled_student = self._uploaded_students.get(
+            DataFileExtractor._make_student_key(student_number)
+        )
+        enrolled_course = self._uploaded_courses.get(
+            DataFileExtractor._make_course_key(
+                course_code, DataFileExtractor._transfer_marker
+            )
+        )
 
-# ********************************************************************************************************************************************************
+        if enrolled_student is None:
+            raise RuntimeError(
+                "cannot create transfer enrolment without first creating student"
+                + str(student_number)
+            )
+        if enrolled_course is None:
+            raise RuntimeError(
+                "cannot create transfer enrolment without first creating course"
+                + str(course_code)
+            )
 
+        enrolment = Enrolment(
+            student=enrolled_student,
+            course=enrolled_course,
+            upload_set=self._upload_set,
+            term=DataFileExtractor._transfer_marker,
+            grade=DataFileExtractor._transfer_marker,
+        )
 
-# ****************************************************************************************************************************************************
-
-
-# ******************************************************************************************************************************
-
-
-## Notes
-# ***************************************************************************************************************
+        return enrolment
