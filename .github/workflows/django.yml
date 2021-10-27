@@ -2,12 +2,12 @@ name: Django CI
 
 on:
   push:
-    branches: 
+    branches:
     - main
     - dev
   pull_request:
-    branches: 
-    - main 
+    branches:
+    - main
     - dev
 
 jobs:
@@ -28,7 +28,6 @@ jobs:
     - name: Install Dependencies
       run: |
         python -m pip install --upgrade pip
-        cd StudentTrackingSystem
         pip install -r requirements.txt
     - name: Run Tests
       run: |
