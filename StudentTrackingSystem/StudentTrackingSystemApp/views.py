@@ -165,7 +165,9 @@ def get_student_data_api(request):
     from django.core import serializers
     from datamodel.models import Student
 
-    serializedData = serializers.serialize("json", Student.objects.all())
+    lastEntry = Student.objects.last().upload_set
+
+    serializedData = serializers.serialize("json", Student.objects.filter(upload_set=lastEntry))
 
     return HttpResponse(serializedData)
 
