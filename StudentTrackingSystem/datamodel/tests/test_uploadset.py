@@ -41,9 +41,12 @@ class UploadSetTests(TestCase):
 
     def test_create_upload_set(self, upload_datetime=timezone.now()):
         with mktemp() as course_file, mktemp() as person_file, mktemp() as transfer_file:
-            course_file.write(course_contents := "course file contents")
-            person_file.write(person_contents := "person file contents")
-            transfer_file.write(transfer_contents := "transfer file contents")
+            course_contents = "course file contents"
+            person_contents = "person file contents"
+            transfer_contents = "transfer file contents"
+            course_file.write(course_contents)
+            person_file.write(person_contents)
+            transfer_file.write(transfer_contents)
 
             us = UploadSet(upload_datetime=upload_datetime)
             us.course_data_file.save("course_test_file", course_file)
