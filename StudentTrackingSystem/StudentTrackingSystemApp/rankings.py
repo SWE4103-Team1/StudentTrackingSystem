@@ -10,12 +10,7 @@ prereq = {
     'ENGG*1003': 'FIR',
     'ENGG*1015': 'FIR',
     'ENGG*1001':  'FIR',
-    'MATH*1013': 'FIR',
-    'INFO*1103': 'FIR',
-    'CS*1083': 'FIR',
-    'ECE*1813': 'FIR',
-    'CHEM*1982': 'FIR',
-    'CHEM*1987': 'FIR',
+    'CS*1083': 'SOP',
     'CS*2043': 'SOP',
     'CS*1303': 'SOP',
     'CS*2613': 'SOP',
@@ -46,7 +41,7 @@ prereq = {
 }
 
 
-def calculateRank(student_number):
+def calculateRank(studentID):
     '''
     Cross-references the prerequisite table to calculate the number of
     prerequisite courses that have been completed by the student (rank_score)
@@ -57,13 +52,15 @@ def calculateRank(student_number):
         Returns:
             an int score of the given student
     '''
-    enrolment_list = Enrolment.objects.all()
-
+    #enrolment_list = Enrolment.objects.all()
+    enrolment = Enrolment.objects.all().filter(student_id=studentID)
+    # for e in enrolment:
+    #     print(e.student.student_number)
     # keeps the count of rank of courses they have taken
-    FIR, SOP, JUN, SEN = 0, 0, 0, 0
 
     # keeps the count of number of pre-reqs in each ranks
     FIR_count, JUN_count, SOP_count, SEN_count = 0, 0, 0, 0
+    FIR, JUN, SOP, SEN = 0,0,0,0
 
     # this for loop goes through the pre-req table to get the ranks of each course and add it to the count of the rank
     for course in prereq.values():
@@ -76,32 +73,26 @@ def calculateRank(student_number):
         elif course == 'SEN':
             SEN_count += 1
 
-    # takes each enrolment from the enrolmentlist
-    for enrolment in enrolment_list:
 
-        # seperates the course code from the enrolment course
-        course_code = enrolment.course.course_code
-
-        # checks if the enrolment student number is the same as the input student number, then checks if the course code of that enrolment is in the prereq table
-        if enrolment.student.student_number == student_number and course_code in prereq:
-            # depending on the course rank that is in the pre-req table, add the count to the specified rank of the course
-            if prereq[course_code] == 'FIR':
-                FIR += 1
-            elif prereq[course_code] == 'SOP':
-                SOP += 1
-            elif prereq[course_code] == 'JUN':
-                JUN += 1
-            elif prereq[course_code] == 'SEN':
-                SEN += 1
 
     # return the coresponding rank depending on whether they completed all the courses in that rank
     # EX: if the student's courses with the rank of 'FIR' is the same length as the FIR pre-req length, then return FIR
     # EX: if the student needs 1 more FIR course, but completed all JUN courses, it will still return as first year since they are still missing FIR courses
-    if FIR <= FIR_count:
+    for e in enrolment:
+        if e.course.course_code in prereq and (prereq[e.course.course_code] == 'FIR'):
+            FIR+=1
+        elif e.course.course_code in prereq and (prereq[e.course.course_code] == 'JUN'):
+            JUN += 1
+        elif e.course.course_code in prereq and (prereq[e.course.course_code] == 'SOP'):
+            SOP += 1
+        elif e.course.course_code in prereq and (prereq[e.course.course_code] == 'SEN'):
+            SEN += 1
+
+    if FIR < FIR_count:
         return 'FIR'
-    elif JUN <= JUN_count:
+    elif JUN < JUN_count:
         return 'JUN'
-    elif SOP <= SOP_count:
+    elif SOP < SOP_count:
         return 'SOP'
     elif SEN <= SEN_count:
         return 'SEN'
