@@ -1,3 +1,5 @@
 from django.test import TestCase
 
-# Create your tests here.
+from datamodel.tests.test_student import StudentTests
+
+
