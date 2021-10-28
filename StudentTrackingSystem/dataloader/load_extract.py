@@ -71,13 +71,10 @@ class DataFileExtractor:
 
         allStudents = Student.objects.all()
 
-
         for student in allStudents:
-            student.rank= calculateRank(student.student_number)
-            print(student.rank)
-            student.save()
-
-
+            if len(student.rank) == 0:
+                student.rank = calculateRank(student.id)
+                student.save()
 
     def get_upload_set(self):
         return self._upload_set
