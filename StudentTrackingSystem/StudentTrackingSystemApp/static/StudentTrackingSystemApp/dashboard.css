@@ -7,9 +7,6 @@
     justify-content:left;
     margin:20px;
 
-
-    
-
 }
 .div-table
 {
@@ -25,7 +22,7 @@ h2{
 
 .columns{
     display: grid;
-    grid-template-columns: 50% 50%;
+    grid-template-columns: 70% 30%;
 }
 
 .counts{
@@ -44,3 +41,4 @@ h2{
     color: black;
     background-color: white;
 }
+

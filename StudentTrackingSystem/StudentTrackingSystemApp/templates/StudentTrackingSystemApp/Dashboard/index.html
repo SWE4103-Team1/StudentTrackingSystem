@@ -23,42 +23,63 @@
 </head>
 
 <body>
-    <div class="container-dashboard">
-        <div class="column-dashboard column-one">
-            <div></div>
-            <h2>Master List</h2>
-            <div id="root"></div>
-        </div>
-        <div class="column-dashboard column-two">
-            <h1>Dashboard</h1>
-            <a href="{% url 'homepage' %}" style="text-decoration:none">
-                <button class="nav_button">Homepage</button>
-            </a>
-        </div>
-        <div class="column-dashboard column-three">
-            <div></div>
-            <h2>Counts</h2>
-            <form method="POST" style="background-color: transparent;">
-            {% csrf_token %}
-                <div class="container">
-                    <label for="semester">Semester:</label>
-                    <input type="search" id="semester" name="semester">
-                    <label for="start_date">Start Date:</label>
-                    <input type="search" id="start_date" name="start_date"><br><br>
-                    <button type="submit">Query</button>
-                </div>
-            </form>
-            
+    <span style="font-size:30px;cursor:pointer;color: white;" onclick="openNav()">&#9776; </span>
+    <div class = "main"> 
+        <div class="container-dashboard">
+            <div class="column-dashboard column-one">
+                <div></div>
+                <h2>Master List</h2>
+                <div id="root"></div>
+            </div>
+            <div class="column-dashboard column-two">
+                <h1>Dashboard</h1>
+            </div>
+            <div class="column-dashboard column-three">
+                <div></div>
+                <h2>Counts</h2>
+                <form method="POST" style="background-color: transparent;">
+                {% csrf_token %}
+                    <div class="container">
+                        <label for="semester">Semester:</label>
+                        <input type="search" id="semester" name="semester">
+                        <label for="start_date">Start Date:</label>
+                        <input type="search" id="start_date" name="start_date"><br><br>
+                        <button type="submit">Query</button>
+                    </div>
+                </form>
+                
 
-            <!-- wow! this isn't cool -->
-            <p>Count of students currently in coop during above semester: {{ coopSemester }}</p>
-            <p>Count of students enrolled during above semester: {{ totalSemester }}</p>
-            <p>Count of students currently in coop at above start date: {{ coopStartDate }}</p>
-            <p>Count of students enrolled from above start date: {{ totalStartDate }}</p>
-            <p>Count of students in each rank during above semester: {{ rankSemester }}</p>
-        
+                <!-- wow! this isn't cool -->
+                <p>Count of students currently in coop during above semester: {{ coopSemester }}</p>
+                <p>Count of students enrolled during above semester: {{ totalSemester }}</p>
+                <p>Count of students currently in coop at above start date: {{ coopStartDate }}</p>
+                <p>Count of students enrolled from above start date: {{ totalStartDate }}</p>
+                <p>Count of students in each rank during above semester: {{ rankSemester }}</p>
+            
+            </div>
         </div>
     </div>
+
+    <div id = "mySidenav" class="sidenav">
+        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+        <a href="{% url 'dashboard' %}" style="text-decoration:none">Dashboard </a>
+        <a href="{% url 'settings' %}" style="text-decoration:none"> Settings </a>
+        <a href="{% url 'logout' %}" style="text-decoration:none"> Logout </a>
+    </div>
+    
+    
+    <script>
+    function openNav() {
+    document.getElementById("mySidenav").style.width = "250px";
+    document.getElementById("main").style.marginLeft = "250px";
+    }
+    
+    function closeNav() {
+    document.getElementById("mySidenav").style.width = "0";
+    document.getElementById("main").style.marginLeft= "0";
+    }
+    </script>
+
 </body>
 
 <noscript>You need to enable JavaScript to run this app.</noscript>

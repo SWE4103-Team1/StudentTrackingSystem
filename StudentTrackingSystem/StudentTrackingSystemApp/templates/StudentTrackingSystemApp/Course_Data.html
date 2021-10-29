@@ -1,6 +1,14 @@
 <html>
 {% load static %}
-<h1>Raw Data</h1>
+<link rel="stylesheet" href="{% static 'StudentTrackingSystemApp/rawData.css' %}">
+
+<div>
+    <span style="font-size:30px;cursor:pointer;color: black; display: inline;" onclick="openNav()">&#9776;</span>
+    <h1 style="display: inline-block;">Raw Data</h1>
+</div>
+
+<div class = "main" onclick="closeNav()">
+
 {% block page_content %}
 <div class="row">
     <div class="col-md-4">
@@ -27,8 +35,33 @@
         </table>
         <div>
         </div>
+    </div>
+    <div id = "mySidenav" class="sidenav">
+        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+        <a href="{% url 'dashboard' %}" style="text-decoration:none">Dashboard </a>
+        <a href="{% url 'settings' %}" style="text-decoration:none"> Settings </a>
+        <a href="{% url 'logout' %}" style="text-decoration:none"> Logout </a>
+    </div>
+    
+    
+    <script>
+    window.onclick = function(event) {
+        if (event.target == sideNav) {
+            closenav();
+        }
+    } 
 
 
+    function openNav() {
+    document.getElementById("mySidenav").style.width = "250px";
+    document.getElementById("main").style.marginLeft = "250px";
+    }
+    
+    function closeNav() {
+    document.getElementById("mySidenav").style.width = "0";
+    document.getElementById("main").style.marginLeft= "0";
+    }
+    </script>
 
 
         {% endblock %}

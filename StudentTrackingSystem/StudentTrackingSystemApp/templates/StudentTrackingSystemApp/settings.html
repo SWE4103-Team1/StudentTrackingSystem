@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+
+<html>
+{% load static %}
+
+<head>
+    <title>
+        Settings Page
+    </title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{% static 'StudentTrackingSystemApp/main.css' %}">
+    <link rel="stylesheet" href="{% static 'StudentTrackingSystemApp/homepage.css' %}">
+</head>
+
+<body >
+    <span style="font-size:30px;cursor:pointer;color: white;" onclick="openNav()">&#9776;</span>
+    
+    <div id = "main" onclick="closeNav()">
+        <h1>Settings</h1>
+        <div class='file_upload_container'>
+            <form method="POST" enctype="multipart/form-data">{% csrf_token %}
+                <input type="file" name="input_files" class="input_files" accept=".txt" multiple>
+                <button type="submit">Upload</button>
+            </form>
+        </div>
+        <h1>Raw Data Files</h1>
+        <div class="nav_button_container">
+            
+            <a href="{% url 'student_data' %}" style="text-decoration:none">
+                <button class="nav_button">Student Data</button>
+            </a>
+            <a href="{% url 'enrolment_data' %}" style="text-decoration:none">
+                <button class="nav_button">Enrollment Data</button>
+            </a>
+            <a href="{% url 'course_data' %}" style="text-decoration:none">
+                <button class="nav_button">Course Data</button>
+            </a>
+        </div>
+    </div>
+    <div id = "mySidenav" class="sidenav">
+        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+        <a href="{% url 'dashboard' %}" style="text-decoration:none">Dashboard </a>
+        <a href="{% url 'settings' %}" style="text-decoration:none"> Settings </a>
+        <a href="{% url 'logout' %}" style="text-decoration:none"> Logout </a>
+    </div>
+    
+    
+    <script>
+    function openNav() {
+    document.getElementById("mySidenav").style.width = "250px";
+    document.getElementById("main").style.marginLeft = "250px";
+    }
+    
+    function closeNav() {
+    document.getElementById("mySidenav").style.width = "0";
+    document.getElementById("main").style.marginLeft= "0";
+    }
+    </script>
+</body>
+
+</html>
