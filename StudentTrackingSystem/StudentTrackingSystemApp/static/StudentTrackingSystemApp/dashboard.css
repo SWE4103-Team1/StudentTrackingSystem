@@ -29,9 +29,12 @@
   padding:0px;
   margin:0px; 
   flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
 }
 
+.column-two{
+  width: 40%;
+}
 .count-container{
   width:100%;
 }

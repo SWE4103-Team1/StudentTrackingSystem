@@ -92,29 +92,6 @@ button:hover{
     opacity: 0.8;
 }
 
-.container-dashboard {
-    display: flex;
-}
-
-.column-dashboard {
-    flex: 1;
-    text-align: center;
-}
-
-.column-one {
-    order: 1;
-    padding-top: 10%;
-}
-
-.column-two {
-    order: 2;
-}
-
-.column-three {
-    order: 3;
-    padding-top: 10%;
-    color: white
-}
 
 .links{
     margin: auto;
