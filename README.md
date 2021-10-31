@@ -1,6 +1,6 @@
 [![Django CI](https://github.com/SWE4103-Team1/StudentTrackingSystem/actions/workflows/django.yml/badge.svg?branch=main)](https://github.com/SWE4103-Team1/StudentTrackingSystem/actions/workflows/django.yml)
 
-[![Django CD](https://github.com/SWE4103-Team1/StudentTrackingSystem/actions/workflows/django.yml/badge.svg?branch=main)](https://github.com/SWE4103-Team1/StudentTrackingSystem/actions/workflows/DeployToAWS.yml)
+[![Django CD](https://github.com/SWE4103-Team1/StudentTrackingSystem/actions/workflows/DeployToAWS.yml/badge.svg?branch=main)](https://github.com/SWE4103-Team1/StudentTrackingSystem/actions/workflows/DeployToAWS.yml)
 
 # Student Tracking System
 ## 10.19-update
