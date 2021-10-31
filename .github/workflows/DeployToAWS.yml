@@ -1,8 +1,8 @@
-name: Deploy master
+name: Deploy main
 on:
   push:
     branches:
-    - master
+    - main
 
 jobs:
   build:
@@ -10,17 +10,17 @@ jobs:
     steps:
 
     - name: Checkout source code
-      uses: actions/checkout@master
+      uses: actions/checkout@main
 
     - name: Generate deployment package
       run: zip -r deploy.zip . -x '*.git*'
 
     - name: Get TimeStamp
-      uses: gerred/actions/current-time@master
+      uses: gerred/actions/current-time@main
       id: current-time
       
     - name: Run string replace
-      uses: frabert/replace-string-action@master
+      uses: frabert/replace-string-action@main
       id: format-time
       with:
         pattern: '[:\.]+'
