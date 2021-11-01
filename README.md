@@ -2,7 +2,6 @@
 
 [![Django CI](https://github.com/SWE4103-Team1/StudentTrackingSystem/actions/workflows/django.yml/badge.svg?branch=dev)](https://github.com/SWE4103-Team1/StudentTrackingSystem/actions/workflows/django.yml)
 
-
 ## Dependencies
 
 1. Install system packages, listed below
