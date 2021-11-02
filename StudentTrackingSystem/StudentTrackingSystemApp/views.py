@@ -171,11 +171,10 @@ def get_student_data_api(request):
 
 def get_counts_by_semester(request, semester):
 	from json import dumps
-
 	from django.shortcuts import HttpResponse
 	from generateCounts.counts import (count_coop_students_by_semester,
 	                                   count_total_students_by_semester)
-
+                                       
 	countCoop = count_coop_students_by_semester(semester)
 	countTotal = count_total_students_by_semester(semester)
 
@@ -188,7 +187,6 @@ def get_counts_by_semester(request, semester):
 
 def get_counts_by_start_date(request, start_date):
 	from json import dumps
-
 	from django.shortcuts import HttpResponse
 	from generateCounts.counts import (count_coop_students_by_start_date,
 	                                   count_total_students_by_start_date)
