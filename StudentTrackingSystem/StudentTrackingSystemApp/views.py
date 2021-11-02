@@ -1,9 +1,10 @@
-from django.contrib.auth import authenticate, get_user_model, logout, login
+from dataloader.load_extract import DataFileExtractor
+from django.contrib.auth import authenticate, get_user_model, login, logout
 from django.shortcuts import redirect, render
+from generateCounts.counts import *
 from users.managers import UserManager
 from users.roles import UserRole
-from dataloader.load_extract import DataFileExtractor
-from generateCounts.counts import *
+
 
 def registerPage(request):
     if request.method == "POST":
@@ -161,19 +162,19 @@ def enrolment_data(request):
     return render(request, "StudentTrackingSystemApp/enrolment_data.html", context)
 
 def get_student_data_api(request):
-    from django.shortcuts import HttpResponse
-    from django.core import serializers
     from datamodel.models import Student
+    from django.core import serializers
+    from django.shortcuts import HttpResponse
 
-    serializedData = serializers.serialize("json", Student.objects.all())
-
+    serializedData = serializers.serialize("json", Student.objects.filter(upload_set=UploadSet.objects.last()))
     return HttpResponse(serializedData)
 
 def get_counts_by_semester(request, semester):
-	from django.shortcuts import HttpResponse
 	from json import dumps
-	from generateCounts.counts import count_coop_students_by_semester, count_total_students_by_semester
-
+	from django.shortcuts import HttpResponse
+	from generateCounts.counts import (count_coop_students_by_semester,
+	                                   count_total_students_by_semester)
+                                       
 	countCoop = count_coop_students_by_semester(semester)
 	countTotal = count_total_students_by_semester(semester)
 
@@ -185,9 +186,10 @@ def get_counts_by_semester(request, semester):
 	return HttpResponse(dumps(data))
 
 def get_counts_by_start_date(request, start_date):
-	from django.shortcuts import HttpResponse
 	from json import dumps
-	from generateCounts.counts import count_coop_students_by_start_date, count_total_students_by_start_date
+	from django.shortcuts import HttpResponse
+	from generateCounts.counts import (count_coop_students_by_start_date,
+	                                   count_total_students_by_start_date)
 
 	countCoop = count_coop_students_by_start_date(start_date)
 	countTotal = count_total_students_by_start_date(start_date)
