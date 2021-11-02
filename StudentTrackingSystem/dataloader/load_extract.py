@@ -4,14 +4,31 @@ from django.db import transaction
 import pandas as pd
 import copy
 import itertools
+import time
 
 from datamodel.models import Student, Course, Enrolment, UploadSet
 from StudentTrackingSystemApp.rankings import calculateRank
+
 
 def bulk_save(models):
     with transaction.atomic():
         for model in models:
             model.save()
+
+
+def _group_enrolments_by_student_num(enrolments: list):
+    """returns dict of sets, where key is student number and value is set of
+    their enrolments"""
+    groups = dict()
+    for enrolment in enrolments:
+        s_num = enrolment.student.student_number
+        existing = groups.get(s_num)
+        if existing is None:
+            groups[s_num] = [enrolment]
+        else:
+            existing.append(enrolment)
+
+    return groups
 
 
 class DataFileExtractor:
@@ -39,42 +56,51 @@ class DataFileExtractor:
             upload_set.save()
 
         self._upload_set = upload_set
-        self._uploaded_courses = dict()
-        self._uploaded_students = dict()
 
     def uploadAllFiles(self, person_file, course_file, transfer_file):
+        # read input data files
         df_person = pd.read_table(person_file, squeeze=True)
         df_course = pd.read_table(course_file, squeeze=True)
-        df_transfer_enrolment = pd.read_table(transfer_file, squeeze=True)
         df_enrolment = copy.deepcopy(df_course)
+        df_transfer_enrolment = pd.read_table(transfer_file, squeeze=True)
         df_transfer_course = copy.deepcopy(df_transfer_enrolment)
 
         students = self._build_person_models(df_person)
         courses = self._build_course_models(df_course)
         transfer_courses = self._build_transfer_course_models(df_transfer_course)
+        del df_person
+        del df_course
+        del df_transfer_course
 
-        bulk_save(itertools.chain(students, courses, transfer_courses))
-
-        # store created objects so creating enrolments doesn't need to query DB
+        # store created objects so creating enrolment models doesn't need to query DB
+        uploaded_students = dict()
+        uploaded_courses = dict()
         for s in students:
-            self._uploaded_students[DataFileExtractor._student_to_key(s)] = s
-
+            uploaded_students[DataFileExtractor._student_to_key(s)] = s
         for c in itertools.chain(courses, transfer_courses):
-            self._uploaded_courses[DataFileExtractor._course_to_key(c)] = c
+            uploaded_courses[DataFileExtractor._course_to_key(c)] = c
 
-        enrolments = self._build_enrolment_models(df_enrolment)
-        transfer_enrolments = self._build_transfer_enrolment_models(
-            df_transfer_enrolment
+        # build enrolment models
+        enrolments = self._build_enrolment_models(
+            df_enrolment, uploaded_students, uploaded_courses
         )
+        transfer_enrolments = self._build_transfer_enrolment_models(
+            df_transfer_enrolment, uploaded_students, uploaded_courses
+        )
+        del df_enrolment
+        del df_transfer_enrolment
+        all_enrolments = list(itertools.chain(enrolments, transfer_enrolments))
 
-        Enrolment.objects.bulk_create(itertools.chain(enrolments, transfer_enrolments))
+        # Calculate rank from student's enrolments and update the models
+        grouped_enrolments = _group_enrolments_by_student_num(all_enrolments)
+        for student_num, student_enrolments in grouped_enrolments.items():
+            uploaded_students[
+                DataFileExtractor._make_student_key(student_num)
+            ].rank = calculateRank(student_num, student_enrolments)
 
-        allStudents = Student.objects.all()
-
-        for student in allStudents:
-            if len(student.rank) == 0:
-                student.rank = calculateRank(student.id)
-                student.save()
+        # Store all models in DB. Not asyncly, sadly
+        bulk_save(itertools.chain(students, courses, transfer_courses))
+        Enrolment.objects.bulk_create(all_enrolments)
 
     def get_upload_set(self):
         return self._upload_set
@@ -91,12 +117,16 @@ class DataFileExtractor:
         course_models = list(map(self._new_course_model, dfc))
         return course_models
 
-    def _build_enrolment_models(self, dfe):
+    def _build_enrolment_models(self, dfe, uploaded_students, uploaded_courses):
         dfe.drop_duplicates(
             subset=["Course", "Student_ID", "Section"], keep="last", inplace=True
         )
         dfe = dfe.values.tolist()
-        enrolment_models = list(map(self._new_enrolment_model, dfe))
+        enrolment_models = list()
+        for e in dfe:
+            e_model = self._new_enrolment_model(e, uploaded_students, uploaded_courses)
+            enrolment_models.append(e_model)
+
         return enrolment_models
 
     def _build_transfer_course_models(self, dft):
@@ -112,7 +142,9 @@ class DataFileExtractor:
         transfer_course_models = list(map(self._new_transfer_course, dft))
         return transfer_course_models
 
-    def _build_transfer_enrolment_models(self, dft):
+    def _build_transfer_enrolment_models(
+        self, dft, uploaded_students, uploaded_courses
+    ):
         # prepare transfer input data
         dft = dft.loc[:, ~dft.columns.str.contains("^Unnamed")]
         dft["Course"].fillna(dft["Title"], inplace=True)
@@ -125,7 +157,13 @@ class DataFileExtractor:
         )
         dft_e.dropna(axis=0, how="all", inplace=True)
         dft_e = dft_e.values.tolist()
-        transfer_enrolment_models = list(map(self._new_transfer_enrolment_model, dft_e))
+        transfer_enrolment_models = list()
+        for e in dft_e:
+            e_model = self._new_transfer_enrolment_model(
+                e, uploaded_students, uploaded_courses
+            )
+            transfer_enrolment_models.append(e_model)
+
         return transfer_enrolment_models
 
     def _new_transfer_course(self, dft):
@@ -159,15 +197,15 @@ class DataFileExtractor:
         )
         return student
 
-    def _new_enrolment_model(self, dfe):
+    def _new_enrolment_model(self, dfe, uploaded_students, uploaded_courses):
         student_number = dfe[0]
         course_code = dfe[3]
         course_section = dfe[8]
 
-        enrolled_student = self._uploaded_students.get(
+        enrolled_student = uploaded_students.get(
             DataFileExtractor._make_student_key(student_number)
         )
-        enrolled_course = self._uploaded_courses.get(
+        enrolled_course = uploaded_courses.get(
             DataFileExtractor._make_course_key(course_code, course_section)
         )
 
@@ -191,14 +229,14 @@ class DataFileExtractor:
         )
         return enrolment
 
-    def _new_transfer_enrolment_model(self, dft_e):
+    def _new_transfer_enrolment_model(self, dft_e, uploaded_students, uploaded_courses):
         student_number = dft_e[0]
         course_code = dft_e[1]
 
-        enrolled_student = self._uploaded_students.get(
+        enrolled_student = uploaded_students.get(
             DataFileExtractor._make_student_key(student_number)
         )
-        enrolled_course = self._uploaded_courses.get(
+        enrolled_course = uploaded_courses.get(
             DataFileExtractor._make_course_key(
                 course_code, DataFileExtractor._transfer_marker
             )

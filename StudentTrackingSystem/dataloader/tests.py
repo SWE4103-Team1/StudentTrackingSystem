@@ -46,6 +46,7 @@ class DataLoaderTests(unittest.TestCase):
         uploader.uploadAllFiles(personfile, coursefile, transferfile)
         end_time = time.time()
         duration = end_time - start_time
+        print("time to upload sample data:", duration)
 
     def test_upload_all_files(self):
         with mktemp() as course_file, mktemp() as person_file, mktemp() as transfer_file:
@@ -74,7 +75,8 @@ class DataLoaderTests(unittest.TestCase):
             uploader = DataFileExtractor()
             uploader.uploadAllFiles(person_file, course_file, transfer_file)
 
-            self.assertTrue(Student.objects.filter())
+            db_students = Student.objects.filter()
+            self.assertTrue(db_students)
             self.assertTrue(Course.objects.filter())
             self.assertTrue(Enrolment.objects.filter())
-            self.assertTrue(Student.objects.filter()[0].rank == 'FIR')
+            self.assertEquals(db_students[0].rank, "FIR")
