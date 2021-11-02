@@ -31,7 +31,7 @@ jobs:
         pip install -r requirements.txt
     - name: Run Tests
       run: |
-        cd StudentTrackingSystem
-        export USE_SQLITE=TRUE
-        python manage.py migrate
-        python manage.py test --noinput --failfast --force-color
+        python manage.py runserver
+        
+        
+        
