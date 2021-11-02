@@ -2,7 +2,7 @@ name: Deploy master
 on:
   push:
     branches:
-    - dev
+    - feature_cd_dev
 
 jobs:
   build:
