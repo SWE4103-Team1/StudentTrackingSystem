@@ -166,8 +166,7 @@ def get_student_data_api(request):
     from django.core import serializers
     from django.shortcuts import HttpResponse
 
-    serializedData = serializers.serialize("json", Student.objects.filter(upload_set=UploadSet.objects.last())
-
+    serializedData = serializers.serialize("json", Student.objects.filter(upload_set=UploadSet.objects.last()))
     return HttpResponse(serializedData)
 
 def get_counts_by_semester(request, semester):
