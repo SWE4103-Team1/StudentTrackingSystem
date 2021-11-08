@@ -7,7 +7,7 @@ import itertools
 import time
 
 from datamodel.models import Student, Course, Enrolment, UploadSet
-from StudentTrackingSystemApp.rankings import calculateRank
+from StudentTrackingSystemApp.Util.rankings import calculateRank
 
 
 def bulk_save(models):
