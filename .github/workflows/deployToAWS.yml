@@ -26,9 +26,7 @@ jobs:
         python manage.py migrate
     
     - name: Collect Static
-      run: |
-        python manage.py collectstatic
-        yes
+      run: python manage.py collectstatic --noinput
 
     - name: Generate deployment package
       run: zip -r deploy.zip . -x '*.git*'
