@@ -16,3 +16,4 @@ sqlparse==0.4.2
 tomli==1.2.1
 typing-extensions==3.10.0.2
 django-cors-headers==3.8.0
+mysqlclient==2.0.3
