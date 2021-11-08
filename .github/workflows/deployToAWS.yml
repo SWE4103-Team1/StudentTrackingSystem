@@ -24,7 +24,6 @@ jobs:
       run: |
         export USE_SQLITE=TRUE
         python manage.py migrate
-        python manage.py test --noinput --failfast --force-color
         python manage.py collectstatic
 
     - name: Generate deployment package
