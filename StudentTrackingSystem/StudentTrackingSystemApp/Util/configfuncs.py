@@ -62,18 +62,17 @@ class SheetData:
             tag = self.get_course_tag(classcode)
             # adds spacing in between the class code
             classcode = tag + " " + classcode[len(tag):]
-
         pre_reqs = []
         # get all the pre-reqs given the course code (in the form of list)
-        for item in self.prereqs.loc[self.prereqs["Course"] == classcode].to_dict(orient="list").values():
+        for item in self.prereqs.loc[self.prereqs["Course"] == classcode].values[0]:
             try:
                 # since each pre-req is returned in the form of a list, so i only take the first element from 'item'
                 # if the element is nan, this would be true, else it would throw an exception
-                if math.isnan(item[0]):
+                if math.isnan(item):
                     continue
             except:
                 # since it throws an exception, its not "nan", so add it to the list
-                pre_reqs += item
+                pre_reqs.append(item)
         # return the pre-req list without including the original given classcode
         return pre_reqs[1:]
     ###########################
@@ -264,7 +263,11 @@ class SheetData:
                 return None
 
 
+# This method works both with or without spacing
+print(SheetData(excelurl).get_pre_req("ECE 2214"))
 print(SheetData(excelurl).get_pre_req("ECE2214"))
+
+# Your original method
 print(SheetData(excelurl).getPreReqs("ECE2214"))
 
 # ---------------
