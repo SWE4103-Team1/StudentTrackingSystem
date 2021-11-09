@@ -68,8 +68,9 @@ class SheetData:
             try:
                 # since each pre-req is returned in the form of a list, so i only take the first element from 'item'
                 # if the element is nan, this would be true, else it would throw an exception
+                # break once the first nan is met since once nan is met the remaining elements will be nan too
                 if math.isnan(item):
-                    continue
+                    break
             except:
                 # since it throws an exception, its not "nan", so add it to the list
                 pre_reqs.append(item)
