@@ -2,7 +2,9 @@ name: Deploy to AWS
 on:
   push:
     branches:
+    - main
     - dev
+    - feature_cd_dev
 
 jobs:
   build:
@@ -10,7 +12,7 @@ jobs:
     steps:
 
     - name: Checkout source code
-      uses: actions/checkout@dev
+      uses: actions/checkout@v2
       
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2
