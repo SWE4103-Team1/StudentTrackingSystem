@@ -1,7 +1,13 @@
 name: Deploy to AWS
 on:
   push:
+    branches:  
+    - main
+    - dev
+    - feature_cd_Dev
+  pull_request:
     branches:
+    - main
     - dev
 
 jobs:
