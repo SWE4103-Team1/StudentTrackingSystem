@@ -118,7 +118,7 @@ def student_data(request):
     all_entries = Student.objects.all()
     print(all_entries)
     context = {"object_list": all_entries}
-    return render(request, "StudentTrackingSystemApp/Student_data.html", context)
+    return render(request, "StudentTrackingSystemApp/Student_Data.html", context)
 
 
 def course_data(request):
