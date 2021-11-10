@@ -1,7 +1,12 @@
 name: Deploy to AWS
 on:
   push:
+    branches:  
+    - main
+    - dev
+  pull_request:
     branches:
+    - main
     - dev
 
 jobs:
@@ -49,8 +54,8 @@ jobs:
       with:
         aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        application_name: SWE4103
-        environment_name: Swe4103-env
+        application_name: SeniorDesign
+        environment_name: Seniordesign-env
         version_label: "swe4103-${{ steps.format-time.outputs.replaced }}"
-        region: us-east-2
+        region: us-east-1
         deployment_package: deploy.zip
