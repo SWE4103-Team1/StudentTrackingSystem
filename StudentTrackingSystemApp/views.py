@@ -118,7 +118,7 @@ def student_data(request):
     all_entries = Student.objects.all()
     print(all_entries)
     context = {"object_list": all_entries}
-    return render(request, "StudentTrackingSystemApp/Student_data.html", context)
+    return render(request, "StudentTrackingSystemApp/Student_Data.html", context)
 
 
 def course_data(request):
@@ -127,7 +127,7 @@ def course_data(request):
     all_entries = Course.objects.all()
     print(all_entries)
     context = {"object_list": all_entries}
-    return render(request, "StudentTrackingSystemApp/Course_data.html", context)
+    return render(request, "StudentTrackingSystemApp/Course_Data.html", context)
 
 
 def enrolment_data(request):
@@ -159,7 +159,7 @@ def enrolment_data(request):
         # "course_code" : course_code_list,
         # "course_name" : course_name_list
     }
-    return render(request, "StudentTrackingSystemApp/enrolment_data.html", context)
+    return render(request, "StudentTrackingSystemApp/Enrolment_Data.html", context)
 
 def get_student_data_api(request):
     from datamodel.models import Student
