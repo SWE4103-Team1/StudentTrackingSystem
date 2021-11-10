@@ -3,10 +3,10 @@ on:
   push:
     branches:
     - feature_cd_dev
-  pull_request:
-    branches:
-    - main
-    - dev
+#   pull_request:
+#     branches:
+#     - main
+#     - dev
 
 jobs:
   build:
