@@ -2,8 +2,6 @@ name: Deploy to AWS
 on:
   push:
     branches:
-    - main
-    - dev
     - feature_cd_dev
 
 jobs:
