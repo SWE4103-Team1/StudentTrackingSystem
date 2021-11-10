@@ -2,6 +2,8 @@
 
 [![Django CI](https://github.com/SWE4103-Team1/StudentTrackingSystem/actions/workflows/django.yml/badge.svg?branch=dev)](https://github.com/SWE4103-Team1/StudentTrackingSystem/actions/workflows/django.yml)
 
+[![Deploy to AWS](https://github.com/SWE4103-Team1/StudentTrackingSystem/actions/workflows/deployToAWS.yml/badge.svg?branch=dev)](https://github.com/SWE4103-Team1/StudentTrackingSystem/actions/workflows/deployToAWS.yml)
+
 ## Dependencies
 
 1. Install system packages, listed below
