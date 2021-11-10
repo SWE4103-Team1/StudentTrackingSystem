@@ -1,9 +1,7 @@
 name: Deploy to AWS
 on:
   push:
-    branches:  
-    - main
-    - dev
+    branches:
     - feature_cd_Dev
   pull_request:
     branches:
