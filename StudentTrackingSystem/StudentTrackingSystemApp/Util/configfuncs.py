@@ -5,10 +5,11 @@ Created on Sat Nov  6 21:44:25 2021
 
 @author: tylertravis, Elliot
 
-Last Edit : Elliot, 9.11.2021 1:52PM
+Last Edit : Elliot, 9.11.2021 8:14PM
 """
 
 import math
+from numpy import true_divide
 
 import pandas as pd
 
@@ -21,31 +22,48 @@ def insert_space(string, integer):
 
 
 class SheetData:
+
+    excel_in_dict = {}
+
     def __init__(self, datasheet):
+        # gets the excel file and store it on xls
+        xls = pd.ExcelFile(datasheet)
+
+        # creates a dict to store the excel data to prevent multiple calls to read the data from the file
+        excel_in_dict = {}
+
+        # store each sheet in a dict
+        # call the sheets by doing "self.excel_in_dict[sheet_name_to_call]"
+        for sheet_name in xls.sheet_names:
+            self.excel_in_dict[sheet_name] = xls.parse(sheet_name)
 
         # Declaration
         # Declaring Pre-Req Table
-        self.dfprereqs = pd.read_excel(
-            datasheet, sheet_name="prereqs")
-        self.dfprereqs.columns = [
+
+        self.excel_in_dict["prereqs"].columns = [
             "Course", "PreReqs1", "PreReqs2", "PreReqs3", "PreReqs4"]
 
-        self.prereqs = pd.read_excel(
-            datasheet, sheet_name="prereqs")
+        # self.dfprereqs = pd.read_excel(
+        #     datasheet, sheet_name="prereqs")
 
-        # Declearing exception nad valid tags
-        self.exceptions = pd.read_excel(
-            datasheet, sheet_name="exceptions").to_dict(orient="list")
-        self.valid_tags = pd.read_excel(
-            datasheet, sheet_name="valid-tags").to_dict(orient="list")
+        # this is all called at the top in the dict
 
-        # Declaring CourseGroup Table
-        self.course_groups = pd.read_excel(
-            datasheet, sheet_name='course-groups').to_dict(orient="list")
+        # # Declearing exception | valid tags | replacements
+        # self.exceptions = pd.read_excel(
+        #     datasheet, sheet_name="exceptions").to_dict(orient="list")
+        # self.valid_tags = pd.read_excel(
+        #     datasheet, sheet_name="valid-tags").to_dict(orient="list")
+        # self.replacement = pd.read_excel(
+        #     datasheet, sheet_name="replacements").to_dict(orient="list")
+
+        # # Declaring CourseGroup Table
+        # self.course_groups = pd.read_excel(
+        #     datasheet, sheet_name='course-groups').to_dict(orient="list")
 
     ###########################
     # Elliot's version - START
     ###########################
+
     def get_pre_req(self, classcode):
         """
         Takes in a class code and returns the list of pre-requesites for the class
@@ -62,9 +80,11 @@ class SheetData:
             tag = self.get_course_tag(classcode)
             # adds spacing in between the class code
             classcode = tag + " " + classcode[len(tag):]
+
         pre_reqs = []
         # get all the pre-reqs given the course code (in the form of list)
-        for item in self.prereqs.loc[self.prereqs["Course"] == classcode].values[0]:
+
+        for item in self.excel_in_dict["prereqs"].loc[self.excel_in_dict["prereqs"]["Course"] == classcode].values[0]:
             try:
                 # since each pre-req is returned in the form of a list, so i only take the first element from 'item'
                 # if the element is nan, this would be true, else it would throw an exception
@@ -108,7 +128,7 @@ class SheetData:
 
         # Setting Temp Variable To Work With
 
-        preReqs = self.dfprereqs
+        preReqs = self.excel_in_dict["prereqs"]
 
         # Filtering By CourseID (needs to be fixed to user preference)
 
@@ -166,7 +186,8 @@ class SheetData:
         """
     # takes the prefix of the course code (EX: SWE4103 -> SWE)
         course_tag = self.get_course_tag(course_code)
-        for key, value in self.valid_tags.items():
+
+        for key, value in self.excel_in_dict["valid-tags"].to_dict(orient="list").items():
             # for each item, if the prefix is in valid-tag or the entire course code (only for CSE-ITS)
             # return the key (course type)
             if course_tag in value or course_code in value:
@@ -190,10 +211,10 @@ class SheetData:
         if course_type is None:
             return None
 
-        if course_code in self.exceptions[course_type]:
-            return True
-        else:
-            return False
+        for value in self.excel_in_dict["exceptions"].to_dict(orient="list").values():
+            if course_code in value:
+                return True
+        return False
 
     def get_course_tag(self, course_code):
         """
@@ -223,7 +244,7 @@ class SheetData:
             Return:
                 the course type if the given course code is found within the 'course-groups' page
         """
-        for key, value in self.course_groups.items():
+        for key, value in self.excel_in_dict["course-groups"].to_dict(orient="list").items():
             if course_code in value:
                 return key
         return None
@@ -251,24 +272,39 @@ class SheetData:
 
         elif self.validate_tag(course_code) == "CSE-OPEN" and not self.is_exception(course_code, "CSE-OPEN"):
             return "CSE-OPEN"
-        elif self.validate_tag(course_code) == "TE" and not self.is_exception(course_code, "TE"):
-            return "TE"
 
-        else:
+        # if the tag is TE, check if its in the course_group first
+        elif self.validate_tag(course_code) == "TE" and not self.is_exception(course_code, "TE"):
             # gets the course type from within 'course-groups' page if the given course code is found
             course_group = self.is_course_group(course_code)
+
             # since it can't validate_tag, check if course is in course_group
             if course_group is not None:
                 return course_group
             else:
-                return None
+                return "TE"
 
+        else:
+            return None
+
+
+
+#####################################################
+# Testing the functions within this module only
+#####################################################
 
 # This method works both with or without spacing
 print(SheetData(excelurl).get_pre_req("ECE 2214"))
 print(SheetData(excelurl).get_pre_req("ECE2214"))
 
-# Your original method
-print(SheetData(excelurl).getPreReqs("ECE2214"))
+# Testing my get course type functions
+print(SheetData(excelurl).get_course_type("ECE3221"))  # Specialized
+print(SheetData(excelurl).get_course_type("PHYS2505"))  # None
+print(SheetData(excelurl).get_course_type("CS4725"))  # TE
+print(SheetData(excelurl).get_course_type("HIST3925"))  # CSE-ITS
+print(SheetData(excelurl).get_course_type("ENGL10"))  # CSE-HSS
+print(SheetData(excelurl).get_course_type("CS1003"))  # None
 
+# Tyler's original method
+print(SheetData(excelurl).getPreReqs("ECE2214"))
 # ---------------
