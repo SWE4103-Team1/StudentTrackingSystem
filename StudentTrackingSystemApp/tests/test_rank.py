@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from ..rankings import calculateRank, prereq
+from ..Util.rankings import calculateRank, prereq
 from datamodel.models import Enrolment, Course
 from datamodel.tests.test_uploadset import UploadSetTests
 from datamodel.tests.test_student import StudentTests

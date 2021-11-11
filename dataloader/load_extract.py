@@ -7,7 +7,8 @@ import itertools
 import time
 
 from datamodel.models import Student, Course, Enrolment, UploadSet
-from StudentTrackingSystemApp.rankings import calculateRank
+from StudentTrackingSystemApp.Util.rankings import calculateRank
+from StudentTrackingSystemApp.Util.configfuncs import get_course_type
 
 
 def bulk_save(models):
@@ -182,6 +183,7 @@ class DataFileExtractor:
             credit_hours=dfc[6],
             name=dfc[4],
             section=dfc[8],
+            course_type=get_course_type(dfc[3]),
             upload_set=self._upload_set,
         )
         return course
