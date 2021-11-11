@@ -1,4 +1,11 @@
 
+.navButton{
+    color: white;
+    font-size:30px;
+    cursor:pointer;
+}
+
+
 .sidenav {
     height: 100%;
     width: 0;
@@ -6,10 +13,11 @@
     z-index: 1;
     top: 0;
     left: 0;
-    background-color: #F00000;
+    background-color: #E53C38;
     overflow-x: hidden;
     transition: 0.5s;
     padding-top: 60px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, .15);
 }
 
 .sidenav a {
@@ -22,7 +30,7 @@
 }
 
 .sidenav a:hover {
-    color: #f1f1f1;
+    color: #FBEBD8;
 }
 
 .sidenav .closebtn {
@@ -41,4 +49,13 @@
 @media screen and (max-height: 450px) {
     .sidenav {padding-top: 15px;}
     .sidenav a {font-size: 18px;}
+}
+
+.container-header{
+    background-color: #E53C38;
+    color: white;
+}
+
+.container-header h1 {
+    color: white;
 }

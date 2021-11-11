@@ -1,46 +1,42 @@
 @font-face {
     font-family: 'Avenir';
-    src: local('Abc'),
-         url('../fonts/avnir_sv/AvenirLTStd-Medium.otf');
-  }
+    src: local('Abc'), url('../fonts/avnir_sv/AvenirLTStd-Medium.otf');
+}
 
-body{
-    font-family:"Avenir";
-    background-color: #5B6770;
+body {
+    font-family: "Avenir";
+    background-color: #F0F2F5;
     margin: 0;
     padding: 0;
 }
 
-h1{
-    color:white;
+h1 {
+    color: black;
     text-align: center;
-    padding: 50px 0 0 ;
+    padding: 50px 0 0;
 }
 
-h2{
-    color:white;
+h2 {
+    color: black;
     text-align: center;
-    padding: 50px 0 0 ;
+    padding: 50px 0 0;
 }
-
 
 button {
-    background-color: #F00000;
+    background-color: #D11D27;
     color: white;
     text-align: center;
     padding: 14px 20px;
-    font-size:16px;
+    font-size: 16px;
     margin: 10px auto;
     display: block;
     border: none;
     cursor: pointer;
     width: 50%;
-    border-radius: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, .15);
 }
 
-button:hover{
+button:hover {
     opacity: 0.8;
 }
-
-
-
