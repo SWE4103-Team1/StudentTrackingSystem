@@ -165,8 +165,9 @@ def get_student_data_api(request):
     from datamodel.models import Student
     from django.core import serializers
     from django.shortcuts import HttpResponse
-
-    serializedData = serializers.serialize("json", Student.objects.filter(upload_set=UploadSet.objects.last()))
+    
+    serializedData = serializers.serialize("json", Student.objects.filter(upload_set=UploadSet.objects.first()))
+  
     return HttpResponse(serializedData)
 
 def get_counts_by_semester(request, semester):
@@ -200,3 +201,34 @@ def get_counts_by_start_date(request, start_date):
 	}
 
 	return HttpResponse(dumps(data))
+
+
+
+
+def get_transcript(request, student_num=0):
+    from django.shortcuts import HttpResponse
+    from datamodel.models import Enrolment
+    import json
+    from django.core import serializers
+    # get student id
+    student_ID = Student.objects.filter(student_number = student_num)
+    student_django_id= student_ID[0].id
+    all_entries = Enrolment.objects.filter(student_id=student_django_id)
+    print(all_entries[1])
+    student_transcript = []
+    for entry in all_entries:
+        transcript = {
+        'Course_Code': entry.course.course_code,
+        'Course_Name':entry.course.name,
+        'Semester': entry.term,
+        'Section':entry.course.section,
+        'Credit_Hours':entry.course.credit_hours,
+        'Grade':entry.grade
+        }
+        jsonstr = json.dumps(transcript)
+        student_transcript.append(transcript)
+  
+
+    jsonstrMast = json.dumps(student_transcript)
+    return HttpResponse(jsonstrMast)
+
