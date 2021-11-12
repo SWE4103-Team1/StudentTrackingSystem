@@ -173,15 +173,21 @@ def get_student_data_api(request):
 def get_counts_by_semester(request, semester):
 	from json import dumps
 	from django.shortcuts import HttpResponse
-	from generateCounts.counts import (count_coop_students_by_semester,
-	                                   count_total_students_by_semester)
-                                       
+	from generateCounts.counts import (count_coop_students_by_semester, 
+										count_total_students_by_semester)
+
+
 	countCoop = count_coop_students_by_semester(semester)
 	countTotal = count_total_students_by_semester(semester)
+	countRank = count_students_by_rank_semester(semester)
 
 	data = {
 		"countCoop": countCoop,
-		"countTotal": countTotal
+		"countTotal": countTotal,
+		"FIR": countRank['FIR'],
+		"SOP": countRank['SOP'], 
+		"JUN": countRank['JUN'],
+		"SEN": countRank['SEN']
 	}
 
 	return HttpResponse(dumps(data))
@@ -190,14 +196,20 @@ def get_counts_by_start_date(request, start_date):
 	from json import dumps
 	from django.shortcuts import HttpResponse
 	from generateCounts.counts import (count_coop_students_by_start_date,
-	                                   count_total_students_by_start_date)
+	                                   count_total_students_by_start_date,
+	                                   count_students_by_rank_start_date)
 
 	countCoop = count_coop_students_by_start_date(start_date)
 	countTotal = count_total_students_by_start_date(start_date)
+	countRank = count_students_by_rank_start_date(start_date)
 
 	data = {
 		"countCoop": countCoop,
-		"countTotal": countTotal
+		"countTotal": countTotal,
+		"FIR": countRank['FIR'],
+		"SOP": countRank['SOP'],
+		"JUN": countRank['JUN'],
+		"SEN": countRank['SEN']
 	}
 
 	return HttpResponse(dumps(data))
@@ -220,6 +232,7 @@ def get_transcript(request, student_num=0):
         transcript = {
         'Course_Code': entry.course.course_code,
         'Course_Name':entry.course.name,
+        'Course_Type':entry.course.course_type,
         'Semester': entry.term,
         'Section':entry.course.section,
         'Credit_Hours':entry.course.credit_hours,
