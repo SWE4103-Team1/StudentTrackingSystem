@@ -13,7 +13,8 @@
     z-index: 1;
     top: 0;
     left: 0;
-    background-color: #E53C38;
+    /*background-color: #D11D27;*/
+    background-image: linear-gradient(to bottom, #D11D27 , #ff444e);
     overflow-x: hidden;
     transition: 0.5s;
     padding-top: 60px;
@@ -52,7 +53,7 @@
 }
 
 .container-header{
-    background-color: #E53C38;
+    background-color: #D11D27;
     color: white;
 }
 
