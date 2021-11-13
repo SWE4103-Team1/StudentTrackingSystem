@@ -128,6 +128,9 @@ def validate_tag(course_code):
 # takes the prefix of the course code (EX: SWE4103 -> SWE)
     course_tag = get_course_tag(course_code)
 
+    if course_tag == "ENGG" or course_code == "ME3232":
+        return "FUNDAMENTALS"
+
     for key, value in excel_in_dict["valid-tags"].to_dict(orient="list").items():
         # for each item, if the prefix is in valid-tag or the entire course code (only for CSE-ITS)
         # return the key (course type)
@@ -205,18 +208,23 @@ def get_course_type(course_code):
     course_code = course_code.replace("*", "")
     course_code = course_code.replace(" ", "")
 
+    course_type = validate_tag(course_code)
+
     # if is valid tag, and is not in exception, return course type
-    if validate_tag(course_code) == "NS" and not is_exception(course_code, "NS"):
+    if course_type == "NS" and not is_exception(course_code, "NS"):
         return "SCIENCE"
 
-    elif validate_tag(course_code) == "CSE-ITS" and not is_exception(course_code, "CSE-ITS"):
+    elif course_type == "CSE-ITS" and not is_exception(course_code, "CSE-ITS"):
         return "CSE-ITS"
 
-    elif validate_tag(course_code) == "CSE-HSS" and not is_exception(course_code, "CSE-HSS"):
+    elif course_type == "CSE-HSS" and not is_exception(course_code, "CSE-HSS"):
         return "CSE-HSS"
 
-    elif validate_tag(course_code) == "CSE-OPEN" and not is_exception(course_code, "CSE-OPEN"):
+    elif course_type == "CSE-OPEN" and not is_exception(course_code, "CSE-OPEN"):
         return "CSE-OPEN"
+    
+    elif course_type == "FUNDAMENTALS" and is_course_group(course_code) == "FUNDAMENTALS":
+        return "FUNDAMENTALS"
 
     # if the tag is TE, check if its in the course_group first
     elif validate_tag(course_code) == "TE" and not is_exception(course_code, "TE"):
@@ -230,4 +238,3 @@ def get_course_type(course_code):
             return "TE"
     else:
         return None
-
