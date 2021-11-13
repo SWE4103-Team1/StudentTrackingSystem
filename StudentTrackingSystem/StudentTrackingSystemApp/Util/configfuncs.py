@@ -128,10 +128,16 @@ def validate_tag(course_code):
 # takes the prefix of the course code (EX: SWE4103 -> SWE)
     course_tag = get_course_tag(course_code)
 
+    if course_tag == "ENGG" or course_tag == "ME":
+        return "FUNDEMENTALS"
+
+    if course_code == "ENVS2003":
+        return "CSE-ITS"
+
     for key, value in excel_in_dict["valid-tags"].to_dict(orient="list").items():
         # for each item, if the prefix is in valid-tag or the entire course code (only for CSE-ITS)
         # return the key (course type)
-        if course_tag in value or course_code in value:
+        if (course_tag in value) or (course_code in value):
             return key
     return None
 
@@ -205,21 +211,26 @@ def get_course_type(course_code):
     course_code = course_code.replace("*", "")
     course_code = course_code.replace(" ", "")
 
+    tag = validate_tag(course_code)
+
     # if is valid tag, and is not in exception, return course type
-    if validate_tag(course_code) == "NS" and not is_exception(course_code, "NS"):
+    if tag == "NS" and not is_exception(course_code, "NS"):
         return "SCIENCE"
 
-    elif validate_tag(course_code) == "CSE-ITS" and not is_exception(course_code, "CSE-ITS"):
+    elif tag == "CSE-ITS" and not is_exception(course_code, "CSE-ITS"):
         return "CSE-ITS"
 
-    elif validate_tag(course_code) == "CSE-HSS" and not is_exception(course_code, "CSE-HSS"):
+    elif tag == "CSE-HSS" and not is_exception(course_code, "CSE-HSS"):
         return "CSE-HSS"
 
-    elif validate_tag(course_code) == "CSE-OPEN" and not is_exception(course_code, "CSE-OPEN"):
+    elif tag == "CSE-OPEN" and not is_exception(course_code, "CSE-OPEN"):
         return "CSE-OPEN"
 
+    elif tag == "FUNDEMENTALS" and is_course_group(course_code):
+        return "FUNDEMENTALS"
+
     # if the tag is TE, check if its in the course_group first
-    elif validate_tag(course_code) == "TE" and not is_exception(course_code, "TE"):
+    elif tag == "TE" and not is_exception(course_code, "TE"):
         # gets the course type from within 'course-groups' page if the given course code is found
         course_group = is_course_group(course_code)
         
@@ -230,4 +241,3 @@ def get_course_type(course_code):
             return "TE"
     else:
         return None
-
