@@ -155,9 +155,10 @@ def is_exception(course_code, course_type):
     if course_type is None:
         return None
 
-    for value in excel_in_dict["exceptions"].to_dict(orient="list").values():
-        if course_code in value:
-            return True
+    print(excel_in_dict["exceptions"][course_type])
+    
+    if course_code in excel_in_dict["exceptions"][course_type]:
+        return True
     return False
 
 def get_course_tag(course_code):
