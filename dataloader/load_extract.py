@@ -4,11 +4,10 @@ from django.db import transaction
 import pandas as pd
 import copy
 import itertools
-import time
 
 from datamodel.models import Student, Course, Enrolment, UploadSet
-from StudentTrackingSystemApp.Util.rankings import calculateRank
-from StudentTrackingSystemApp.Util.configfuncs import get_course_type
+from StudentTrackingSystemApp.rankings import calculateRank
+from StudentTrackingSystemApp.configfuncs import get_course_type
 
 
 def bulk_save(models):
