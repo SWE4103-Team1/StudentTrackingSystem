@@ -25,7 +25,7 @@ class UserManager(BaseUserManager):
         username = (
             username if username else ""
         )  # django user model can't have username = Null
-        
+
         user = self.model(email=email, username=username, role=role, **extra_fields)
         user.set_password(password)
         user.save()
@@ -53,24 +53,16 @@ class UserManager(BaseUserManager):
 
         return self.create_user(email, password, username, role, **extra_fields)
 
-
-    def login_user(
-        self, username:str, password: str
-    ):
+    def login_user(self, username: str, password: str):
         if not username:
-            print("user")
             raise ValueError(err_msg.format("username"))
         if not password:
-            print("pass")
             raise ValueError(err_msg.format("Password"))
-
 
         user = authenticate(username=username, password=password)
 
         if user is not None:
-            print("1")
             auth_login(user)
             return True
         else:
             return False
-            
