@@ -25,9 +25,7 @@ SECRET_KEY = "django-insecure-7uh^l%zllqn=^ujk_g_szhj#!f+vahxzw*w2)hx=_*^(8wpb)p
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', '.elasticbeanstalk.com']
-
-# ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["127.0.0.1", ".elasticbeanstalk.com"]
 
 # Application definition
 
@@ -43,7 +41,6 @@ INSTALLED_APPS = [
     "datamodel",
     "dataloader",
     "corsheaders",
-
 ]
 
 MIDDLEWARE = [
@@ -97,14 +94,6 @@ else:
         }
     }
 
-# DATABASES = {
-#    'default': {
-#        'ENGINE': 'django.db.backends.sqlite3',
-#        'NAME': BASE_DIR / 'db.sqlite3',
-#    }
-# }
-
-
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
 
@@ -140,8 +129,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
 
-STATIC_URL = '/static/'
-STATIC_ROOT = 'static'
+STATIC_URL = "/static/"
+STATIC_ROOT = "static"
 STATICFILES_DIRS = [os.path.join(BASE_DIR / "StudentTrackingSystemApp/static")]
 
 # Default primary key field type
@@ -150,5 +139,6 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR / "StudentTrackingSystemApp/static")]
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 AUTH_USER_MODEL = "users.User"
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000", "http://swe4103-env.eba-irrkpdyi.us-east-2.elasticbeanstalk.com"
+    "http://localhost:3000",
+    "http://swe4103-env.eba-irrkpdyi.us-east-2.elasticbeanstalk.com",
 ]
