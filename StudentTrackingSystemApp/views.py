@@ -215,31 +215,31 @@ def get_counts_by_start_date(request, start_date):
 
 	return HttpResponse(dumps(data))
 
-def get_start_dates_api(request):
+def get_cohorts_api(request):
 	from json import dumps
 	from django.shortcuts import HttpResponse
 	from datamodel.models import Student
 
-	dates = []
+	cohorts = []
 
 	startDates = Student.objects.values('start_date').distinct()
 	for date in startDates:
-		dates.append(date['start_date'].strftime("%Y-%m-%d"))
+		cohorts.append(date['start_date'].strftime("%Y-%m-%d"))
 
-	return HttpResponse(dumps({'start-dates': dates}))
+	return HttpResponse(dumps({'cohorts': cohorts}))
 
-def get_cohorts_api(request):
+def get_semesters_api(request):
 	from json import dumps
 	from django.shortcuts import HttpResponse
 	from datamodel.models import Enrolment
 
-	cohorts = []
+	semesters = []
 
 	enrollmentTerms = Enrolment.objects.values('term').distinct()
 	for term in enrollmentTerms:
-		cohorts.append(term['term'])
+		semesters.append(term['term'])
 
-	return HttpResponse(dumps({'terms': cohorts}))
+	return HttpResponse(dumps({'semesters': semesters}))
 
 
 def get_transcript(request, student_num=0):
