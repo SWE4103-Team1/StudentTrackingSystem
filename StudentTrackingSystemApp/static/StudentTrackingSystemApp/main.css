@@ -1,7 +1,6 @@
 @font-face {
     font-family: 'Avenir';
-    src: local('Abc'),
-         url('../fonts/avnir_sv/AvenirLTStd-Medium.otf');
+    src: local('Abc');
   }
 
 body{

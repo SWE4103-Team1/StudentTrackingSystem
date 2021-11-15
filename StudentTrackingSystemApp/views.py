@@ -161,11 +161,11 @@ def enrolment_data(request):
     }
     return render(request, "StudentTrackingSystemApp/Enrolment_Data.html", context)
 
-def get_student_data_api(request):
+def get_student_data_api(request):  
     from datamodel.models import Student
     from django.core import serializers
     from django.shortcuts import HttpResponse
-    
+     
     serializedData = serializers.serialize("json", Student.objects.filter(upload_set=UploadSet.objects.first()))
   
     return HttpResponse(serializedData)
@@ -174,7 +174,8 @@ def get_counts_by_semester(request, semester):
 	from json import dumps
 	from django.shortcuts import HttpResponse
 	from generateCounts.counts import (count_coop_students_by_semester, 
-										count_total_students_by_semester)
+										count_total_students_by_semester,
+                                        count_students_by_rank_semester)
 
 
 	countCoop = count_coop_students_by_semester(semester)
@@ -185,10 +186,10 @@ def get_counts_by_semester(request, semester):
 		"countCoop": countCoop,
 		"countTotal": countTotal,
 		"FIR": countRank['FIR'],
-		"SOP": countRank['SOP'], 
-		"JUN": countRank['JUN'],
+		"SOP": countRank['SOP'],  
+		"JUN": countRank['JUN'], 
 		"SEN": countRank['SEN']
-	}
+	}  
 
 	return HttpResponse(dumps(data))
 
