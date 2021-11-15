@@ -31,5 +31,7 @@ urlpatterns = [
     path('api/student_data/', views.get_student_data_api, name ='get_student_data_api'),
     path('api/counts_semester/<path:semester>/', views.get_counts_by_semester, name ='get_counts_by_semester_api'),
     path('api/counts_start_date/<str:start_date>/', views.get_counts_by_start_date, name ='get_counts_by_start_date_api'),
-     path('get_transcript/<int:student_num>', views.get_transcript, name = 'get_transcript'),
+    path('api/start_dates', views.get_start_dates_api, name ='get_start_dates_api'),
+    path('api/cohorts', views.get_cohorts_api, name ='get_cohorts_api'),
+    path('get_transcript/<int:student_num>', views.get_transcript, name = 'get_transcript'),
 ]
