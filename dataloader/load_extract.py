@@ -114,23 +114,19 @@ class DataFileExtractor:
             subset=["Student_ID"], keep="first", inplace=True
         )
 
-
         #Finding Students with enrolments
-        dfp_temp = dfp.merge(dfe_temp,on=['Student_ID'],how='right')
+        dfp = dfp.merge(dfe_temp,on=['Student_ID'],how='right',copy=False)
 
         #remove_columns: a list of extra columns not needed in dfp after merge (inner join)
         remove_columns = dfe_temp.drop(columns=['Student_ID','Program']).columns
-        dfp_temp = dfp_temp.drop(remove_columns,axis=1)
+        del dfe_temp
+        dfp.drop(remove_columns,axis=1,inplace=True)
 
         # Make 'Program_x' and 'Program_y'back into one column 'Program'
-        dfp_temp = dfp_temp.drop('Program_y',axis=1)
-        dfp_temp = dfp_temp.rename(columns={"Program_x":"Program"})
-        dfp_temp = dfp_temp.replace({np.NaN: None})
+        dfp.drop('Program_y',axis=1,inplace=True)
+        dfp.rename(columns={"Program_x":"Program"},inplace=True)
+        dfp.replace({np.NaN: None},inplace=True)
 
-
-        dfp = copy.deepcopy(dfp_temp)
-        del dfp_temp
-        del dfe_temp
 
         dfp = dfp.values.tolist()
         student_models = list(map(self._new_student_model, dfp))
