@@ -2,7 +2,6 @@ from dataloader.load_extract import DataFileExtractor
 from django.contrib.auth import authenticate, get_user_model, login, logout
 from django.shortcuts import redirect, render
 from generateCounts.counts import *
-from users.managers import UserManager
 from users.roles import UserRole
 
 
@@ -61,8 +60,9 @@ def logout_view(request):
 
 
 def redirectLogin(request):
-	context = {}
-	return redirect("loginPage")
+    context = {}
+    return redirect("loginPage")
+
 
 # able to read in files
 def homePage(request):
@@ -85,38 +85,43 @@ def homePage(request):
 
 
 def dashboard(request):
-	context = {
-		"coopSemester": "",
-		"totalSemester": "",
-		"coopStartDate": "",
-		"totalStartDate": "",
-		"rankSemester": ""
-	}
+    context = {
+        "coopSemester": "",
+        "totalSemester": "",
+        "coopStartDate": "",
+        "totalStartDate": "",
+        "rankSemester": "",
+    }
 
-	if request.method == 'POST':
-		semester = request.POST.get('semester')
-		start_date = request.POST.get('start_date')
+    if request.method == "POST":
+        semester = request.POST.get("semester")
+        start_date = request.POST.get("start_date")
 
-		try:
-			context["coopSemester"] = str(count_coop_students_by_semester(semester))
-			context["totalSemester"] = str(count_total_students_by_semester(semester))
-			context["coopStartDate"] = str(count_coop_students_by_start_date(start_date))
-			context["totalStartDate"] = str(count_total_students_by_start_date(start_date))
-			context["rankSemester"] = str(count_students_by_rank(semester))
+        try:
+            context["coopSemester"] = str(count_coop_students_by_semester(semester))
+            context["totalSemester"] = str(count_total_students_by_semester(semester))
+            context["coopStartDate"] = str(
+                count_coop_students_by_start_date(start_date)
+            )
+            context["totalStartDate"] = str(
+                count_total_students_by_start_date(start_date)
+            )
+            context["rankSemester"] = str(count_students_by_rank(semester))
 
-			return render(request, 'StudentTrackingSystemApp/Dashboard/index.html', context)
+            return render(
+                request, "StudentTrackingSystemApp/Dashboard/index.html", context
+            )
 
-		except Exception as e:
-			print(f'ERROR: {e}')
+        except Exception as e:
+            print(f"ERROR: {e}")
 
-	return render(request, 'StudentTrackingSystemApp/Dashboard/index.html', context)
+    return render(request, "StudentTrackingSystemApp/Dashboard/index.html", context)
 
 
 def student_data(request):
     from datamodel.models import Student
 
     all_entries = Student.objects.all()
-    print(all_entries)
     context = {"object_list": all_entries}
     return render(request, "StudentTrackingSystemApp/Student_Data.html", context)
 
@@ -125,7 +130,6 @@ def course_data(request):
     from datamodel.models import Course
 
     all_entries = Course.objects.all()
-    print(all_entries)
     context = {"object_list": all_entries}
     return render(request, "StudentTrackingSystemApp/Course_Data.html", context)
 
@@ -151,8 +155,6 @@ def enrolment_data(request):
     # for c in course_list_course_name:
     #     course_code_list.append((c.get('course__course_name')))
 
-    print(all_entries)
-
     context = {
         "all_objects": all_entries,
         # "student_numbers" : student_number_list,
@@ -161,77 +163,84 @@ def enrolment_data(request):
     }
     return render(request, "StudentTrackingSystemApp/Enrolment_Data.html", context)
 
-def get_student_data_api(request):  
+
+def get_student_data_api(request):
     from datamodel.models import Student
     from django.core import serializers
     from django.shortcuts import HttpResponse
-     
-    serializedData = serializers.serialize("json", Student.objects.filter(upload_set=UploadSet.objects.first()))
-  
+
+    serializedData = serializers.serialize(
+        "json", Student.objects.filter(upload_set=UploadSet.objects.last())
+    )
     return HttpResponse(serializedData)
 
+
 def get_counts_by_semester(request, semester):
-	from json import dumps
-	from django.shortcuts import HttpResponse
-	from generateCounts.counts import (count_coop_students_by_semester, 
-										count_total_students_by_semester,
-                                        count_students_by_rank_semester)
+    from json import dumps
+    from django.shortcuts import HttpResponse
+    from generateCounts.counts import (
+        count_coop_students_by_semester,
+        count_total_students_by_semester,
+        count_students_by_rank_semester,
+    )
 
+    countCoop = count_coop_students_by_semester(semester)
+    countTotal = count_total_students_by_semester(semester)
+    countRank = count_students_by_rank_semester(semester)
 
-	countCoop = count_coop_students_by_semester(semester)
-	countTotal = count_total_students_by_semester(semester)
-	countRank = count_students_by_rank_semester(semester)
+    data = {
+        "countCoop": countCoop,
+        "countTotal": countTotal,
+        "FIR": countRank["FIR"],
+        "SOP": countRank["SOP"],
+        "JUN": countRank["JUN"],
+        "SEN": countRank["SEN"],
+    }
+    return HttpResponse(dumps(data))
 
-	data = {
-		"countCoop": countCoop,
-		"countTotal": countTotal,
-		"FIR": countRank['FIR'],
-		"SOP": countRank['SOP'],  
-		"JUN": countRank['JUN'], 
-		"SEN": countRank['SEN']
-	}  
-
-	return HttpResponse(dumps(data))
 
 def get_counts_by_start_date(request, start_date):
-	from json import dumps
-	from django.shortcuts import HttpResponse
-	from generateCounts.counts import (count_coop_students_by_start_date,
-	                                   count_total_students_by_start_date,
-	                                   count_students_by_rank_start_date)
+    from json import dumps
+    from django.shortcuts import HttpResponse
+    from generateCounts.counts import (
+        count_coop_students_by_start_date,
+        count_total_students_by_start_date,
+        count_students_by_rank_start_date,
+    )
 
-	countCoop = count_coop_students_by_start_date(start_date)
-	countTotal = count_total_students_by_start_date(start_date)
-	countRank = count_students_by_rank_start_date(start_date)
+    countCoop = count_coop_students_by_start_date(start_date)
+    countTotal = count_total_students_by_start_date(start_date)
+    countRank = count_students_by_rank_start_date(start_date)
 
-	data = {
-		"countCoop": countCoop,
-		"countTotal": countTotal,
-		"FIR": countRank['FIR'],
-		"SOP": countRank['SOP'],
-		"JUN": countRank['JUN'],
-		"SEN": countRank['SEN']
-	}
+    data = {
+        "countCoop": countCoop,
+        "countTotal": countTotal,
+        "FIR": countRank["FIR"],
+        "SOP": countRank["SOP"],
+        "JUN": countRank["JUN"],
+        "SEN": countRank["SEN"],
+    }
 
-	return HttpResponse(dumps(data))
+    return HttpResponse(dumps(data))
+
 
 def get_count_parameters_api(request):
-	from json import dumps
-	from django.shortcuts import HttpResponse
-	from datamodel.models import Student, Enrolment
+    from json import dumps
+    from django.shortcuts import HttpResponse
+    from datamodel.models import Student, Enrolment
 
-	cohorts = []
-	semesters = []
+    cohorts = []
+    semesters = []
 
-	startDates = Student.objects.values('start_date').distinct()
-	for date in startDates:
-		cohorts.append(date['start_date'].strftime("%Y-%m-%d"))
+    startDates = Student.objects.values("start_date").distinct()
+    for date in startDates:
+        cohorts.append(date["start_date"].strftime("%Y-%m-%d"))
 
-	enrollmentTerms = Enrolment.objects.values('term').distinct()
-	for term in enrollmentTerms:
-		semesters.append(term['term'])
+    enrollmentTerms = Enrolment.objects.values("term").distinct()
+    for term in enrollmentTerms:
+        semesters.append(term["term"])
 
-	return HttpResponse(dumps({'cohorts': cohorts, 'semesters': semesters}))
+    return HttpResponse(dumps({"cohorts": cohorts, "semesters": semesters}))
 
 
 def get_transcript(request, student_num=0):
@@ -239,26 +248,25 @@ def get_transcript(request, student_num=0):
     from datamodel.models import Enrolment
     import json
     from django.core import serializers
+
     # get student id
-    student_ID = Student.objects.filter(student_number = student_num)
-    student_django_id= student_ID[0].id
+    student_ID = Student.objects.filter(student_number=student_num)
+    student_django_id = student_ID[0].id
     all_entries = Enrolment.objects.filter(student_id=student_django_id)
     print(all_entries[1])
     student_transcript = []
     for entry in all_entries:
         transcript = {
-        'Course_Code': entry.course.course_code,
-        'Course_Name':entry.course.name,
-        'Course_Type':entry.course.course_type,
-        'Semester': entry.term,
-        'Section':entry.course.section,
-        'Credit_Hours':entry.course.credit_hours,
-        'Grade':entry.grade
+            "Course_Code": entry.course.course_code,
+            "Course_Name": entry.course.name,
+            "Course_Type": entry.course.course_type,
+            "Semester": entry.term,
+            "Section": entry.course.section,
+            "Credit_Hours": entry.course.credit_hours,
+            "Grade": entry.grade,
         }
         jsonstr = json.dumps(transcript)
         student_transcript.append(transcript)
-  
 
     jsonstrMast = json.dumps(student_transcript)
     return HttpResponse(jsonstrMast)
-

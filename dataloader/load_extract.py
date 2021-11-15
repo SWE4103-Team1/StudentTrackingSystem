@@ -4,11 +4,11 @@ from django.db import transaction
 import pandas as pd
 import copy
 import itertools
-import time
 import numpy as np
+
 from datamodel.models import Student, Course, Enrolment, UploadSet
-from StudentTrackingSystemApp.Util.rankings import calculateRank
-from StudentTrackingSystemApp.Util.configfuncs import get_course_type
+from StudentTrackingSystemApp.rankings import calculateRank
+from StudentTrackingSystemApp.configfuncs import get_course_type
 
 
 def bulk_save(models):
@@ -66,7 +66,7 @@ class DataFileExtractor:
         df_transfer_enrolment = pd.read_table(transfer_file, squeeze=True)
         df_transfer_course = copy.deepcopy(df_transfer_enrolment)
 
-        students = self._build_person_models(df_person,df_enrolment)
+        students = self._build_person_models(df_person, df_enrolment)
         courses = self._build_course_models(df_course)
         transfer_courses = self._build_transfer_course_models(df_transfer_course)
         del df_person
@@ -106,27 +106,24 @@ class DataFileExtractor:
     def get_upload_set(self):
         return self._upload_set
 
-    def _build_person_models(self, dfp,dfe):
+    def _build_person_models(self, dfp, dfe):
         dfp.drop_duplicates(subset=["Student_ID"], keep="last", inplace=True)
-         # dfe_temp: enrolment dataframe for verifying students
+        # dfe_temp: enrolment dataframe for verifying students
         dfe_temp = copy.deepcopy(dfe)
-        dfe_temp.drop_duplicates(
-            subset=["Student_ID"], keep="first", inplace=True
-        )
+        dfe_temp.drop_duplicates(subset=["Student_ID"], keep="first", inplace=True)
 
-        #Finding Students with enrolments
-        dfp = dfp.merge(dfe_temp,on=['Student_ID'],how='right',copy=False)
+        # Finding Students with enrolments
+        dfp = dfp.merge(dfe_temp, on=["Student_ID"], how="right", copy=False)
 
-        #remove_columns: a list of extra columns not needed in dfp after merge (inner join)
-        remove_columns = dfe_temp.drop(columns=['Student_ID','Program']).columns
+        # remove_columns: a list of extra columns not needed in dfp after merge (inner join)
+        remove_columns = dfe_temp.drop(columns=["Student_ID", "Program"]).columns
         del dfe_temp
-        dfp.drop(remove_columns,axis=1,inplace=True)
+        dfp.drop(remove_columns, axis=1, inplace=True)
 
         # Make 'Program_x' and 'Program_y'back into one column 'Program'
-        dfp.drop('Program_y',axis=1,inplace=True)
-        dfp.rename(columns={"Program_x":"Program"},inplace=True)
-        dfp.replace({np.NaN: None},inplace=True)
-
+        dfp.drop("Program_y", axis=1, inplace=True)
+        dfp.rename(columns={"Program_x": "Program"}, inplace=True)
+        dfp.replace({np.NaN: None}, inplace=True)
 
         dfp = dfp.values.tolist()
         student_models = list(map(self._new_student_model, dfp))
