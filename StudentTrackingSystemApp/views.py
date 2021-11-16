@@ -149,8 +149,9 @@ def get_student_data_api(request):
     from django.shortcuts import HttpResponse
 
     serializedData = serializers.serialize(
-        "json", Student.objects.filter(upload_set=UploadSet.objects.last())
+        "json", Student.objects.filter(upload_set=UploadSet.objects.first())
     )
+    
     return HttpResponse(serializedData)
 
 
