@@ -1,8 +1,7 @@
 from django.test import TestCase
 from django.contrib.auth import get_user_model
 
-from .roles import UserRole
-
+from ..roles import UserRole
 
 class UserManagerTests(TestCase):
     def test_create_basic_user(self):

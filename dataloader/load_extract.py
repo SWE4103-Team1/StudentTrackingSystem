@@ -182,7 +182,6 @@ class DataFileExtractor:
             credit_hours=dfc[6],
             name=dfc[4],
             section=dfc[8],
-            course_type=get_course_type(dfc[3]),
             upload_set=self._upload_set,
         )
         return course
