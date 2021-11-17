@@ -15,46 +15,35 @@
     <noscript>You need JavaScript to run this application</noscript>
     <link rel="apple-touch-icon" href="/logo192.png" />
     <link rel="manifest" href="/manifest.json" />
-    <link rel="stylesheet" href="{% static 'StudentTrackingSystemApp/main.css' %}">
+
     <link rel="stylesheet" href="{% static '\build_table\build-table\static\css\2.383c0125.chunk.css' %}">
     <link rel="stylesheet" href="{% static '\build_table\build-table\static\css\main.96f7007f.chunk.css' %}">
     <link rel="stylesheet" href="{% static 'StudentTrackingSystemApp/dashboard.css' %}">
     <link rel="stylesheet" href="{% static 'StudentTrackingSystemApp/sideNav.css' %}">
 </head>
 
-<body style="font-family:Avenir;background-color: #5B6770;">
+<body>
+    <div class="container-header">
+        <span class="navButton" , onclick="openNav()">&#9776; </span>
+        <h1 class="title">Dashboard</h1>
+        </div>
+    <div id="mySidenav" class="sidenav">
+        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+        <a href="{% url 'dashboard' %}" style="text-decoration:none">Dashboard </a>
+        <a href="{% url 'settings' %}" style="text-decoration:none"> Settings </a>
+        <a href="{% url 'logout' %}" style="text-decoration:none"> Logout </a>
+    </div>
     <div class="container-dashboard">
-        <a href="{% url 'homepage' %}" style="text-decoration:none">
-            <button class="nav_button">Back to Homepage</button>
-        </a>
-        <h1>Dashboard</h1>
-        <div class="column-dashboard column-one">
-            <div></div>
-            <h2>Master List</h2>
-            <div id="root"></div>
-        </div>
-
-        <div class="container-header">
-          <span class = "navButton", onclick="openNav()">&#9776; </span>
-            <h1 class="title">Dashboard</h1>
-        </div>
         <div class="container-content">
             <div class="column-dashboard column-one">
-                <h2 class="title">Master List</h2>
+            
                 <div id="root"></div>
             </div>
-            <div class="column-dashboard column-two">
-            </div>
+            
         </div>
     </div>
 </body>
 
-<div id = "mySidenav" class="sidenav">
-  <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
-  <a href="{% url 'dashboard' %}" style="text-decoration:none">Dashboard </a>
-  <a href="{% url 'settings' %}" style="text-decoration:none"> Settings </a>
-  <a href="{% url 'logout' %}" style="text-decoration:none"> Logout </a>
-</div>
 
 
 <script>
