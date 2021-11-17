@@ -1,6 +1,13 @@
 <html>
 {% load static %}
-<h1>Raw Data</h1>
+
+<div>
+    <a href="{% url 'settings' %}" style="text-decoration:none">
+        <button class="nav_button">&lt</button>
+    </a>
+    <h1 style="display: inline-block;">Student Data</h1>
+</div>
+
 {% block page_content %}
 <div class="row">
     <div class="col-md-4">
@@ -27,10 +34,7 @@
         </table>
         <div>
         </div>
-
-
-
-
+    </div>
         {% endblock %}
 
 </html>
