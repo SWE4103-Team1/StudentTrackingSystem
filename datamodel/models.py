@@ -44,6 +44,7 @@ class Course(models.Model):
     section = models.CharField(max_length=10)
     credit_hours = models.IntegerField()
     name = models.CharField(max_length=75)
+    course_type = models.CharField(max_length=50, blank=True, null=True)
     upload_set = models.ForeignKey(UploadSet, on_delete=models.CASCADE)
 
     class Meta:

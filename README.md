@@ -2,7 +2,7 @@
 
 [![Django CI](https://github.com/SWE4103-Team1/StudentTrackingSystem/actions/workflows/django.yml/badge.svg?branch=dev)](https://github.com/SWE4103-Team1/StudentTrackingSystem/actions/workflows/django.yml)
 
-[![Jenkins CD Build Status](http://3.86.91.241:8080/buildStatus/icon?job=git_test)](http://3.86.91.241:8080/job/git_test/)
+[![Deploy to AWS](https://github.com/SWE4103-Team1/StudentTrackingSystem/actions/workflows/deployToAWS.yml/badge.svg?branch=dev)](https://github.com/SWE4103-Team1/StudentTrackingSystem/actions/workflows/deployToAWS.yml)
 
 ## Dependencies
 
