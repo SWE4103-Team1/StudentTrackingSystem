@@ -41,7 +41,7 @@ def loginPage(request):
                 print(f"Successfully logged in user: {user}")
                 login(request, user)
                 # Here is where we need to redirect the user to landing page
-                return redirect("homepage")
+                return redirect("dashboard")
             else:
                 print(f"{user} does not exist")
                 context = {"error": "Invalid login credentials. Please try again."}
@@ -66,23 +66,24 @@ def redirectLogin(request):
 
 
 # able to read in files
-def homePage(request):
+def settings(request):
     if request.method == "POST":
         # files will hold all the files that are read in
         files = request.FILES.getlist("input_files")
-        for f in files:
-            if f.name == "personData.txt":
-                personData = f
-            elif f.name == "courseData.txt":
-                courseData = f
-            elif f.name == "transferData.txt":
-                transferData = f
+        if files:
+            for f in files:
+                if f.name == "personData.txt":
+                    personData = f
+                elif f.name == "courseData.txt":
+                    courseData = f
+                elif f.name == "transferData.txt":
+                    transferData = f
 
-        uploader = DataFileExtractor()
-        uploader.uploadAllFiles(personData, courseData, transferData)
+            uploader = DataFileExtractor()
+            uploader.uploadAllFiles(personData, courseData, transferData)
 
     context = {}
-    return render(request, "StudentTrackingSystemApp/homepage.html", context)
+    return render(request, "StudentTrackingSystemApp/settings.html", context)
 
 
 def dashboard(request):

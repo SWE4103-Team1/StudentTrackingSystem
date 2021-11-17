@@ -8,60 +8,74 @@
     <link rel="icon" href="/favicon.ico" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <meta name="theme-color" content="#000000" />
-    <meta name="description" content="Web site created using create-react-app" />
     <title>
         Dashboard
     </title>
     <meta charset="UTF-8">
-    <link rel="stylesheet" href="{% static 'StudentTrackingSystemApp/main.css' %}">
-    <link rel="stylesheet" href="{% static 'StudentTrackingSystemApp/dashboard.css' %}">
     <noscript>You need JavaScript to run this application</noscript>
     <link rel="apple-touch-icon" href="/logo192.png" />
     <link rel="manifest" href="/manifest.json" />
-    <title>React App</title>
+    <link rel="stylesheet" href="{% static 'StudentTrackingSystemApp/main.css' %}">
     <link rel="stylesheet" href="{% static '\build_table\build-table\static\css\main.cf0c3cd8.chunk.css' %}">
+    <link rel="stylesheet" href="{% static 'StudentTrackingSystemApp/dashboard.css' %}">
+    <link rel="stylesheet" href="{% static 'StudentTrackingSystemApp/sideNav.css' %}">
 </head>
 
 <body>
     <div class="container-dashboard">
-        <div class="column-dashboard column-one">
-            <div></div>
-            <h2>Master List</h2>
-            <div id="root"></div>
+        <div class="container-header">
+          <span class = "navButton", onclick="openNav()">&#9776; </span>
+            <h1 class="title">Dashboard</h1>
         </div>
-        <div class="column-dashboard column-two">
-            <h1>Dashboard</h1>
-            <a href="{% url 'homepage' %}" style="text-decoration:none">
-                <button class="nav_button">Homepage</button>
-            </a>
-        </div>
-        <div class="column-dashboard column-three">
-            <div></div>
-            <h2>Counts</h2>
-            <form method="POST" style="background-color: transparent;">
-            {% csrf_token %}
-                <div class="container">
-                    <label for="semester">Semester:</label>
-                    <input type="search" id="semester" name="semester">
-                    <label for="start_date">Start Date:</label>
-                    <input type="search" id="start_date" name="start_date"><br><br>
-                    <button type="submit">Query</button>
-                </div>
-            </form>
-            
-
-            <!-- wow! this isn't cool -->
-            <p>Count of students currently in coop during above semester: {{ coopSemester }}</p>
-            <p>Count of students enrolled during above semester: {{ totalSemester }}</p>
-            <p>Count of students currently in coop at above start date: {{ coopStartDate }}</p>
-            <p>Count of students enrolled from above start date: {{ totalStartDate }}</p>
-            <p>Count of students in each rank during above semester: {{ rankSemester }}</p>
-        
+        <div class="container-content">
+            <div class="column-dashboard column-one">
+                <h2 class="title">Master List</h2>
+                <div id="root"></div>
+            </div>
+            <div class="column-dashboard column-two">
+                <h2 class="title">Counts</h2>
+                <form method="POST" style="background-color: transparent;">
+                    {% csrf_token %}
+                    <div class="count-container">
+                        <label for="semester">Semester:</label>
+                        <input type="search" id="semester" name="semester">
+                        <label for="start_date">Start Date:</label>
+                        <input type="search" id="start_date" name="start_date"><br><br>
+                        <button type="submit">Query</button>
+                    </div>
+                </form>
+                <p>By start date:</p>
+                <p>COOP: {{ coopStartDate }}</p>
+                <p>TOTAL: {{ totalStartDate }}</p>
+                <br/>
+                <p>By semester:</p>
+                <p>COOP: {{ coopSemester }}</p>
+                <p>RANKS: {{ rankSemester }}</p>
+                <p>TOTAL STUDENTS: {{ totalSemester }}</p>
+            </div>
         </div>
     </div>
 </body>
+    
+<div id = "mySidenav" class="sidenav">
+  <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+  <a href="{% url 'dashboard' %}" style="text-decoration:none">Dashboard </a>
+  <a href="{% url 'settings' %}" style="text-decoration:none"> Settings </a>
+  <a href="{% url 'logout' %}" style="text-decoration:none"> Logout </a>
+</div>
 
-<noscript>You need to enable JavaScript to run this app.</noscript>
+
+<script>
+function openNav() {
+document.getElementById("mySidenav").style.width = "250px";
+document.getElementById("main").style.marginLeft = "250px";
+}
+
+function closeNav() {
+document.getElementById("mySidenav").style.width = "0";
+document.getElementById("main").style.marginLeft= "0";
+}
+</script>
 
 <script>!function (e) {
         function r(r) {
