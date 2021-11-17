@@ -1,25 +1,42 @@
-.masterList{
-    
-    padding:10px;
-    
-    flex: 50%;
-   /* align-items: left; */
-    justify-content:left;
-    margin:20px;
-
-
-    
-
-}
-.div-table
-{
-    border: 1px solid red;
-    width: 100px;
-    height: 50px;
-    overflow: auto;
+* {
+  padding: 0px;
+  margin: 0px;
 }
 
-h2{
-    color: white;
+.container-dashboard {
+  display: flex;
+  flex-direction: column;
 }
 
+.container-header {
+  display: flex;
+  align-items: center;
+  padding: 20px;
+  flex-direction: row;
+}
+
+.title {
+  margin: 0 20px;
+  padding: 0;
+}
+
+.container-content {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+}
+
+.column-dashboard {
+  display: flex;
+  padding: 10px;
+  margin: 10px;
+  flex-direction: column;
+  align-items: center;
+  width: 90%;
+}
+
+.column-one {
+  width: 60%;
+  padding: 10px;
+  margin-left: 10px;
+}
