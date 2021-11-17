@@ -1,66 +1,42 @@
 * {
-    padding: 0px;
-    margin: 0px;
+  padding: 0px;
+  margin: 0px;
 }
 
 .container-dashboard {
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
 }
 
 .container-header {
-    display: flex;
-    align-items: center;
-    padding: 20px;
-    flex-direction: row;
+  display: flex;
+  align-items: center;
+  padding: 20px;
+  flex-direction: row;
 }
 
 .title {
-    margin: 0 20px;
-    padding: 0;
+  margin: 0 20px;
+  padding: 0;
 }
 
 .container-content {
-    display: flex;
-    flex-direction: row;
-    align-items: flex-start;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
 }
 
 .column-dashboard {
-    display: flex;
-    padding: 10px;
-    margin: 10px;
-    flex-direction: column;
-    align-items: center;
-    width: 90%;
+  display: flex;
+  padding: 10px;
+  margin: 10px;
+  flex-direction: column;
+  align-items: center;
+  width: 90%;
 }
 
 .column-one {
-    width: 60%;
-    padding: 10px;
-    margin-left: 10px;
-}
-
-.column-two {
-    width: 20%;
-    padding: 10px;
-    margin-left: 10px;
-}
-
-.count-container {
-    width: 100%;
-}
-
-input[type=search] {
-    width: 50%;
-    text-align: left;
-    font-size: 16px;
-    padding: 12px;
-    margin-top: 10px;
-    margin-left: auto;
-    margin-right: auto;
-    display: block;
-    border: 1px solid #ccc;
-    box-sizing: border-box;
-    border-radius: 10px;
+  width: 60%;
+  padding: 10px;
+  margin-left: 10px;
 }
