@@ -68,7 +68,7 @@ def count_total_students_by_start_date(start_date_):
 
     return len(added_students)
 
-def count_students_by_rank_semester(term_):
+def count_students_by_rank(term_):
     FIR =0
     SOP = 0
     JUN = 0
@@ -96,28 +96,6 @@ def count_students_by_rank_semester(term_):
                 SEN += 1
         else:
             pass
-
-    rank_counts = {'FIR':FIR,'SOP':SOP,'JUN':JUN,'SEN':SEN}
-
-    return rank_counts
-
-def count_students_by_rank_start_date(start_date_):
-    FIR =0
-    SOP = 0
-    JUN = 0
-    SEN = 0
-    enrolled_student_ids = []
-
-    students = list(Student.objects.filter(start_date=start_date_).values('rank'))
-    for student in students:
-        if student['rank'] == 'FIR':
-            FIR +=1
-        elif student['rank'] == 'SOP':
-            SOP += 1
-        elif student['rank'] == 'JUN':
-            JUN += 1
-        elif student['rank'] == 'SEN':
-            SEN += 1
 
     rank_counts = {'FIR':FIR,'SOP':SOP,'JUN':JUN,'SEN':SEN}
 

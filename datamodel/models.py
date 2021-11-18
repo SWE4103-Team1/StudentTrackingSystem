@@ -15,10 +15,10 @@ class UploadSet(models.Model):
 class Student(models.Model):
     id = models.BigAutoField(primary_key=True)
     student_number = models.IntegerField()
-    name = models.TextField(max_length=70,null=True)
-    campus = models.CharField(max_length=2,null=True)
-    program = models.CharField(max_length=10,null=True)
-    start_date = models.DateField(max_length=8,null=True)
+    name = models.TextField(max_length=70)
+    campus = models.CharField(max_length=2)
+    program = models.CharField(max_length=10)
+    start_date = models.DateField(max_length=8)
     rank = models.CharField(max_length=3,blank=True)
     upload_set = models.ForeignKey(UploadSet, on_delete=models.CASCADE)
 
@@ -77,7 +77,7 @@ class Enrolment(models.Model):
         ]
         constraints = [
             models.UniqueConstraint(
-                fields=["student_id", "course_id","term"], name="unique_enrolment_constraint"
+                fields=["student_id", "course_id"], name="unique_enrolment_constraint"
             )
         ]
 

@@ -2,6 +2,7 @@ from dataloader.load_extract import DataFileExtractor
 from django.contrib.auth import authenticate, get_user_model, login, logout
 from django.shortcuts import redirect, render
 from generateCounts.counts import *
+from users.managers import UserManager
 from users.roles import UserRole
 
 
@@ -139,8 +140,29 @@ def enrolment_data(request):
     from datamodel.models import Enrolment
 
     all_entries = Enrolment.objects.all()
+    # students_list_student_number = all_entries.values('student__student_number')
+    # course_list_course_code = all_entries.values('course__course_code')
+    # course_list_course_name = all_entries.values('course__name')
 
-    context = {"object_list": all_entries}
+    # student_number_list = []
+    # course_code_list = []
+    # course_name_list = []
+
+    # for s in students_list_student_number:
+    #     student_number_list.append((s.get('student__student_number')))
+
+    # for c in course_list_course_code:
+    #     course_code_list.append((c.get('course__course_code')))
+
+    # for c in course_list_course_name:
+    #     course_code_list.append((c.get('course__course_name')))
+
+    context = {
+        "all_objects": all_entries,
+        # "student_numbers" : student_number_list,
+        # "course_code" : course_code_list,
+        # "course_name" : course_name_list
+    }
     return render(request, "StudentTrackingSystemApp/Enrolment_Data.html", context)
 
 
@@ -150,9 +172,8 @@ def get_student_data_api(request):
     from django.shortcuts import HttpResponse
 
     serializedData = serializers.serialize(
-        "json", Student.objects.filter(upload_set=UploadSet.objects.first())
+        "json", Student.objects.filter(upload_set=UploadSet.objects.last())
     )
-    
     return HttpResponse(serializedData)
 
 
@@ -162,21 +183,13 @@ def get_counts_by_semester(request, semester):
     from generateCounts.counts import (
         count_coop_students_by_semester,
         count_total_students_by_semester,
-        count_students_by_rank_semester,
     )
 
     countCoop = count_coop_students_by_semester(semester)
     countTotal = count_total_students_by_semester(semester)
-    countRank = count_students_by_rank_semester(semester)
 
-    data = {
-        "countCoop": countCoop,
-        "countTotal": countTotal,
-        "FIR": countRank["FIR"],
-        "SOP": countRank["SOP"],
-        "JUN": countRank["JUN"],
-        "SEN": countRank["SEN"],
-    }
+    data = {"countCoop": countCoop, "countTotal": countTotal}
+
     return HttpResponse(dumps(data))
 
 
@@ -186,68 +199,11 @@ def get_counts_by_start_date(request, start_date):
     from generateCounts.counts import (
         count_coop_students_by_start_date,
         count_total_students_by_start_date,
-        count_students_by_rank_start_date,
     )
 
     countCoop = count_coop_students_by_start_date(start_date)
     countTotal = count_total_students_by_start_date(start_date)
-    countRank = count_students_by_rank_start_date(start_date)
 
-    data = {
-        "countCoop": countCoop,
-        "countTotal": countTotal,
-        "FIR": countRank["FIR"],
-        "SOP": countRank["SOP"],
-        "JUN": countRank["JUN"],
-        "SEN": countRank["SEN"],
-    }
+    data = {"countCoop": countCoop, "countTotal": countTotal}
 
     return HttpResponse(dumps(data))
-
-
-def get_count_parameters_api(request):
-    from json import dumps
-    from django.shortcuts import HttpResponse
-    from datamodel.models import Student, Enrolment
-
-    cohorts = []
-    semesters = []
-
-    startDates = Student.objects.values("start_date").distinct()
-    for date in startDates:
-        cohorts.append(date["start_date"].strftime("%Y-%m-%d"))
-
-    enrollmentTerms = Enrolment.objects.values("term").distinct()
-    for term in enrollmentTerms:
-        semesters.append(term["term"])
-
-    return HttpResponse(dumps({"cohorts": cohorts, "semesters": semesters}))
-
-
-def get_transcript(request, student_num=0):
-    from django.shortcuts import HttpResponse
-    from datamodel.models import Enrolment
-    import json
-    from django.core import serializers
-
-    # get student id
-    student_ID = Student.objects.filter(student_number=student_num)
-    student_django_id = student_ID[0].id
-    all_entries = Enrolment.objects.filter(student_id=student_django_id)
-    print(all_entries[1])
-    student_transcript = []
-    for entry in all_entries:
-        transcript = {
-            "Course_Code": entry.course.course_code,
-            "Course_Name": entry.course.name,
-            "Course_Type": entry.course.course_type,
-            "Semester": entry.term,
-            "Section": entry.course.section,
-            "Credit_Hours": entry.course.credit_hours,
-            "Grade": entry.grade,
-        }
-        jsonstr = json.dumps(transcript)
-        student_transcript.append(transcript)
-
-    jsonstrMast = json.dumps(student_transcript)
-    return HttpResponse(jsonstrMast)
