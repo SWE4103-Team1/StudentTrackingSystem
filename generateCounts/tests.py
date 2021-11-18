@@ -2,7 +2,7 @@ from django.test import TestCase
 from datamodel.models import Student, Course, Enrolment, UploadSet
 import datetime
 from django.utils import timezone
-from generateCounts.counts import count_coop_students_by_semester,count_total_students_by_semester,count_total_students_by_start_date,count_coop_students_by_start_date,count_students_by_rank_semester
+from generateCounts.counts import count_coop_students_by_semester,count_total_students_by_semester,count_total_students_by_start_date,count_coop_students_by_start_date,count_students_by_rank
 
 class countsTester(TestCase):
 
@@ -404,6 +404,6 @@ class countsTester(TestCase):
         enrolment3.save()
         enrolment4.save()
 
-        rank_counts = list(count_students_by_rank_semester("2021/WI").values()) # count_students_by_rank returns dictionary
+        rank_counts = list(count_students_by_rank("2021/WI").values()) # count_students_by_rank returns dictionary
 
         self.assertTrue(rank_counts == [1,1,1,1])
