@@ -1,9 +1,10 @@
 name: Deploy to AWS
 on:
   push:
-    branches:  
+    branches:
     - main
     - dev
+    - dev_install-mariadb-eb
   pull_request:
     branches:
     - main
@@ -16,7 +17,7 @@ jobs:
 
     - name: Checkout source code
       uses: actions/checkout@main
-      
+
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2
       with:
@@ -29,7 +30,7 @@ jobs:
       run: |
         export USE_SQLITE=TRUE
         python manage.py migrate
-    
+
     - name: Collect Static
       run: python manage.py collectstatic --noinput
 
@@ -39,7 +40,7 @@ jobs:
     - name: Get TimeStamp
       uses: gerred/actions/current-time@master
       id: current-time
-      
+
     - name: Run string replace
       uses: frabert/replace-string-action@master
       id: format-time
