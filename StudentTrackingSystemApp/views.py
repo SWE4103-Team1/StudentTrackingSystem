@@ -152,7 +152,7 @@ def get_student_data_api(request):
     serializedData = serializers.serialize(
         "json", Student.objects.filter(upload_set=UploadSet.objects.first())
     )
-    
+
     return HttpResponse(serializedData)
 
 
@@ -215,7 +215,13 @@ def get_count_parameters_api(request):
 
     startDates = Student.objects.values("start_date").distinct()
     for date in startDates:
-        cohorts.append(date["start_date"].strftime("%Y-%m-%d"))
+        cohortYear = date["start_date"].strftime("%Y")
+        nextYear = int(cohortYear) + 1
+        cohorts.append("".join((cohortYear, "-", str(nextYear))))
+
+    # Remove dupliactes and sort list
+    cohorts = list(dict.fromkeys(cohorts))
+    cohorts.sort(reverse=True)
 
     enrollmentTerms = Enrolment.objects.values("term").distinct()
     for term in enrollmentTerms:
