@@ -30,7 +30,7 @@ urlpatterns = [
     path('dashboard/', views.dashboard, name ='dashboard'),
     path('api/student_data/', views.get_student_data_api, name ='get_student_data_api'),
     path('api/counts_semester/<path:semester>/', views.get_counts_by_semester, name ='get_counts_by_semester_api'),
-    path('api/counts_start_date/<str:start_date>/', views.get_counts_by_start_date, name ='get_counts_by_start_date_api'),
+    path('api/counts_cohort/<str:cohort>/', views.get_counts_by_cohort, name ='get_counts_by_cohort_api'),
     path('api/count_parameters', views.get_count_parameters_api, name ='get_count_parameters_api'),
     path('get_transcript/<int:student_num>', views.get_transcript, name = 'get_transcript'),
 ]

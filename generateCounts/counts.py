@@ -21,15 +21,13 @@ def count_coop_students_by_semester(term_):
     return len(added_students)
 
 
-def count_coop_students_by_start_date(start_date_):
+def count_coop_students_by_cohort(cohort):
     coop_course_ids = []
     added_students = []
     student_id_list = []
 
-    # TODO: Changed all references of start_date to cohort in functions
     # Since parameter is passed as year-nextYear we need to extract the year
-    year = start_date_[:4]
-    print(year)
+    year = cohort[:4]
 
     coop_courses = list(Course.objects.filter(name="CO-OP WORK TERM").values("id"))
     students = list(Student.objects.filter(start_date__contains=year).values("id"))
@@ -68,11 +66,11 @@ def count_total_students_by_semester(term_):
     return len(student_ids)
 
 
-def count_total_students_by_start_date(start_date_):
+def count_total_students_by_cohort(cohort):
     added_students = []
     student_id_list = []
 
-    year = start_date_[:4]
+    year = cohort[:4]
 
     students = Student.objects.filter(start_date__contains=year).values("id")
 
@@ -123,14 +121,14 @@ def count_students_by_rank_semester(term_):
     return rank_counts
 
 
-def count_students_by_rank_start_date(start_date_):
+def count_students_by_rank_cohort(cohort):
     FIR = 0
     SOP = 0
     JUN = 0
     SEN = 0
     enrolled_student_ids = []
 
-    year = start_date_[:4]
+    year = cohort[:4]
 
     students = list(Student.objects.filter(start_date__contains=year).values("rank"))
     for student in students:

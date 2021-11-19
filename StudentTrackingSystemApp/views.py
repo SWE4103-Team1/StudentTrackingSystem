@@ -1,9 +1,7 @@
 from dataloader.load_extract import DataFileExtractor
 from django.contrib.auth import authenticate, get_user_model, login, logout
 from django.shortcuts import redirect, render
-from generateCounts.counts import *
 from users.roles import UserRole
-
 
 def registerPage(request):
     if request.method == "POST":
@@ -86,36 +84,7 @@ def settings(request):
 
 
 def dashboard(request):
-    context = {
-        "coopSemester": "",
-        "totalSemester": "",
-        "coopStartDate": "",
-        "totalStartDate": "",
-        "rankSemester": "",
-    }
-
-    if request.method == "POST":
-        semester = request.POST.get("semester")
-        start_date = request.POST.get("start_date")
-
-        try:
-            context["coopSemester"] = str(count_coop_students_by_semester(semester))
-            context["totalSemester"] = str(count_total_students_by_semester(semester))
-            context["coopStartDate"] = str(
-                count_coop_students_by_start_date(start_date)
-            )
-            context["totalStartDate"] = str(
-                count_total_students_by_start_date(start_date)
-            )
-            context["rankSemester"] = str(count_students_by_rank(semester))
-
-            return render(
-                request, "StudentTrackingSystemApp/Dashboard/index.html", context
-            )
-
-        except Exception as e:
-            print(f"ERROR: {e}")
-
+    context = {}
     return render(request, "StudentTrackingSystemApp/Dashboard/index.html", context)
 
 
@@ -145,7 +114,7 @@ def enrolment_data(request):
 
 
 def get_student_data_api(request):
-    from datamodel.models import Student
+    from datamodel.models import Student, UploadSet
     from django.core import serializers
     from django.shortcuts import HttpResponse
 
@@ -180,18 +149,18 @@ def get_counts_by_semester(request, semester):
     return HttpResponse(dumps(data))
 
 
-def get_counts_by_start_date(request, start_date):
+def get_counts_by_cohort(request, cohort):
     from json import dumps
     from django.shortcuts import HttpResponse
     from generateCounts.counts import (
-        count_coop_students_by_start_date,
-        count_total_students_by_start_date,
-        count_students_by_rank_start_date,
+        count_coop_students_by_cohort,
+        count_total_students_by_cohort,
+        count_students_by_rank_cohort,
     )
 
-    countCoop = count_coop_students_by_start_date(start_date)
-    countTotal = count_total_students_by_start_date(start_date)
-    countRank = count_students_by_rank_start_date(start_date)
+    countCoop = count_coop_students_by_cohort(cohort)
+    countTotal = count_total_students_by_cohort(cohort)
+    countRank = count_students_by_rank_cohort(cohort)
 
     data = {
         "countCoop": countCoop,
@@ -226,6 +195,8 @@ def get_count_parameters_api(request):
     enrollmentTerms = Enrolment.objects.values("term").distinct()
     for term in enrollmentTerms:
         semesters.append(term["term"])
+
+    semesters.sort(reverse=True)
 
     return HttpResponse(dumps({"cohorts": cohorts, "semesters": semesters}))
 
