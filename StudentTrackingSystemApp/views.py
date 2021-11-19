@@ -197,6 +197,7 @@ def get_count_parameters_api(request):
         semesters.append(term["term"])
 
     semesters.sort(reverse=True)
+    semesters = semesters[1:] #THIS IS TO REMOVE A STUPID WEIRD T AT THE FRONT
 
     return HttpResponse(dumps({"cohorts": cohorts, "semesters": semesters}))
 
