@@ -9,6 +9,7 @@ body {
     margin: 25px 0;
     font-size: .9em;
     font-family: "Avenir";
+    background-color: #D11D27;
     min-width: 400px;
     box-shadow: 0 0 20px rgba(0, 0, 0, .15);
     border-radius: 20px;
@@ -18,7 +19,7 @@ body {
 .styled-table thead tr {
     position: -webkit-sticky;
     position: sticky;
-    background-color: #D11D27;
+    /* background-color: blue; */
     color: #fff;
     text-align: left;
     border-radius: 5px;

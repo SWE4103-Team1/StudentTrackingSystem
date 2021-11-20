@@ -5,7 +5,6 @@
     cursor:pointer;
 }
 
-
 .sidenav {
     height: 100%;
     width: 0;
@@ -13,12 +12,12 @@
     z-index: 1;
     top: 0;
     left: 0;
-    /*background-color: #D11D27;*/
-    background-image: linear-gradient(to bottom, #D11D27 , #ff444e);
+    background-image: linear-gradient(to right, #D11D27 , rgb(211, 122, 122));
     overflow-x: hidden;
     transition: 0.5s;
     padding-top: 60px;
     box-shadow: 0 0 20px rgba(0, 0, 0, .15);
+    border-radius: 5px;
 }
 
 .sidenav a {
