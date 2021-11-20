@@ -99,10 +99,10 @@ def get_course_type(course_code):
     if temp is not None:
         course_code = temp
 
-    if _is_core(course_code):
-            return 'CORE'
-
     course_type = _validate_tag(course_code)
+
+    if _is_core(course_code):
+            return "CORE"
 
     # if its a valid tag and is not in the exceptions list
     if _is_exception(course_code, course_type):
@@ -148,10 +148,7 @@ def _is_exception(course_code, course_type):
     if course_type is None:
         return None
 
-    if course_code in excel_in_dict["exceptions"][course_type]:
-        return True
-    return False
-
+    return course_code in excel_in_dict["exceptions"][course_type].to_list()
 
 def _get_course_tag(course_code):
     """
