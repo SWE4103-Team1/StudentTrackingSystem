@@ -107,7 +107,7 @@ def dashboard(request):
             context["totalStartDate"] = str(
                 count_total_students_by_start_date(start_date)
             )
-            context["rankSemester"] = str(count_students_by_rank(semester))
+            context["rankSemester"] = str(count_students_by_rank_semester(semester))
 
             return render(
                 request, "StudentTrackingSystemApp/Dashboard/index.html", context
@@ -152,7 +152,7 @@ def get_student_data_api(request):
     serializedData = serializers.serialize(
         "json", Student.objects.filter(upload_set=UploadSet.objects.first())
     )
-    
+
     return HttpResponse(serializedData)
 
 
