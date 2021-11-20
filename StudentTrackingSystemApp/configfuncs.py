@@ -102,7 +102,7 @@ def get_course_type(course_code):
     course_type = _validate_tag(course_code)
 
     if _is_core(course_code) and not _is_exception(course_code, course_type):
-            return 'CORE'
+            return "CORE"
 
     # if its a valid tag and is not in the exceptions list
     if _is_exception(course_code, course_type):
