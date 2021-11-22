@@ -16,7 +16,7 @@ import re
 excel_in_dict = {}
 xls = None
 
-def get_config_file(filename):
+def set_config_file(filename):
     global xls
 
     xls = pd.ExcelFile(filename)
