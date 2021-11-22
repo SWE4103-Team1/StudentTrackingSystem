@@ -189,6 +189,7 @@ class DataFileExtractor:
             course_code=dft[1],
             name=dft[2],
             credit_hours=dft[3],
+            course_type=get_course_type(dft[1]),
             upload_set=self._upload_set,
             section=DataFileExtractor._transfer_marker,
         )

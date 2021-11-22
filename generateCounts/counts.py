@@ -49,7 +49,7 @@ def count_total_students_by_semester(term_):
     for student in students:
         student_ids.append(student['student_id'])
 
-    student_ids = list(set(student_ids)) ##Gets rid of duplicates
+    student_ids = list(set(student_ids)) #Gets rid of duplicates
     return len(student_ids)
 
 def count_total_students_by_start_date(start_date_):
