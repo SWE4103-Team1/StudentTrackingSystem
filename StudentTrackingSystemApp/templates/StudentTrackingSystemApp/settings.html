@@ -24,7 +24,7 @@
                 <div class = "column">
                     <h2>Upload Data Files</h2>
                     <form class="DataFiles" method="POST" enctype="multipart/form-data">{% csrf_token %}
-                        <input type="file" name="input_files" class="input_files" accept=".txt,.xlsx" multiple>
+                        <input type="file" name="data_files" class="data_files" accept=".txt" multiple>
                         <button type="submit">Upload</button>
                     </form>
                 </div>
@@ -38,7 +38,7 @@
                 <div class = "column">
                     <h2>Upload Configuration File</h2>
                     <form class="Config" method="POST" enctype="multipart/form-data">{% csrf_token %}
-                        <input type="file" name="input_files" class="input_files" accept=".xlsx" multiple>
+                        <input type="file" name="config_file" class="config_file" accept=".xlsx">
                         <button type="submit">Upload</button>
                     </form>
                 </div>
