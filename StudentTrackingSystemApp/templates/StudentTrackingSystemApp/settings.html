@@ -20,13 +20,30 @@
             <h1 class = "title">Settings</h1>
         </div>
         <div id = "main" onclick="closeNav()">
-            <h2>Upload Data Files</h2>
-            <div class='file_upload_container'>
-                <form method="POST" enctype="multipart/form-data">{% csrf_token %}
-                    <input type="file" name="input_files" class="input_files" accept=".txt" multiple>
-                    <button type="submit">Upload</button>
-                </form>
+            <div class="columns"> 
+                <div class = "column">
+                    <h2>Upload Data Files</h2>
+                    <form class="DataFiles" method="POST" enctype="multipart/form-data">{% csrf_token %}
+                        <input type="file" name="input_files" class="input_files" accept=".txt" multiple>
+                        <button type="submit">Upload</button>
+                    </form>
+                </div>
+                <div class="column">
+                    <h2>Upload Prerequisites</h2>
+                    <form class="Prerequisites" method="POST" enctype="multipart/form-data">{% csrf_token %}
+                        <input type="file" name="input_files" class="input_files" accept=".txt" multiple>
+                        <button type="submit">Upload</button>
+                    </form>
+                </div>
+                <div class = "column">
+                    <h2>Upload Configuration File</h2>
+                    <form class="Config" method="POST" enctype="multipart/form-data">{% csrf_token %}
+                        <input type="file" name="input_files" class="input_files" accept=".txt" multiple>
+                        <button type="submit">Upload</button>
+                    </form>
+                </div>
             </div>
+
             <h2>View Raw Data Files</h2>
             <div class="nav_button_container">
                 
