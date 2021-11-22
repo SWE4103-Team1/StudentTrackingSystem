@@ -71,7 +71,7 @@ def settings(request):
 
         personData, courseData, transferData, configFile = None, None, None, None
 
-        # files will hold all the files that are read in
+        # files will hold all the data files that are read in
         data_files = request.FILES.getlist("data_files")
         if data_files:
             for f in data_files:
@@ -85,7 +85,8 @@ def settings(request):
             uploader = DataFileExtractor()
             uploader.uploadAllFiles(personData, courseData, transferData)
         
-        config_file = request.FILES.getlist("config_file")
+        # config file holds a single config excel file
+        config_file = request.FILES["config_file"]
         if config_file:
             configfuncs.set_config_file(config_file)
                 
