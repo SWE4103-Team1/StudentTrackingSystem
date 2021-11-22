@@ -72,21 +72,22 @@ def settings(request):
         personData, courseData, transferData, configFile = None, None, None, None
 
         # files will hold all the files that are read in
-        files = request.FILES.getlist("input_files")
-        if files:
-            for f in files:
+        data_files = request.FILES.getlist("data_files")
+        if data_files:
+            for f in data_files:
                 if f.name == "personData.txt":
                     personData = f
                 elif f.name == "courseData.txt":
                     courseData = f
                 elif f.name == "transferData.txt":
                     transferData = f
-                elif f.name == "SWEProgram.xlsx":
-                    configFile = f
 
             uploader = DataFileExtractor()
-            configfuncs.get_config_file(configFile)
             uploader.uploadAllFiles(personData, courseData, transferData)
+        
+        config_file = request.FILES.getlist("config_file")
+        if config_file:
+            configfuncs.set_config_file(config_file)
                 
     context = {}
     return render(request, "StudentTrackingSystemApp/settings.html", context)
