@@ -24,21 +24,21 @@
                 <div class = "column">
                     <h2>Upload Data Files</h2>
                     <form class="DataFiles" method="POST" enctype="multipart/form-data">{% csrf_token %}
-                        <input type="file" name="input_files" class="input_files" accept=".txt" multiple>
+                        <input type="file" name="input_files" class="input_files" accept=".txt,.xlsx" multiple>
                         <button type="submit">Upload</button>
                     </form>
                 </div>
                 <div class="column">
                     <h2>Upload Prerequisites</h2>
                     <form class="Prerequisites" method="POST" enctype="multipart/form-data">{% csrf_token %}
-                        <input type="file" name="input_files" class="input_files" accept=".txt" multiple>
+                        <input type="file" name="input_files" class="input_files" accept=".xlsx" multiple>
                         <button type="submit">Upload</button>
                     </form>
                 </div>
                 <div class = "column">
                     <h2>Upload Configuration File</h2>
                     <form class="Config" method="POST" enctype="multipart/form-data">{% csrf_token %}
-                        <input type="file" name="input_files" class="input_files" accept=".txt" multiple>
+                        <input type="file" name="input_files" class="input_files" accept=".xlsx" multiple>
                         <button type="submit">Upload</button>
                     </form>
                 </div>
