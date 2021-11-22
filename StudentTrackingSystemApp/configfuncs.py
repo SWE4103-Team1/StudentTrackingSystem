@@ -5,39 +5,28 @@ Created on Sat Nov  6 21:44:25 2021
 
 @author: tylertravis, Elliot
 
-Last Edit : Elliot, 9.11.2021 8:14PM
 """
 
 import math
 import pandas as pd
-import os
 import re
-
-from StudentTrackingSystem.settings import BASE_DIR
 
 # Temporary Course Excel URL
 
-filename = os.path.join(BASE_DIR, "data", "SWEProgram.xlsx")
-
-
 excel_in_dict = {}
+xls = None
 
-# gets the excel file and store it on xls
-xls = pd.ExcelFile(filename)
+def get_config_file(filename):
+    global xls
 
-# store each sheet in a dict
-# call the sheets by doing "excel_in_dict[sheet_name_to_call]"
-for sheet_name in xls.sheet_names:
-    excel_in_dict[sheet_name] = xls.parse(sheet_name)
+    xls = pd.ExcelFile(filename)
 
-# Declaring Pre-Req Table
-excel_in_dict["prereqs"].columns = [
-    "Course",
-    "PreReqs1",
-    "PreReqs2",
-    "PreReqs3",
-    "PreReqs4",
-]
+    # store each sheet in a dict
+    # call the sheets by doing "excel_in_dict[sheet_name_to_call]"
+    for sheet_name in xls.sheet_names:
+        excel_in_dict[sheet_name] = xls.parse(sheet_name)
+
+
 
 
 def get_pre_req(classcode):
@@ -55,16 +44,13 @@ def get_pre_req(classcode):
         # takes the prefix of the class code (only the letter part of the class code)
         tag = _get_course_tag(classcode)
         # adds spacing in between the class code
-        classcode = tag + " " + classcode[len(tag) :]
+        classcode = tag + " " + classcode[len(tag):]
 
     pre_reqs = []
     # get all the pre-reqs given the course code (in the form of list)
 
-    for item in (
-        excel_in_dict["prereqs"]
-        .loc[excel_in_dict["prereqs"]["Course"] == classcode]
-        .values[0]
-    ):
+    for item in (excel_in_dict["prereqs"].loc[
+            excel_in_dict["prereqs"]["Course"] == classcode].values[0]):
         try:
             # since each pre-req is returned in the form of a list, so i only take the first element from 'item'
             # if the element is nan, this would be true, else it would throw an exception
@@ -102,7 +88,7 @@ def get_course_type(course_code):
     course_type = _validate_tag(course_code)
 
     if _is_core(course_code):
-            return "CORE"
+        return "CORE"
 
     # if its a valid tag and is not in the exceptions list
     if _is_exception(course_code, course_type):
@@ -123,7 +109,8 @@ def _validate_tag(course_code):
     # takes the prefix of the course code (EX: SWE4103 -> SWE)
     course_tag = _get_course_tag(course_code)
 
-    for key, value in excel_in_dict["valid-tags"].to_dict(orient="list").items():
+    for key, value in excel_in_dict["valid-tags"].to_dict(
+            orient="list").items():
         # for each item, if the prefix is in valid-tag or the entire course code (only for CSE-ITS)
         # return the key (course type)
         if course_tag in value or course_code in value:
@@ -150,6 +137,7 @@ def _is_exception(course_code, course_type):
 
     return course_code in excel_in_dict["exceptions"][course_type].to_list()
 
+
 def _get_course_tag(course_code):
     """
     Gets the prefix of the course code (EX: SWE4103 -> SWE)
@@ -163,14 +151,12 @@ def _get_course_tag(course_code):
     course_tag = ""
     i = 0
     # takes all characters up to the first digit in the course code
-    while (
-        course_code is not None
-        and i < len(course_code)
-        and not course_code[i].isdigit()
-    ):
+    while (course_code is not None and i < len(course_code)
+           and not course_code[i].isdigit()):
         course_tag += course_code[i]
         i += 1
     return course_tag
+
 
 def _get_matrix_courses(matrix_year):
     """
@@ -189,11 +175,13 @@ def _get_matrix_courses(matrix_year):
         for j, value in row.items():
             if type(value) is not float and type(value) is str:
                 value = value.replace(" ", "")
-                course_codes_only = re.findall(r"\b[A-Z]{2,4}[0-9]{2,4}\b", str(value))
+                course_codes_only = re.findall(r"\b[A-Z]{2,4}[0-9]{2,4}\b",
+                                               str(value))
                 if not not course_codes_only:
                     core_courses += (course_codes_only)
-    
+
     return core_courses
+
 
 def _get_all_cores(year=None):
     """
@@ -210,14 +198,15 @@ def _get_all_cores(year=None):
 
     # if you enter the year 2015, it will replace it to 2015-16
     if year is not None and '-' not in year:
-        year += "-" + str(int(year[1:]) +1)
+        year += "-" + str(int(year[1:]) + 1)
 
     keys = []
     cores = {}
 
     for sheet_name in excel_in_dict:
         # check if the sheet name is the matrix year
-        if '-' in sheet_name and len(sheet_name) == 7 and sheet_name is not None:
+        if '-' in sheet_name and len(
+                sheet_name) == 7 and sheet_name is not None:
             keys.append(sheet_name)
 
     # use the matrix years as key for the dict
@@ -226,8 +215,9 @@ def _get_all_cores(year=None):
 
     if year is not None:
         return cores[year]
-    
+
     return cores
+
 
 def _is_core(course_code, year=None):
     """
@@ -240,7 +230,7 @@ def _is_core(course_code, year=None):
         Return:
             The boolean value if the course_code is found within the matrix
     """
-    
+
     cores = _get_all_cores(year)
 
     all_courses = []
@@ -249,7 +239,7 @@ def _is_core(course_code, year=None):
     if year is None:
         for courses in cores.values():
             all_courses += courses
-        
+
         return course_code in all_courses
     # else if a year is given, only return the list of courses within that year's matrix
     else:
@@ -257,7 +247,6 @@ def _is_core(course_code, year=None):
 
 
 def _get_replacements(course_code):
-
     """
     Returns the equivalent course for the given course_code
 
@@ -276,9 +265,11 @@ def _get_replacements(course_code):
     replacement_sheet = excel_in_dict['replacements']
 
     # converts all the replacments to a dict
-    all_years = replacement_sheet.set_index('ALL YEARS')['Unnamed: 1'].to_dict()
-    before_19 = replacement_sheet.set_index('Before 2019')['Unnamed: 3'].to_dict()
-    
+    all_years = replacement_sheet.set_index(
+        'ALL YEARS')['Unnamed: 1'].to_dict()
+    before_19 = replacement_sheet.set_index(
+        'Before 2019')['Unnamed: 3'].to_dict()
+
     # combine all the replacment dict to a single dict
     all_years.update(before_19)
 
@@ -289,4 +280,3 @@ def _get_replacements(course_code):
                 return key
 
     return None
-
