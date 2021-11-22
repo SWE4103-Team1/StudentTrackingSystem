@@ -3,6 +3,7 @@ from django.contrib.auth import authenticate, get_user_model, login, logout
 from django.shortcuts import redirect, render
 from generateCounts.counts import *
 from users.roles import UserRole
+from StudentTrackingSystemApp import configfuncs
 
 
 def registerPage(request):
@@ -67,6 +68,9 @@ def redirectLogin(request):
 # able to read in files
 def settings(request):
     if request.method == "POST":
+
+        personData, courseData, transferData, configFile = None, None, None, None
+
         # files will hold all the files that are read in
         files = request.FILES.getlist("input_files")
         if files:
@@ -77,10 +81,13 @@ def settings(request):
                     courseData = f
                 elif f.name == "transferData.txt":
                     transferData = f
+                elif f.name == "SWEProgram.xlsx":
+                    configFile = f
 
             uploader = DataFileExtractor()
+            configfuncs.get_config_file(configFile)
             uploader.uploadAllFiles(personData, courseData, transferData)
-
+                
     context = {}
     return render(request, "StudentTrackingSystemApp/settings.html", context)
 
