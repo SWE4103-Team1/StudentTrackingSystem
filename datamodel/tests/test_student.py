@@ -3,14 +3,15 @@ from django.utils import timezone
 from datetime import timedelta
 import copy
 
-from ..models import Student
+from ..models import Student, UploadSet
 from .test_uploadset import UploadSetTests
 
 
 class StudentTests(TestCase):
-    def test_create_student(self):
-        us_tester = UploadSetTests()
-        us = us_tester.test_create_null_upload_set()
+    def test_create_student(self, us: UploadSet = None):
+        if us is None:
+            us_tester = UploadSetTests()
+            us = us_tester.test_create_null_upload_set()
 
         s = Student(
             student_number=123456,

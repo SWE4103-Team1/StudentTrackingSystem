@@ -1,5 +1,4 @@
 from django.utils import timezone
-from django.db import transaction
 
 import pandas as pd
 import copy
@@ -7,14 +6,9 @@ import itertools
 import numpy as np
 
 from datamodel.models import Student, Course, Enrolment, UploadSet
+from dataloader.db_queries import bulk_save
 from StudentTrackingSystemApp.rankings import calculateRank
 from StudentTrackingSystemApp.configfuncs import get_course_type
-
-
-def bulk_save(models):
-    with transaction.atomic():
-        for model in models:
-            model.save()
 
 
 def _group_enrolments_by_student_num(enrolments: list):
