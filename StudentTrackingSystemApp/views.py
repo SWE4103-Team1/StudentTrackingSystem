@@ -71,11 +71,14 @@ def redirectLogin(request):
 def settings(request):
     if request.method == "POST":
 
-        personData, courseData, transferData, configFile = None, None, None, None
+        personData, courseData, transferData = None, None, None
 
         # files will hold all the data files that are read in
         data_files = request.FILES.getlist("data_files")
         if data_files:
+            if configfuncs.config_file_exist():
+                # add code here
+                pass
             for f in data_files:
                 if f.name == "personData.txt":
                     personData = f
@@ -92,11 +95,6 @@ def settings(request):
             config_file = request.FILES["config_file"]
             if config_file:
                 configfuncs.set_config_file(config_file)
-                if configfuncs.config_file_exist():
-                    # Remove this pass below and write your code to pass a notification to the front. 
-                    # if the file exist then this configfuncs.config_file_exist() will return True
-                    pass
-                    
         except MultiValueDictKeyError:
             pass
 
