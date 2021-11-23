@@ -45,5 +45,5 @@ class AuditTests(TestCase):
         enrolments = list(map(build_enrolment, courses))
         bulk_save(enrolments)
 
-        res = audit_student(student.student_number, us.upload_datetime)
+        res = audit_student(student.student_number)
         print(res)

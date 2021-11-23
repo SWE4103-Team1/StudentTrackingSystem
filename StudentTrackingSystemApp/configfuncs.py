@@ -102,7 +102,7 @@ def get_course_type(course_code):
     course_type = _validate_tag(course_code)
 
     if _is_core(course_code):
-            return "CORE"
+        return "CORE"
 
     # if its a valid tag and is not in the exceptions list
     if _is_exception(course_code, course_type):
@@ -150,6 +150,7 @@ def _is_exception(course_code, course_type):
 
     return course_code in excel_in_dict["exceptions"][course_type].to_list()
 
+
 def _get_course_tag(course_code):
     """
     Gets the prefix of the course code (EX: SWE4103 -> SWE)
@@ -172,6 +173,7 @@ def _get_course_tag(course_code):
         i += 1
     return course_tag
 
+
 def _get_matrix_courses(matrix_year):
     """
     returns a list of core courses found within the given year matrix
@@ -191,9 +193,10 @@ def _get_matrix_courses(matrix_year):
                 value = value.replace(" ", "")
                 course_codes_only = re.findall(r"\b[A-Z]{2,4}[0-9]{2,4}\b", str(value))
                 if not not course_codes_only:
-                    core_courses += (course_codes_only)
-    
+                    core_courses += course_codes_only
+
     return core_courses
+
 
 def _get_all_cores(year=None):
     """
@@ -202,22 +205,22 @@ def _get_all_cores(year=None):
         Param:
             year : the year to return the core courses found in the matrix
                     (leave blank for all the core corses for existing matrix)
-        
+
         Return:
             the core courses found within the given year matrix
             (all core courses found within the config file if year is None)
     """
 
     # if you enter the year 2015, it will replace it to 2015-16
-    if year is not None and '-' not in year:
-        year += "-" + str(int(year[1:]) +1)
+    if year is not None and "-" not in year:
+        year += "-" + str(int(year[1:]) + 1)
 
     keys = []
     cores = {}
 
     for sheet_name in excel_in_dict:
         # check if the sheet name is the matrix year
-        if '-' in sheet_name and len(sheet_name) == 7 and sheet_name is not None:
+        if "-" in sheet_name and len(sheet_name) == 7 and sheet_name is not None:
             keys.append(sheet_name)
 
     # use the matrix years as key for the dict
@@ -226,21 +229,22 @@ def _get_all_cores(year=None):
 
     if year is not None:
         return cores[year]
-    
+
     return cores
+
 
 def _is_core(course_code, year=None):
     """
     Returns a boolean value if the course_code is within a specific year's matrix, or in any of the matrices
 
         Param:
-            course_code : the course_code to check 
+            course_code : the course_code to check
             year : the year of the matrix to check in
 
         Return:
             The boolean value if the course_code is found within the matrix
     """
-    
+
     cores = _get_all_cores(year)
 
     all_courses = []
@@ -249,7 +253,7 @@ def _is_core(course_code, year=None):
     if year is None:
         for courses in cores.values():
             all_courses += courses
-        
+
         return course_code in all_courses
     # else if a year is given, only return the list of courses within that year's matrix
     else:
@@ -273,12 +277,12 @@ def _get_replacements(course_code):
     course_code = course_code.replace("*", "")
 
     # gets the replacement sheet
-    replacement_sheet = excel_in_dict['replacements']
+    replacement_sheet = excel_in_dict["replacements"]
 
     # converts all the replacments to a dict
-    all_years = replacement_sheet.set_index('ALL YEARS')['Unnamed: 1'].to_dict()
-    before_19 = replacement_sheet.set_index('Before 2019')['Unnamed: 3'].to_dict()
-    
+    all_years = replacement_sheet.set_index("ALL YEARS")["Unnamed: 1"].to_dict()
+    before_19 = replacement_sheet.set_index("Before 2019")["Unnamed: 3"].to_dict()
+
     # combine all the replacment dict to a single dict
     all_years.update(before_19)
 
@@ -289,4 +293,3 @@ def _get_replacements(course_code):
                 return key
 
     return None
-

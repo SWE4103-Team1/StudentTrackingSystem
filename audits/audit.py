@@ -7,14 +7,18 @@ from StudentTrackingSystemApp.configfuncs import excel_in_dict as xls_confs
 UNPOP = "UNPOPULATED"
 
 
-def audit_student(student_number, upload_set_datetime=None):
+def _find_if(compare, list):
+    for elem in list:
+        if compare(elem):
+            return elem
+    return None
+
+
+def audit_student(student_number):
     # Query the enrolments for the given student number
     enrolments = Enrolment.objects.filter(
         student__student_number=student_number,
     ).order_by("term")
-
-    if upload_set_datetime is not None:
-        enrolments = enrolments.filter(upload_set__upload_datetime=upload_set_datetime)
 
     # Populate audit response with enrolment data
     audit_response = {}
@@ -22,20 +26,55 @@ def audit_student(student_number, upload_set_datetime=None):
         student = enrolments[0].student
         audit_response["target_student"] = _target_student_data(student)
         audit_response["as_of"] = enrolments[0].term
-        mat_cohort = _best_fit_config_matrix(student)
-        audit_response["base_program"] = "SWE" + mat_cohort[0]
+        audit_response["base_program"] = "SWE" + UNPOP
         audit_response["progress"] = {}
-        _best_fit_config_matrix(student)
+
+        for enrolment in enrolments:
+            _lookup_course_type(enrolment.course)
+
+            print(enrolment)
+
     return audit_response
 
 
+def _lookup_course_type(course):
+    replacements = xls_confs["replacements"].to_dict(orient="list")
+    course_types = xls_confs["valid-tags"].to_dict(orient="list")
+    exceptions = xls_confs["exceptions"].to_dict(orient="list")
+
+    # print("replacements", replacements)
+    # print("exceptions", exceptions)
+
+    course_type = None
+    joined_code = "".join(course.course_code.split("*"))
+
+    def _code_matches_course_in_type(target_course):
+
+        return joined_code.startswith(target_course)  # and not
+
+    # Match to valid tags
+    for type, courses_in_type in course_types.items():
+        if joined_code in exceptions[type]:
+            break
+
+        found = _find_if(_code_matches_course_in_type, courses_in_type)
+        if len(found):
+            return type
+            # iterate through found, checking if
+
+    return course_type
+
+
 def _target_student_data(student):
+    now = datetime.now()
+    years_in = float(now.year - student.upload_set.upload_datetime.year)
+    years_in = round(years_in + (now.month - 1) / 12, 1)
     return {
         "student_number": student.student_number,
         "full_name": student.name,
         "cohort": UNPOP,
         "rank": student.rank,
-        "years_in": 7,  # datetime().year - student.upload_set.upload_datetime.year(),
+        "years_in": years_in,
         "status": UNPOP,
     }
 
@@ -65,5 +104,8 @@ def _best_fit_config_matrix(student):
     return student_mat[0]
 
 
-def _completed__progress_data(enrolments):
+def _completed_progress_data(enrolments):
     pass
+
+
+# read in valid tags
