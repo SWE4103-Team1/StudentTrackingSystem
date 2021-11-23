@@ -4,6 +4,7 @@ from django.shortcuts import redirect, render
 from generateCounts.counts import *
 from users.roles import UserRole
 from StudentTrackingSystemApp import configfuncs
+from django.utils.datastructures import MultiValueDictKeyError
 
 
 def registerPage(request):
@@ -84,12 +85,25 @@ def settings(request):
 
             uploader = DataFileExtractor()
             uploader.uploadAllFiles(personData, courseData, transferData)
-        
+
         # config file holds a single config excel file
-        config_file = request.FILES["config_file"]
-        if config_file:
-            configfuncs.set_config_file(config_file)
-                
+        try:
+            config_file = request.FILES["config_file"]
+            if config_file:
+                configfuncs.set_config_file(config_file)
+        except MultiValueDictKeyError:
+            pass
+        
+
+        # pre-req files holds a single prereq config excel file
+        try:
+            prereq_file = request.FILES["prereq_file"]
+            if prereq_file:
+                # add code to set the student ranks
+                pass
+        except MultiValueDictKeyError:
+            pass
+
     context = {}
     return render(request, "StudentTrackingSystemApp/settings.html", context)
 
