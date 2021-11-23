@@ -27,7 +27,7 @@ def set_config_file(filename):
         excel_in_dict[sheet_name] = xls.parse(sheet_name)
 
 def config_file_exist():
-    return xls == None
+    return xls != None
 
 
 def get_pre_req(classcode):
