@@ -45,7 +45,8 @@ def loginPage(request):
                 return redirect("dashboard")
             else:
                 print(f"{user} does not exist")
-                context = {"error": "Invalid login credentials. Please try again."}
+                context = {
+                    "error": "Invalid login credentials. Please try again."}
                 return render(request, "StudentTrackingSystemApp/login.html", context)
         except Exception as e:
             print(f"ERROR: {e}")
@@ -91,9 +92,13 @@ def settings(request):
             config_file = request.FILES["config_file"]
             if config_file:
                 configfuncs.set_config_file(config_file)
+                if configfuncs.config_file_exist():
+                    # Remove this pass below and write your code to pass a notification to the front. 
+                    # if the file exist then this configfuncs.config_file_exist() will return True
+                    pass
+                    
         except MultiValueDictKeyError:
             pass
-        
 
         # pre-req files holds a single prereq config excel file
         try:
@@ -122,8 +127,10 @@ def dashboard(request):
         start_date = request.POST.get("start_date")
 
         try:
-            context["coopSemester"] = str(count_coop_students_by_semester(semester))
-            context["totalSemester"] = str(count_total_students_by_semester(semester))
+            context["coopSemester"] = str(
+                count_coop_students_by_semester(semester))
+            context["totalSemester"] = str(
+                count_total_students_by_semester(semester))
             context["coopStartDate"] = str(
                 count_coop_students_by_start_date(start_date)
             )
@@ -175,7 +182,7 @@ def get_student_data_api(request):
     serializedData = serializers.serialize(
         "json", Student.objects.filter(upload_set=UploadSet.objects.first())
     )
-    
+
     return HttpResponse(serializedData)
 
 
