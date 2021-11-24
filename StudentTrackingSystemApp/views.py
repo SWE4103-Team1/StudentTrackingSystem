@@ -81,6 +81,7 @@ def settings(request):
                 context = {
                     "DataError": "No Configuration File Found: Must Upload Configuration Files Before Data Files"}
                 return render(request, "StudentTrackingSystemApp/settings.html", context)
+
             else:
                 for f in data_files:
                     if f.name == "personData.txt":
