@@ -76,20 +76,26 @@ def settings(request):
         # files will hold all the data files that are read in
         data_files = request.FILES.getlist("data_files")
         if data_files:
-            if configfuncs.config_file_exist():
-                # add code here
-                pass
-            for f in data_files:
-                if f.name == "personData.txt":
-                    personData = f
-                elif f.name == "courseData.txt":
-                    courseData = f
-                elif f.name == "transferData.txt":
-                    transferData = f
+            if not configfuncs.config_file_exist():
+                print(f"Can't Submit Data Files without Config Files")
+                context = {
+                    "DataError": "No Configuration File Found: Must Upload Configuration Files Before Data Files"}
+                return render(request, "StudentTrackingSystemApp/settings.html", context)
+            else:
+                for f in data_files:
+                    if f.name == "personData.txt":
+                        personData = f
+                    elif f.name == "courseData.txt":
+                        courseData = f
+                    elif f.name == "transferData.txt":
+                        transferData = f
 
-            uploader = DataFileExtractor()
-            uploader.uploadAllFiles(personData, courseData, transferData)
-
+                uploader = DataFileExtractor()
+                uploader.uploadAllFiles(personData, courseData, transferData)
+        else:
+            context = {
+                "FileError": "No Files Selected"}
+            return render(request, "StudentTrackingSystemApp/settings.html", context)
         # config file holds a single config excel file
         try:
             config_file = request.FILES["config_file"]

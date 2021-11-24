@@ -27,13 +27,10 @@
                         <input type="file" name="data_files" class="data_files" accept=".txt" multiple>
                         <button type="submit">Upload</button>
                     </form>
-                </div>
-                <div class="column">
-                    <h2>Upload Prerequisites</h2>
-                    <form class="Prerequisites" method="POST" enctype="multipart/form-data">{% csrf_token %}
-                        <input type="file" name="prereq_files" class="prereq_files" accept=".xlsx" multiple>
-                        <button type="submit">Upload</button>
-                    </form>
+
+                    <p style="text-align:center;color:red;">
+                        {{DataError}}
+                    </p>
                 </div>
                 <div class = "column">
                     <h2>Upload Configuration File</h2>
@@ -41,6 +38,19 @@
                         <input type="file" name="config_file" class="config_file" accept=".xlsx">
                         <button type="submit">Upload</button>
                     </form>
+                    <p style="text-align:center;color:red;">
+                        {{ConfigError}}
+                    </p>
+                </div>
+                <div class="column">
+                    <h2>Upload Prerequisites</h2>
+                    <form class="Prerequisites" method="POST" enctype="multipart/form-data">{% csrf_token %}
+                        <input type="file" name="prereq_files" class="prereq_files" accept=".xlsx" multiple>
+                        <button type="submit">Upload</button>
+                    </form>
+                    <p style="text-align:center;color:red;">
+                        {{PreReqError}}
+                    </p>
                 </div>
             </div>
 
