@@ -7,7 +7,7 @@ import itertools
 import numpy as np
 
 from datamodel.models import Student, Course, Enrolment, UploadSet
-from StudentTrackingSystemApp.rankings import calculateRank
+from StudentTrackingSystemApp.rankings import get_rank_by_PREREQ
 from StudentTrackingSystemApp.configfuncs import get_course_type
 
 
@@ -97,7 +97,7 @@ class DataFileExtractor:
         for student_num, student_enrolments in grouped_enrolments.items():
             uploaded_students[
                 DataFileExtractor._make_student_key(student_num)
-            ].rank = calculateRank(student_num, student_enrolments)
+            ].rank = get_rank_by_PREREQ(student_num, student_enrolments)
 
         # Store all models in DB. Not asyncly, sadly
         bulk_save(itertools.chain(students, courses, transfer_courses))
