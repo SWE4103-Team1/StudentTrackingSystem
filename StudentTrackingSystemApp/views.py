@@ -3,7 +3,7 @@ from django.contrib.auth import authenticate, get_user_model, login, logout
 from django.shortcuts import redirect, render
 from generateCounts.counts import *
 from users.roles import UserRole
-from StudentTrackingSystemApp import configfuncs
+from StudentTrackingSystemApp import configfuncs, rankings
 from django.utils.datastructures import MultiValueDictKeyError
 
 
@@ -92,10 +92,7 @@ def settings(request):
 
                 uploader = DataFileExtractor()
                 uploader.uploadAllFiles(personData, courseData, transferData)
-        else:
-            context = {
-                "FileError": "No Files Selected"}
-            return render(request, "StudentTrackingSystemApp/settings.html", context)
+
         # config file holds a single config excel file
         try:
             config_file = request.FILES["config_file"]
@@ -108,8 +105,11 @@ def settings(request):
         try:
             prereq_file = request.FILES["prereq_file"]
             if prereq_file:
-                # add code to set the student ranks
-                pass
+                if not rankings.prereq_exist():
+                    # write code here to pass msg to front
+                    pass
+                rankings.set_prereq_file(prereq_file)
+                print(prereq_file)
         except MultiValueDictKeyError:
             pass
 
