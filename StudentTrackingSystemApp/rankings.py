@@ -1,5 +1,6 @@
 import pandas as pd
 from datamodel.models import Enrolment
+import math
 
 # the excel file
 xls = None
@@ -55,15 +56,30 @@ def get_rank_by_CH(student_number, student_enrolments=None):
         )
 
     for e in student_enrolments:
-        if e.grade not in exception_grade:  # if they dint fail the class, count the CH
-            total_ch += e.course.credit_hours
 
+        grade = e.grade
+        valid = False
+        try:
+            valid = not math.isnan(float(grade))
+        except (TypeError, ValueError):
+            valid = True
+
+        if e.grade not in exception_grade and valid:  # if they dint fail the class, count the CH
+            if e.student.student_number == 5931264:
+                print(str(e.grade) + " " + str(e.course.course_code) + " " + str(e.course.credit_hours))
+            total_ch += e.course.credit_hours
+    
+
+
+        
+
+        
     # if the total credit hours are lower than the required credit hours, return that rank
     if total_ch <= JUN_CH:
         return 'JUN'
-    elif total_ch <= SOP_CH:
+    elif total_ch > JUN_CH and total_ch < SEN_CH:
         return 'SOP'
-    elif total_ch <= SEN_CH:
+    else:
         return 'SEN'
 
 
@@ -123,3 +139,4 @@ def prereq_exist():
             a boolean value of whether the pre-req excel file have been uploaded first
     """
     return xls != None
+
