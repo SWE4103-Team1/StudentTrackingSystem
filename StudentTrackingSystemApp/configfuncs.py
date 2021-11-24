@@ -16,7 +16,14 @@ import re
 excel_in_dict = {}
 xls = None
 
+
 def set_config_file(filename):
+    """
+    Sets the global variable to the config file
+
+        Param:
+            filename : the config file
+    """
     global xls
 
     xls = pd.ExcelFile(filename)
@@ -26,7 +33,11 @@ def set_config_file(filename):
     for sheet_name in xls.sheet_names:
         excel_in_dict[sheet_name] = xls.parse(sheet_name)
 
+
 def config_file_exist():
+    """
+    returns a boolean vlaue of whether the config excel file have been uploaded first
+    """
     return xls != None
 
 
@@ -191,7 +202,7 @@ def _get_all_cores(year=None):
         Param:
             year : the year to return the core courses found in the matrix
                     (leave blank for all the core corses for existing matrix)
-        
+
         Return:
             the core courses found within the given year matrix
             (all core courses found within the config file if year is None)
