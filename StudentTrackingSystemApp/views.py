@@ -81,7 +81,11 @@ def settings(request):
                 context = {
                     "DataError": "No Configuration File Found: Must Upload Configuration Files Before Data Files"}
                 return render(request, "StudentTrackingSystemApp/settings.html", context)
-
+            elif not rankings.prereq_exist():
+                print(f"Can't Submit Data Files without Pre-Reqs Files")
+                context = {
+                    "DataError": "No Prerequisites File Found: Must Upload Prerequisites Files Before Data Files"}
+                return render(request, "StudentTrackingSystemApp/settings.html", context)
             else:
                 for f in data_files:
                     if f.name == "personData.txt":
@@ -93,7 +97,7 @@ def settings(request):
 
                 uploader = DataFileExtractor()
                 uploader.uploadAllFiles(personData, courseData, transferData)
-
+        
         # config file holds a single config excel file
         try:
             config_file = request.FILES["config_file"]
@@ -106,9 +110,9 @@ def settings(request):
         try:
             prereq_file = request.FILES["prereq_file"]
             if prereq_file:
-                if not rankings.prereq_exist():
-                    # write code here to pass msg to front
-                    pass
+                # I think this can be removed - Mark
+                # if not rankings.prereq_exist():
+
                 rankings.set_prereq_file(prereq_file)
                 print(prereq_file)
         except MultiValueDictKeyError:

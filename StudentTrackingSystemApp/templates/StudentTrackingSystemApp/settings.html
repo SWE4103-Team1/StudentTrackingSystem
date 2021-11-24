@@ -38,9 +38,6 @@
                         <input type="file" name="config_file" class="config_file" accept=".xlsx">
                         <button type="submit">Upload</button>
                     </form>
-                    <p style="text-align:center;color:red;">
-                        {{ConfigError}}
-                    </p>
                 </div>
                 <div class="column">
                     <h2>Upload Prerequisites</h2>
@@ -48,11 +45,15 @@
                         <input type="file" name="prereq_file" class="prereq_file" accept=".xlsx" multiple>
                         <button type="submit">Upload</button>
                     </form>
-                    <p style="text-align:center;color:red;">
-                        {{PreReqError}}
-                    </p>
                 </div>
+
+                <p style="text-align:center;color:red;">
+                    {{NoFiles}}
+                </p>
+
             </div>
+
+
 
             <h2>View Raw Data Files</h2>
             <div class="nav_button_container">
