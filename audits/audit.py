@@ -20,8 +20,8 @@ def _find_if(compare, list):
 class AuditData:
     empty_progress_data = {"courses": [], "credit_hours": 0}
     empty_progress = {
-        "completed": empty_progress_data,
-        "in_progress": empty_progress_data,
+        "completed": deepcopy(empty_progress_data),
+        "in_progress": deepcopy(empty_progress_data),
     }
 
     def __init__(self):
@@ -108,6 +108,7 @@ def audit_student(student_number, mapped_courses=None):
         }
 
         # populate progress from student's enrolments
+        print("enrolments", list(map(lambda e: e.course.course_code, enrolments)))
         for enrolment in enrolments:
             status = "completed"
             if enrolment.grade == "nan" or enrolment is None:
