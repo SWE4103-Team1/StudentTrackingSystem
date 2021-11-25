@@ -65,19 +65,14 @@ def get_rank_by_CH(student_number, student_enrolments=None):
             valid = True
 
         if e.grade not in exception_grade and valid:  # if they dint fail the class, count the CH
-            if e.student.student_number == 5931264:
-                print(str(e.grade) + " " + str(e.course.course_code) + " " + str(e.course.credit_hours))
             total_ch += e.course.credit_hours
     
-
-
-        
-
-        
     # if the total credit hours are lower than the required credit hours, return that rank
     if total_ch <= JUN_CH:
+        return 'FIR'
+    elif total_ch > JUN_CH and total_ch <= SOP_CH:
         return 'JUN'
-    elif total_ch > JUN_CH and total_ch < SEN_CH:
+    elif total_ch > SOP_CH and total_ch <= SEN_CH:
         return 'SOP'
     else:
         return 'SEN'
