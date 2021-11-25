@@ -1,5 +1,5 @@
 from datamodel.models import Student, Course, Enrolment, UploadSet
-
+from django.db.models import Q
 
 def count_coop_students_by_semester(term_):
     added_students = []
@@ -28,9 +28,17 @@ def count_coop_students_by_cohort(cohort):
 
     # Since parameter is passed as year-nextYear we need to extract the year
     year = cohort[:4]
+    nextYear = cohort[5:]
 
+    # We want to find students that start in september of the above year
+    # or winter/summer of the following year
+    fall = year + "-09"
+    winter = nextYear + "-01"
+    summer = nextYear + "-05"
+
+    # Maybe use __contains = [fall, winter, summer]
     coop_courses = list(Course.objects.filter(name="CO-OP WORK TERM").values("id"))
-    students = list(Student.objects.filter(start_date__contains=year).values("id"))
+    students = list(Student.objects.filter(Q(start_date__contains=fall) | Q(start_date__contains=winter) | Q(start_date__contains=summer)).values("id"))
 
     for coop_course in coop_courses:
         coop_course_ids.append(coop_course["id"])
@@ -70,9 +78,17 @@ def count_total_students_by_cohort(cohort):
     added_students = []
     student_id_list = []
 
+    # Since parameter is passed as year-nextYear we need to extract the year
     year = cohort[:4]
+    nextYear = cohort[5:]
 
-    students = Student.objects.filter(start_date__contains=year).values("id")
+    # We want to find students that start in september of the above year
+    # or winter/summer of the following year
+    fall = year + "-09"
+    winter = nextYear + "-01"
+    summer = nextYear + "-05"
+
+    students = list(Student.objects.filter(Q(start_date__contains=fall) | Q(start_date__contains=winter) | Q(start_date__contains=summer)).values("id"))
 
     for student in students:
         student_id_list.append(student["id"])
@@ -128,9 +144,18 @@ def count_students_by_rank_cohort(cohort):
     SEN = 0
     enrolled_student_ids = []
 
+    # Since parameter is passed as year-nextYear we need to extract the years
     year = cohort[:4]
+    nextYear = cohort[5:]
 
-    students = list(Student.objects.filter(start_date__contains=year).values("rank"))
+    # We want to find students that start in september of the above year
+    # or winter/summer of the following year
+    fall = year + "-09"
+    winter = nextYear + "-01"
+    summer = nextYear + "-05"
+
+    students = list(Student.objects.filter(Q(start_date__contains=fall) | Q(start_date__contains=winter) | Q(start_date__contains=summer)).values("rank"))
+
     for student in students:
         if student["rank"] == "FIR":
             FIR += 1
