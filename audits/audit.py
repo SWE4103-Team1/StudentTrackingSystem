@@ -1,4 +1,7 @@
-# query enrolments for a given student number join that certain student
+# TODO: calculate the student's status
+# TODO: read the matrix to identify how many non-core courses are remaining
+# TODO: use the cohort instead of the student's start date when finding best matrix
+
 from datetime import datetime
 
 from datamodel.models import Enrolment, Course
@@ -29,7 +32,7 @@ def audit_student(student_number, mapped_courses=None):
         student = enrolments[0].student
         conf_mat_sheet = _best_fit_config_matrix(student)
         audit_response["target_student"] = _target_student_data(student)
-        audit_response["latests_enrolment_term"] = enrolments[0].term
+        audit_response["latest_enrolment_term"] = enrolments[0].term
         audit_response["base_program"] = "SWE{}".format(conf_mat_sheet)
         progress = audit_response["progress"]
 
@@ -50,11 +53,9 @@ def audit_student(student_number, mapped_courses=None):
         }
 
         # populate progress from student's enrolments
-        print("enrolments", list(map(lambda e: e.course.course_code, enrolments)))
         for enrolment in filter(lambda e: e.course.course_type != None, enrolments):
             status = "completed"
             if enrolment.grade == "nan" or enrolment is None:
-                print("not grade, grade is:", enrolment.grade)
                 status = "in_progress"
             audit_response.add_course(status, enrolment.course)
             if enrolment.course.course_type == "CORE":
@@ -81,7 +82,6 @@ def _target_student_data(student):
 
 
 def _best_fit_config_matrix(student):
-    # TODO: use the cohort instead of the student's start date
     target_year = student.start_date.year
 
     def is_target_year(sheet):

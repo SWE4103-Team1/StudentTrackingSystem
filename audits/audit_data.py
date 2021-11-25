@@ -6,10 +6,6 @@ from datamodel.models import Course
 
 class AuditData:
     empty_progress_data = {"courses": [], "credit_hours": 0}
-    empty_progress = {
-        "completed": deepcopy(empty_progress_data),
-        "in_progress": deepcopy(empty_progress_data),
-    }
 
     def __init__(self):
         self.data = {
@@ -19,9 +15,7 @@ class AuditData:
 
     def add_course(self, status: str, course: Course):
         progress = self.data["progress"]
-        type_progress = progress.get(
-            course.course_type, deepcopy(AuditData.empty_progress)
-        )
+        type_progress = progress.get(course.course_type, {})
         if status not in type_progress:
             type_progress[status] = deepcopy(AuditData.empty_progress_data)
         type_progress[status]["courses"].append(course.course_code.replace("*", ""))
@@ -30,9 +24,7 @@ class AuditData:
 
     def remove_course(self, status: str, course: Course):
         progress = self.data["progress"]
-        type_progress = progress.get(
-            course.course_type, deepcopy(AuditData.empty_progress)
-        )
+        type_progress = progress.get(course.course_type, {})
         if status not in type_progress:
             return
         try:
