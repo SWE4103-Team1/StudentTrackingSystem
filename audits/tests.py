@@ -10,6 +10,6 @@ class AuditTests(TestCase):
         upload_tester = DataLoaderTests()
         upload_tester._sample_upload_set()
         print("finished upload")
-        target_student = Student.objects.get(student_number=56889969)
+        target_student = Student.objects.get(student_number=5283043)
         res, codes = audit_student(target_student.student_number)
         print(res)

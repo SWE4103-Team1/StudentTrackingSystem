@@ -6,14 +6,8 @@ from StudentTrackingSystemApp.configfuncs import excel_in_dict as xls_confs
 from StudentTrackingSystemApp.configfuncs import get_all_cores
 from audits.audit_data import AuditData
 
+
 UNPOP = "UNPOPULATED"
-
-
-def _find_if(compare, list):
-    for elem in list:
-        if compare(elem):
-            return elem
-    return None
 
 
 def audit_student(student_number, mapped_courses=None):
@@ -57,7 +51,7 @@ def audit_student(student_number, mapped_courses=None):
 
         # populate progress from student's enrolments
         print("enrolments", list(map(lambda e: e.course.course_code, enrolments)))
-        for enrolment in enrolments:
+        for enrolment in filter(lambda e: e.course.course_type != None, enrolments):
             status = "completed"
             if enrolment.grade == "nan" or enrolment is None:
                 print("not grade, grade is:", enrolment.grade)
