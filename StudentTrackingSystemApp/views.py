@@ -110,9 +110,6 @@ def settings(request):
         try:
             prereq_file = request.FILES["prereq_file"]
             if prereq_file:
-                # I think this can be removed - Mark
-                # if not rankings.prereq_exist():
-
                 rankings.set_prereq_file(prereq_file)
                 print(prereq_file)
         except MultiValueDictKeyError:
