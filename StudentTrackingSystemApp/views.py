@@ -111,7 +111,6 @@ def settings(request):
             prereq_file = request.FILES["prereq_file"]
             if prereq_file:
                 rankings.set_prereq_file(prereq_file)
-                print(prereq_file)
         except MultiValueDictKeyError:
             pass
 

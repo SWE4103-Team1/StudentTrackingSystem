@@ -105,7 +105,6 @@ def get_course_type(course_code):
     # special case for CSE-HSS courses, since they overlap with CSE-OPEN courses
     # if its an exception for either CSE-HSS or CSE-ITS, but is is not an exception for CSE-OPEN, return CSE-OPEN instead
     if course_type == "CSE-HSS" or course_type == "CSE-ITS":
-        print(course_type, course_code)
         if (_is_exception(course_code, "CSE-ITS") or _is_exception(course_code, "CSE-HSS")) and not _is_exception(course_code, "CSE-OPEN"):
             return "CSE-OPEN"
 
