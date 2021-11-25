@@ -178,6 +178,7 @@ def get_count_parameters_api(request):
     from json import dumps
     from django.shortcuts import HttpResponse
     from datamodel.models import Student, Enrolment
+    from generateCounts.counts import count_total_students_by_cohort, count_total_students_by_semester
 
     cohorts = []
     semesters = []
@@ -186,7 +187,10 @@ def get_count_parameters_api(request):
     for date in startDates:
         cohortYear = date["start_date"].strftime("%Y")
         nextYear = int(cohortYear) + 1
-        cohorts.append("".join((cohortYear, "-", str(nextYear))))
+        cohort = "".join((cohortYear, "-", str(nextYear)))
+        # Omit the cohort if there are no students a part of it
+        if count_total_students_by_cohort(cohort) > 0:
+            cohorts.append(cohort)
 
     # Remove dupliactes and sort list
     cohorts = list(dict.fromkeys(cohorts))
@@ -194,7 +198,10 @@ def get_count_parameters_api(request):
 
     enrollmentTerms = Enrolment.objects.values("term").distinct()
     for term in enrollmentTerms:
-        semesters.append(term["term"])
+        semester = term["term"]
+        # Omit the semester if there are no students a part of it
+        if count_total_students_by_semester(term["term"]) > 0:
+            semesters.append(semester)
 
     semesters.sort(reverse=True)
     semesters = semesters[1:] #THIS IS TO REMOVE A STUPID WEIRD T AT THE FRONT
