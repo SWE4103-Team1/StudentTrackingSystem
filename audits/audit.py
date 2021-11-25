@@ -1,8 +1,11 @@
 # query enrolments for a given student number join that certain student
 from datetime import datetime
+import json
+from copy import deepcopy
 
-from datamodel.models import Enrolment
+from datamodel.models import Enrolment, Course
 from StudentTrackingSystemApp.configfuncs import excel_in_dict as xls_confs
+from StudentTrackingSystemApp.configfuncs import get_all_cores
 
 UNPOP = "UNPOPULATED"
 
@@ -14,27 +17,107 @@ def _find_if(compare, list):
     return None
 
 
-def audit_student(student_number):
+class AuditData:
+    empty_progress_data = {"courses": [], "credit_hours": 0}
+    empty_progress = {
+        "completed": empty_progress_data,
+        "in_progress": empty_progress_data,
+    }
+
+    def __init__(self):
+        self.data = {
+            "target_student": {},
+            "progress": {},
+        }
+
+    def add_course(self, status: str, course: Course):
+        progress = self.data["progress"]
+        type_progress = progress.get(
+            course.course_type, deepcopy(AuditData.empty_progress)
+        )
+        if status not in type_progress:
+            type_progress[status] = deepcopy(AuditData.empty_progress_data)
+        type_progress[status]["courses"].append(course.course_code.replace("*", ""))
+        type_progress[status]["credit_hours"] += course.credit_hours
+        self.data["progress"][course.course_type] = type_progress
+
+    def remove_course(self, status: str, course: Course):
+        progress = self.data["progress"]
+        type_progress = progress.get(
+            course.course_type, deepcopy(AuditData.empty_progress)
+        )
+        if status not in type_progress:
+            return
+        try:
+            type_progress[status]["courses"].remove(course.course_code.replace("*", ""))
+            type_progress[status]["credit_hours"] -= course.credit_hours
+            self.data["progress"][course.course_type] = type_progress
+        except ValueError:
+            pass  # course already removed from lits, that's ok
+
+    def __getitem__(self, key):
+        return self.data[key]
+
+    def __setitem__(self, key, value):
+        self.data[key] = value
+
+    def __str__(self):
+        return json.dumps(self.data)
+
+    def toJSON(self):
+        return json.dumps(self.data)
+
+
+def audit_student(student_number, mapped_courses=None):
+    # Get credit hours for courses
+    if mapped_courses is None:
+        courses = Course.objects.all().order_by("upload_set__upload_datetime")
+        # new courses will overwrite older
+        mapped_courses = {c.course_code.replace("*", ""): c for c in courses.reverse()}
+
     # Query the enrolments for the given student number
     enrolments = Enrolment.objects.filter(
         student__student_number=student_number,
     ).order_by("term")
 
     # Populate audit response with enrolment data
-    audit_response = {}
+    audit_response = AuditData()
+    student_status = "JUST ENTERED"
     if len(enrolments):
         student = enrolments[0].student
+        conf_mat_sheet = _best_fit_config_matrix(student)
         audit_response["target_student"] = _target_student_data(student)
-        audit_response["as_of"] = enrolments[0].term
-        audit_response["base_program"] = "SWE" + UNPOP
-        audit_response["progress"] = {}
+        audit_response["latests_enrolment_term"] = enrolments[0].term
+        audit_response["base_program"] = "SWE{}".format(conf_mat_sheet)
+        progress = audit_response["progress"]
 
+        # fill core's remaining with all cores
+        core_codes = get_all_cores(conf_mat_sheet)
+        progress["CORE"] = {
+            "remaining": {
+                "courses": core_codes,
+                "credit_hours": sum(
+                    map(
+                        lambda c: mapped_courses.get(
+                            c, Course(credit_hours=0)
+                        ).credit_hours,
+                        core_codes,
+                    )
+                ),
+            }
+        }
+
+        # populate progress from student's enrolments
         for enrolment in enrolments:
-            _lookup_course_type(enrolment.course)
+            status = "completed"
+            if enrolment.grade == "nan" or enrolment is None:
+                print("not grade, grade is:", enrolment.grade)
+                status = "in_progress"
+            audit_response.add_course(status, enrolment.course)
+            if enrolment.course.course_type == "CORE":
+                audit_response.remove_course("remaining", enrolment.course)
 
-            print(enrolment)
-
-    return audit_response
+    return (audit_response, mapped_courses)
 
 
 def _lookup_course_type(course):
@@ -102,10 +185,3 @@ def _best_fit_config_matrix(student):
         )
 
     return student_mat[0]
-
-
-def _completed_progress_data(enrolments):
-    pass
-
-
-# read in valid tags

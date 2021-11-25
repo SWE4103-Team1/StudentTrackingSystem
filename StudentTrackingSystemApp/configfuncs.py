@@ -187,18 +187,18 @@ def _get_matrix_courses(matrix_year):
     core_courses = []
     matrix = excel_in_dict[matrix_year]
 
-    for i, row in matrix.iterrows():
-        for j, value in row.items():
+    for _, row in matrix.iterrows():
+        for _, value in row.items():
             if type(value) is not float and type(value) is str:
                 value = value.replace(" ", "")
                 course_codes_only = re.findall(r"\b[A-Z]{2,4}[0-9]{2,4}\b", str(value))
-                if not not course_codes_only:
+                if course_codes_only:
                     core_courses += course_codes_only
 
     return core_courses
 
 
-def _get_all_cores(year=None):
+def get_all_cores(year=None):
     """
     Returns all the core courses based on the given year, else return all core courses
 
@@ -245,7 +245,7 @@ def _is_core(course_code, year=None):
             The boolean value if the course_code is found within the matrix
     """
 
-    cores = _get_all_cores(year)
+    cores = get_all_cores(year)
 
     all_courses = []
 
