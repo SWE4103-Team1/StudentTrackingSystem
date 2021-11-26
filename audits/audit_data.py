@@ -1,3 +1,4 @@
+# TODO: don't remove courses / CH if already 0
 import json
 from copy import deepcopy
 
@@ -33,14 +34,17 @@ class AuditData:
                 type_progress[status]["courses"].remove(
                     course.course_code.replace("*", "")
                 )
-                type_progress[status]["credit_hours"] -= course.credit_hours
-                self.data["progress"][course.course_type] = type_progress
             except ValueError:
-                pass  # course already removed from lits, that's ok
+                pass  # course already removed
+            if type_progress[status]["credit_hours"] > course.credit_hours:
+                type_progress[status]["credit_hours"] -= course.credit_hours
+            self.data["progress"][course.course_type] = type_progress
 
         else:
-            type_progress[status]["num_courses"] -= 1
-            type_progress[status]["credit_hours"] -= course.credit_hours
+            if type_progress[status]["num_courses"] > 0:
+                type_progress[status]["num_courses"] -= 1
+            if type_progress[status]["credit_hours"] > course.credit_hours:
+                type_progress[status]["credit_hours"] -= course.credit_hours
             self.data["progress"][course.course_type] = type_progress
 
     def __getitem__(self, key):
