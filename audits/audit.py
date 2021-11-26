@@ -3,7 +3,6 @@
 from datetime import datetime
 
 from datamodel.models import Enrolment, Course
-from dataloader.load_extract import DataFileExtractor
 from StudentTrackingSystemApp.configfuncs import get_all_cores
 from audits.audit_data import AuditData
 from audits.confmatrix import best_fit_config_matrix, non_core_requirements
@@ -11,20 +10,7 @@ from audits import status
 
 
 UNPOP = "UNPOPULATED"
-pass_grades = {
-    "nan",
-    "CR",
-    "C-",
-    "C",
-    "C+",
-    "B-",
-    "B",
-    "B+",
-    "A-",
-    "A",
-    "A+",
-    DataFileExtractor._transfer_marker,
-}
+pass_grades = {"nan", "CR", "C-", "C", "C+", "B-", "B", "B+", "A-", "A", "A+", "T"}
 
 
 def audit_student(student_number, enrolments=None, courses=None, mapped_courses=None):
@@ -48,13 +34,15 @@ def audit_student(student_number, enrolments=None, courses=None, mapped_courses=
     # Get credit hours for courses
     if courses is None:
         courses = Course.objects.all().order_by("upload_set__upload_datetime")
-    if mapped_courses is None:
+    if mapped_courses is not None:
         # new courses will overwrite older
         mapped_courses = {c.course_code.replace("*", ""): c for c in courses.reverse()}
 
     # Populate audit response with enrolment data
     audit_response = AuditData()
+    print("enrolment", enrolments[0])
     student = enrolments[0].student
+    print("student", student)
     conf_mat_sheet = best_fit_config_matrix(student)
     audit_response["latest_enrolment_term"] = enrolments[0].term
     audit_response["base_program"] = "SWE{}".format(conf_mat_sheet)

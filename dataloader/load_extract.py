@@ -9,6 +9,7 @@ from datamodel.models import Student, Course, Enrolment, UploadSet
 from dataloader.db_enhancements import bulk_save, group_enrolments_by_student_num
 from StudentTrackingSystemApp.rankings import calculateRank
 from StudentTrackingSystemApp.configfuncs import get_course_type
+from audits import audit, status
 
 
 class DataFileExtractor:
@@ -73,10 +74,16 @@ class DataFileExtractor:
 
         # Calculate rank & status from student's enrolments and update the models
         grouped_enrolments = group_enrolments_by_student_num(all_enrolments)
+        mapped_courses = None
         for student_num, student_enrolments in grouped_enrolments.items():
-            uploaded_students[
+            student = uploaded_students[
                 DataFileExtractor._make_student_key(student_num)
-            ].rank = calculateRank(student_num, student_enrolments)
+            ]
+            s_audit, _, mapped_courses = audit.audit_student(
+                student_num, student_enrolments, courses, mapped_courses
+            )
+            student.rank = calculateRank(student_num, student_enrolments)
+            student.status = status.student_status(s_audit["progress"])
 
         # Store all models in DB. Not asyncly, sadly
         bulk_save(itertools.chain(students, courses, transfer_courses))
@@ -112,6 +119,7 @@ class DataFileExtractor:
         dfc.drop_duplicates(subset=["Course", "Section"], keep="last", inplace=True)
         dfc = dfc.values.tolist()
         course_models = list(map(self._new_course_model, dfc))
+        course_models.sort(key=lambda c: c.upload_set.upload_datetime, reverse=True)
         return course_models
 
     def _build_enrolment_models(self, dfe, uploaded_students, uploaded_courses):
