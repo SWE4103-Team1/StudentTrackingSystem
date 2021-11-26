@@ -8,6 +8,7 @@ from datamodel.models import Enrolment, Course
 from StudentTrackingSystemApp.configfuncs import excel_in_dict as xls_confs
 from StudentTrackingSystemApp.configfuncs import get_all_cores
 from audits.audit_data import AuditData
+from audits.confmatrix import best_fit_config_matrix, non_core_requirements
 
 
 UNPOP = "UNPOPULATED"
@@ -30,8 +31,7 @@ def audit_student(student_number, mapped_courses=None):
     student_status = "JUST ENTERED"
     if len(enrolments):
         student = enrolments[0].student
-        conf_mat_sheet = _best_fit_config_matrix(student)
-        audit_response["target_student"] = _target_student_data(student)
+        conf_mat_sheet = best_fit_config_matrix(student)
         audit_response["latest_enrolment_term"] = enrolments[0].term
         audit_response["base_program"] = "SWE{}".format(conf_mat_sheet)
         progress = audit_response["progress"]
@@ -52,19 +52,25 @@ def audit_student(student_number, mapped_courses=None):
             }
         }
 
-        # populate progress from student's enrolments
-        for enrolment in filter(lambda e: e.course.course_type != None, enrolments):
-            status = "completed"
-            if enrolment.grade == "nan" or enrolment is None:
-                status = "in_progress"
-            audit_response.add_course(status, enrolment.course)
-            if enrolment.course.course_type == "CORE":
-                audit_response.remove_course("remaining", enrolment.course)
+        # fill non-core's reamining sections with all non-cores
+        non_core_reqs = non_core_requirements(conf_mat_sheet)
+        for course_type, reqs in non_core_reqs.items():
+            progress[course_type] = {"remaining": reqs}
 
+        # populate progress from student's enrolments, removing remaining appropriately
+        for enrolment in filter(lambda e: e.course.course_type != None, enrolments):
+            course_status = "completed"
+            if enrolment.grade == "nan" or enrolment is None:
+                course_status = "in_progress"
+
+            audit_response.add_course(course_status, enrolment.course)
+            audit_response.remove_course("remaining", enrolment.course)
+
+        audit_response["target_student"] = _student_data(student, student_status)
     return (audit_response, mapped_courses)
 
 
-def _target_student_data(student):
+def _student_data(student, student_status):
     # years_in calculated as current year minus start year, plus
     # the portion of the current year, in months, that have passed
     # the current month is ignored, which is why now.month - 1 is used
@@ -77,29 +83,5 @@ def _target_student_data(student):
         "cohort": UNPOP,
         "rank": student.rank,
         "years_in": years_in,
-        "status": UNPOP,
+        "status": student_status,
     }
-
-
-def _best_fit_config_matrix(student):
-    target_year = student.start_date.year
-
-    def is_target_year(sheet):
-        mat_start_year = sheet.split("-")[0]
-        if mat_start_year.isnumeric():
-            try:
-                mat_start_year = int(mat_start_year)
-            except ValueError:
-                return False
-            return mat_start_year == target_year
-        return False
-
-    student_mat = list(filter(is_target_year, xls_confs.keys()))
-    if len(student_mat) < 1:
-        raise RuntimeError(
-            "No suitable matrix in configration file for start year {}".format(
-                target_year
-            )
-        )
-
-    return student_mat[0]

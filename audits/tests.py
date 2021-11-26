@@ -13,3 +13,8 @@ class AuditTests(TestCase):
         target_student = Student.objects.get(student_number=5283043)
         res, codes = audit_student(target_student.student_number)
         print(res)
+
+    def test_load(self):
+        from audits.confmatrix import non_core_requirements
+
+        non_core_requirements("2018-19")

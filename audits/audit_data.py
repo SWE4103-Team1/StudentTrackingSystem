@@ -27,12 +27,21 @@ class AuditData:
         type_progress = progress.get(course.course_type, {})
         if status not in type_progress:
             return
-        try:
-            type_progress[status]["courses"].remove(course.course_code.replace("*", ""))
+
+        if course.course_type == "CORE":
+            try:
+                type_progress[status]["courses"].remove(
+                    course.course_code.replace("*", "")
+                )
+                type_progress[status]["credit_hours"] -= course.credit_hours
+                self.data["progress"][course.course_type] = type_progress
+            except ValueError:
+                pass  # course already removed from lits, that's ok
+
+        else:
+            type_progress[status]["num_courses"] -= 1
             type_progress[status]["credit_hours"] -= course.credit_hours
             self.data["progress"][course.course_type] = type_progress
-        except ValueError:
-            pass  # course already removed from lits, that's ok
 
     def __getitem__(self, key):
         return self.data[key]
