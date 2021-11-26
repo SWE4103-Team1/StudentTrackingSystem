@@ -1,17 +1,29 @@
 # TODO: calculate the student's status
-# TODO: read the matrix to identify how many non-core courses are remaining
 # TODO: use the cohort instead of the student's start date when finding best matrix
 
 from datetime import datetime
 
 from datamodel.models import Enrolment, Course
-from StudentTrackingSystemApp.configfuncs import excel_in_dict as xls_confs
+from dataloader.load_extract import DataFileExtractor
 from StudentTrackingSystemApp.configfuncs import get_all_cores
 from audits.audit_data import AuditData
 from audits.confmatrix import best_fit_config_matrix, non_core_requirements
 
 
 UNPOP = "UNPOPULATED"
+passing_grades = {
+    "CR",
+    "C-",
+    "C",
+    "C+",
+    "B-",
+    "B",
+    "B+",
+    "A-",
+    "A",
+    "A+",
+    DataFileExtractor._transfer_marker,
+}
 
 
 def audit_student(student_number, mapped_courses=None):
@@ -58,7 +70,11 @@ def audit_student(student_number, mapped_courses=None):
             progress[course_type] = {"remaining": reqs}
 
         # populate progress from student's enrolments, removing remaining appropriately
-        for enrolment in filter(lambda e: e.course.course_type != None, enrolments):
+        applicables = filter(
+            lambda e: e.course.course_type != None and e.grade in passing_grades,
+            enrolments,
+        )
+        for enrolment in applicables:
             course_status = "completed"
             if enrolment.grade == "nan" or enrolment is None:
                 course_status = "in_progress"
