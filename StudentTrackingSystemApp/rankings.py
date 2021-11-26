@@ -8,7 +8,7 @@ xls = None
 # a dict to hold the pages within the excel file
 ranks_in_dict = {}
 # grades to exclude from the calculations
-exception_grade = ['F', 'W', 'NCR']
+exception_grade = ['F', 'W', 'NCR', 'D']
 
 
 def set_prereq_file(filename):
