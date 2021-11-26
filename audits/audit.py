@@ -11,7 +11,8 @@ from audits import status
 
 
 UNPOP = "UNPOPULATED"
-passing_grades = {
+pass_grades = {
+    "nan",
     "CR",
     "C-",
     "C",
@@ -26,19 +27,30 @@ passing_grades = {
 }
 
 
-def audit_student(student_number, mapped_courses=None):
-    # Get credit hours for courses
-    if mapped_courses is None:
-        courses = Course.objects.all().order_by("upload_set__upload_datetime")
-        # new courses will overwrite older
-        mapped_courses = {c.course_code.replace("*", ""): c for c in courses.reverse()}
-
+def audit_student(student_number, enrolments=None, courses=None, mapped_courses=None):
+    """
+    Audits a student with the given student number. All default parameters are
+    to improve performance for load-extract and can be omitted for a basic
+    audit.
+    enrolments is a list of Enrolments, sorted in descending order by term
+    courses is a list of Courses, sorted in descending order by upload_datetime
+    mapped_courses is a dict, mapping the course code, without asterisks, to the course
+    """
     # Query the enrolments for the given student number
-    enrolments = Enrolment.objects.filter(
-        student__student_number=student_number,
-    ).order_by("term")
+    if enrolments is None:
+        enrolments = Enrolment.objects.filter(
+            student__student_number=student_number,
+        ).order_by("term")
+
     if len(enrolments) < 0:
         raise RuntimeError("Student {} has no enrolments".format(student_number))
+
+    # Get credit hours for courses
+    if courses is None:
+        courses = Course.objects.all().order_by("upload_set__upload_datetime")
+    if mapped_courses is None:
+        # new courses will overwrite older
+        mapped_courses = {c.course_code.replace("*", ""): c for c in courses.reverse()}
 
     # Populate audit response with enrolment data
     audit_response = AuditData()
@@ -50,41 +62,38 @@ def audit_student(student_number, mapped_courses=None):
 
     # fill core's remaining with all cores
     core_codes = get_all_cores(conf_mat_sheet)
-    progress["CORE"] = {
-        "remaining": {
-            "courses": core_codes,
-            "credit_hours": sum(
-                map(
-                    lambda c: mapped_courses.get(
-                        c, Course(credit_hours=0)
-                    ).credit_hours,
-                    core_codes,
-                )
-            ),
-        }
+    progress["CORE"] = AuditData.default_core_progress()
+    progress["CORE"]["remaining"] = {
+        "courses": core_codes,
+        "credit_hours": sum(
+            map(
+                lambda c: mapped_courses.get(c, Course(credit_hours=0)).credit_hours,
+                core_codes,
+            )
+        ),
     }
 
     # fill non-core's reamining sections with all non-cores
     non_core_reqs = non_core_requirements(conf_mat_sheet)
     for course_type, reqs in non_core_reqs.items():
-        progress[course_type] = {"remaining": reqs}
+        progress[course_type] = AuditData.default_non_core_progress()
+        progress[course_type]["remaining"] = reqs
 
     # populate progress from student's enrolments, removing remaining appropriately
     applicables = filter(
-        lambda e: e.course.course_type != None and e.grade in passing_grades,
+        lambda e: e.course.course_type != None and e.grade in pass_grades,
         enrolments,
     )
     for enrolment in applicables:
         course_status = "completed"
-        if enrolment.grade == "nan" or enrolment is None:
+        if enrolment.grade == "nan":
             course_status = "in_progress"
-
         audit_response.add_course(course_status, enrolment.course)
         audit_response.remove_course("remaining", enrolment.course)
 
     student_status = status.student_status(progress)
     audit_response["target_student"] = _student_data(student, student_status)
-    return (audit_response, mapped_courses)
+    return (audit_response, enrolments, mapped_courses)
 
 
 def _student_data(student, status):

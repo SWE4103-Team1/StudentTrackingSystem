@@ -6,7 +6,33 @@ from datamodel.models import Course
 
 
 class AuditData:
-    empty_progress_data = {"courses": [], "credit_hours": 0}
+    @staticmethod
+    def default_non_core_remaining_progress_data():
+        return deepcopy({"num_courses": 0, "credit_hours": 0})
+
+    @staticmethod
+    def default_progress_data():
+        return deepcopy({"courses": [], "credit_hours": 0})
+
+    @staticmethod
+    def default_core_progress():
+        return deepcopy(
+            {
+                "completed": AuditData.default_progress_data(),
+                "remaining": AuditData.default_progress_data(),
+                "in_progress": AuditData.default_progress_data(),
+            }
+        )
+
+    @staticmethod
+    def default_non_core_progress():
+        return deepcopy(
+            {
+                "completed": AuditData.default_progress_data(),
+                "remaining": AuditData.default_non_core_remaining_progress_data(),
+                "in_progress": AuditData.default_progress_data(),
+            }
+        )
 
     def __init__(self):
         self.data = {

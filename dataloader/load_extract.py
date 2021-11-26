@@ -6,24 +6,9 @@ import itertools
 import numpy as np
 
 from datamodel.models import Student, Course, Enrolment, UploadSet
-from dataloader.db_queries import bulk_save
+from dataloader.db_enhancements import bulk_save, group_enrolments_by_student_num
 from StudentTrackingSystemApp.rankings import calculateRank
 from StudentTrackingSystemApp.configfuncs import get_course_type
-
-
-def _group_enrolments_by_student_num(enrolments: list):
-    """returns dict of sets, where key is student number and value is set of
-    their enrolments"""
-    groups = dict()
-    for enrolment in enrolments:
-        s_num = enrolment.student.student_number
-        existing = groups.get(s_num)
-        if existing is None:
-            groups[s_num] = [enrolment]
-        else:
-            existing.append(enrolment)
-
-    return groups
 
 
 class DataFileExtractor:
@@ -86,8 +71,8 @@ class DataFileExtractor:
         del df_transfer_enrolment
         all_enrolments = list(itertools.chain(enrolments, transfer_enrolments))
 
-        # Calculate rank from student's enrolments and update the models
-        grouped_enrolments = _group_enrolments_by_student_num(all_enrolments)
+        # Calculate rank & status from student's enrolments and update the models
+        grouped_enrolments = group_enrolments_by_student_num(all_enrolments)
         for student_num, student_enrolments in grouped_enrolments.items():
             uploaded_students[
                 DataFileExtractor._make_student_key(student_num)
