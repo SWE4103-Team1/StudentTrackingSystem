@@ -6,9 +6,11 @@ import math
 xls = None
 
 # a dict to hold the pages within the excel file
-ranks_in_dict = {}
+JUN_col = {}
+SOP_col = {}
+SEN_col = {}
 # grades to exclude from the calculations
-exception_grade = ['F', 'W', 'NCR', 'D']
+exception_grade = ['F', 'W', 'NCR', 'D', 'WF']
 
 
 def set_prereq_file(filename):
@@ -19,15 +21,16 @@ def set_prereq_file(filename):
             filename : the file that is passed in
     """
     # refer to the global variables
-    global xls, ranks_in_dict
+    global xls, JUN_col, SOP_col, SEN_col
 
     # parses the excel file
     xls = pd.ExcelFile(filename)
     df = xls.parse('Sheet1')
 
     # gets each column with the header as key, and following cells as list
-    ranks_in_dict = df.to_dict(orient='list')
-
+    JUN_col = df['JUN'].dropna().to_dict()
+    SOP_col = df['SOP'].dropna().to_dict()
+    SEN_col = df['SEN'].dropna().to_dict()
 
 def get_rank_by_CH(student_number, student_enrolments=None):
     """
@@ -42,9 +45,9 @@ def get_rank_by_CH(student_number, student_enrolments=None):
     """
 
     # takes the first cell in each of these columns
-    JUN_CH = ranks_in_dict['JUN'][0]
-    SOP_CH = ranks_in_dict['SOP'][0]
-    SEN_CH = ranks_in_dict['SEN'][0]
+    JUN_CH = JUN_col[0]
+    SOP_CH = SOP_col[0]
+    SEN_CH = SEN_col[0]
 
     # the CH counter
     total_ch = 0
@@ -57,15 +60,12 @@ def get_rank_by_CH(student_number, student_enrolments=None):
 
     for e in student_enrolments:
 
-        grade = e.grade
-        valid = False
         try:
-            valid = not math.isnan(float(grade))
-        except (TypeError, ValueError):
-            valid = True
-
-        if e.grade not in exception_grade and valid:  # if they dint fail the class, count the CH
-            total_ch += e.course.credit_hours
+            if math.isnan(float(e.grade)): # if grade is nan, ignore
+                continue
+        except: # will enter here if its not nan and is a letter grade
+            if e.grade not in exception_grade:  # if they dint fail the class, count the CH
+                total_ch += e.course.credit_hours
     
     # if the total credit hours are lower than the required credit hours, return that rank
     if total_ch <= JUN_CH:
@@ -97,8 +97,12 @@ def get_rank_by_PREREQ(student_number, student_enrolments=None):
         )
 
     # gets the number of courses needed for each rank (-1 to exclude the credit hours)
-    JUN = len(ranks_in_dict["JUN"]) - 1
-    SOP = len(ranks_in_dict["SOP"]) - 1
+
+    # dropping nan from the dicts
+
+    JUN = len(JUN_col) - 1
+    SOP = len(SOP_col) - 1
+    SEN = len(SEN_col) - 1
 
     # counter to count the number of courses within each rank
     jun_c, sop_c, sen_c = 0, 0, 0
@@ -108,23 +112,30 @@ def get_rank_by_PREREQ(student_number, student_enrolments=None):
 
     for e in student_enrolments:
         # if the course code found is within the "JUN" column AND its hasn't been counted yet AND they din't fail the course, add a count to that rank counter
-        if e.course.course_code in ranks_in_dict["JUN"] and e.course.course_code not in counted and e.grade not in exception_grade:
-            counted.add(e.course.course_code)
-            jun_c += 1
-        elif e.course.course_code in ranks_in_dict["SOP"] and e.course.course_code not in counted and e.grade not in exception_grade:
-            counted.add(e.course.course_code)
-            sop_c += 1
-        elif e.course.course_code in ranks_in_dict["SEN"] and e.course.course_code not in counted and e.grade not in exception_grade:
-            counted.add(e.course.course_code)
-            sen_c += 1
+        try:# if the grade is nan, skip it
+            if math.isnan(float(e.grade)):
+                continue
+        except:
+            if e.course.course_code in JUN_col.values() and e.course.course_code not in counted and e.grade not in exception_grade:
+                counted.add(e.course.course_code)
+                jun_c += 1
+            elif e.course.course_code in SOP_col.values() and e.course.course_code not in counted and e.grade not in exception_grade:
+                counted.add(e.course.course_code)
+                sop_c += 1
+            elif e.course.course_code in SEN_col.values() and e.course.course_code not in counted and e.grade not in exception_grade:
+                counted.add(e.course.course_code)
+                sen_c += 1
 
     if jun_c < JUN:
+        return "FIR"
+    elif jun_c >= JUN and sop_c < SOP:
         return "JUN"
-    elif sop_c < SOP:
+    elif sop_c >= SOP and sen_c < SEN:
         return "SOP"
     else:
         return "SEN"
 
+   
 
 def prereq_exist():
     """
