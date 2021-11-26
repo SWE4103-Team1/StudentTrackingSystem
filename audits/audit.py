@@ -1,4 +1,3 @@
-# TODO: calculate the student's status
 # TODO: use the cohort instead of the student's start date when finding best matrix
 
 from datetime import datetime
@@ -8,6 +7,7 @@ from dataloader.load_extract import DataFileExtractor
 from StudentTrackingSystemApp.configfuncs import get_all_cores
 from audits.audit_data import AuditData
 from audits.confmatrix import best_fit_config_matrix, non_core_requirements
+from audits import status
 
 
 UNPOP = "UNPOPULATED"
@@ -37,56 +37,57 @@ def audit_student(student_number, mapped_courses=None):
     enrolments = Enrolment.objects.filter(
         student__student_number=student_number,
     ).order_by("term")
+    if len(enrolments) < 0:
+        raise RuntimeError("Student {} has no enrolments".format(student_number))
 
     # Populate audit response with enrolment data
     audit_response = AuditData()
-    student_status = "JUST ENTERED"
-    if len(enrolments):
-        student = enrolments[0].student
-        conf_mat_sheet = best_fit_config_matrix(student)
-        audit_response["latest_enrolment_term"] = enrolments[0].term
-        audit_response["base_program"] = "SWE{}".format(conf_mat_sheet)
-        progress = audit_response["progress"]
+    student = enrolments[0].student
+    conf_mat_sheet = best_fit_config_matrix(student)
+    audit_response["latest_enrolment_term"] = enrolments[0].term
+    audit_response["base_program"] = "SWE{}".format(conf_mat_sheet)
+    progress = audit_response["progress"]
 
-        # fill core's remaining with all cores
-        core_codes = get_all_cores(conf_mat_sheet)
-        progress["CORE"] = {
-            "remaining": {
-                "courses": core_codes,
-                "credit_hours": sum(
-                    map(
-                        lambda c: mapped_courses.get(
-                            c, Course(credit_hours=0)
-                        ).credit_hours,
-                        core_codes,
-                    )
-                ),
-            }
+    # fill core's remaining with all cores
+    core_codes = get_all_cores(conf_mat_sheet)
+    progress["CORE"] = {
+        "remaining": {
+            "courses": core_codes,
+            "credit_hours": sum(
+                map(
+                    lambda c: mapped_courses.get(
+                        c, Course(credit_hours=0)
+                    ).credit_hours,
+                    core_codes,
+                )
+            ),
         }
+    }
 
-        # fill non-core's reamining sections with all non-cores
-        non_core_reqs = non_core_requirements(conf_mat_sheet)
-        for course_type, reqs in non_core_reqs.items():
-            progress[course_type] = {"remaining": reqs}
+    # fill non-core's reamining sections with all non-cores
+    non_core_reqs = non_core_requirements(conf_mat_sheet)
+    for course_type, reqs in non_core_reqs.items():
+        progress[course_type] = {"remaining": reqs}
 
-        # populate progress from student's enrolments, removing remaining appropriately
-        applicables = filter(
-            lambda e: e.course.course_type != None and e.grade in passing_grades,
-            enrolments,
-        )
-        for enrolment in applicables:
-            course_status = "completed"
-            if enrolment.grade == "nan" or enrolment is None:
-                course_status = "in_progress"
+    # populate progress from student's enrolments, removing remaining appropriately
+    applicables = filter(
+        lambda e: e.course.course_type != None and e.grade in passing_grades,
+        enrolments,
+    )
+    for enrolment in applicables:
+        course_status = "completed"
+        if enrolment.grade == "nan" or enrolment is None:
+            course_status = "in_progress"
 
-            audit_response.add_course(course_status, enrolment.course)
-            audit_response.remove_course("remaining", enrolment.course)
+        audit_response.add_course(course_status, enrolment.course)
+        audit_response.remove_course("remaining", enrolment.course)
 
-        audit_response["target_student"] = _student_data(student, student_status)
+    student_status = status.student_status(progress)
+    audit_response["target_student"] = _student_data(student, student_status)
     return (audit_response, mapped_courses)
 
 
-def _student_data(student, student_status):
+def _student_data(student, status):
     # years_in calculated as current year minus start year, plus
     # the portion of the current year, in months, that have passed
     # the current month is ignored, which is why now.month - 1 is used
@@ -99,5 +100,5 @@ def _student_data(student, student_status):
         "cohort": UNPOP,
         "rank": student.rank,
         "years_in": years_in,
-        "status": student_status,
+        "status": status,
     }
