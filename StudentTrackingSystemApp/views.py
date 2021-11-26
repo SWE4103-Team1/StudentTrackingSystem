@@ -178,19 +178,27 @@ def get_count_parameters_api(request):
     from json import dumps
     from django.shortcuts import HttpResponse
     from datamodel.models import Student, Enrolment
-    from generateCounts.counts import count_total_students_by_cohort, count_total_students_by_semester
 
     cohorts = []
     semesters = []
 
     startDates = Student.objects.values("start_date").distinct()
     for date in startDates:
-        cohortYear = date["start_date"].strftime("%Y")
-        nextYear = int(cohortYear) + 1
-        cohort = "".join((cohortYear, "-", str(nextYear)))
-        # Omit the cohort if there are no students a part of it
-        if count_total_students_by_cohort(cohort) > 0:
-            cohorts.append(cohort)
+        start_date = date["start_date"].strftime("%Y-%m")
+        year = start_date[:4]
+        month = start_date[5:]
+
+        # If a student starts in sept then they are a part of the 
+        # currentYear-nextYear cohort
+        # If a student starts in the winter or summer term, then they are 
+        # a part of the previousYear-currentYear cohort
+        cohort = []
+        if int(month) == 9:
+            cohort = [year, "-", str(int(year) + 1)] 
+        else:
+            cohort = [str(int(year) - 1), "-", year]
+
+        cohorts.append(''.join(cohort))
 
     # Remove dupliactes and sort list
     cohorts = list(dict.fromkeys(cohorts))
@@ -199,9 +207,7 @@ def get_count_parameters_api(request):
     enrollmentTerms = Enrolment.objects.values("term").distinct()
     for term in enrollmentTerms:
         semester = term["term"]
-        # Omit the semester if there are no students a part of it
-        if count_total_students_by_semester(term["term"]) > 0:
-            semesters.append(semester)
+        semesters.append(semester)
 
     semesters.sort(reverse=True)
     semesters = semesters[1:] #THIS IS TO REMOVE A STUPID WEIRD T AT THE FRONT
