@@ -34,9 +34,12 @@ def audit_student(student_number, enrolments=None, courses=None, mapped_courses=
     # Get credit hours for courses
     if courses is None:
         courses = Course.objects.all().order_by("upload_set__upload_datetime")
-    if mapped_courses is not None:
+    if mapped_courses is None:
         # new courses will overwrite older
-        mapped_courses = {c.course_code.replace("*", ""): c for c in courses.reverse()}
+        print(type(courses))
+        for c in courses:
+            print(type(c.course_code))
+        mapped_courses = {c.course_code.replace("*", ""): c for c in courses}
 
     # Populate audit response with enrolment data
     audit_response = AuditData()
