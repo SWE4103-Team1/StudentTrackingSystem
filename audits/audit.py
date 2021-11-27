@@ -33,6 +33,7 @@ def audit_student(student_number, enrolments=None, courses=None, mapped_courses=
 
     # Get credit hours for courses
     if courses is None:
+        # TODO: look for unique
         courses = Course.objects.all().order_by("upload_set__upload_datetime")
     if mapped_courses is None:
         # new courses will overwrite older

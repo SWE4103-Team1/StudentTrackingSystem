@@ -7,63 +7,11 @@ import numpy as np
 
 from datamodel.models import Student, Course, Enrolment, UploadSet
 from dataloader.db_enhancements import bulk_save, group_enrolments_by_student_num
+from dataloader.unassigned_transfers import *
 from StudentTrackingSystemApp.rankings import calculateRank
 from StudentTrackingSystemApp.configfuncs import get_course_type
 from audits import audit, status
 
-def get_transfer_unsassigned_courses(s):
-    s_list = []
-    course_dictionary = {
-        "BLOCK": "EXTRA",
-        "SCIENCE":  "BAS SCI",
-        "LANGUAGE" : "CSE-OPEN",
-        "HUM" : "CSE-HSS",
-        "OPEN" : "CSE-OPEN",
-        "TECHNICAL ELECTIVE" : "TE",
-    }
-    for index, value in s.items():
-        if "SCIENCE" in value or "PHYSICS" in value or "CHEMISTRY" in value or "BIOLOGY" in value:
-            s_list.append(course_dictionary["SCIENCE"])
-        elif "ARTS" in value or "COMPLEMENTARY STUDIES" in value or "COMPLIMENTARY STUDIES" in value or "OPEN ELECTIVE" in value:
-            s_list.append(course_dictionary["OPEN"])
-        elif "TECHNICAL ELECTIVE" in value:
-            s_list.append(course_dictionary["TECHNICAL ELECTIVE"])
-        elif "FRENCH" in value or "ENGLISH" in value or "SPANISH" in value:
-            s_list.append(course_dictionary["LANGUAGE"])
-        elif "HUM" in value:
-            s_list.append(course_dictionary["HUM"])
-        elif "ASSIGNED" in value:
-            s_list.append(value)
-        else:
-            s_list.append("BLOCK")
-    return pd.Series(s_list)
-
-def fix_course_title(s):
-
-    course_title_dictionary = {
-        ("U/A BASIC SCIENCE ELECTIVE",
-        "U/A SCIENCE ELECTIVE",
-        "U/A BASIC SCIENCE",
-        "U/A SCIENCE" ) : "U/A BAS SCI",
-        "U/A FRENCH" : "U/A CSE-OPEN (FRENCH)",
-        "U/A ENGLISH" : "U/A CSE-OPEN (ENGLISH)",
-        "U/A SPANISH" : "U/A CSE-OPEN (SPANISH)",
-        ("U/A HUMANITIES","HUM") : "U/A CSE-HSS",
-        ("A-LEVEL PHYSICS","UNASSIGNED PHYSICS 1ST YR","UNASSIGNED PHYSICS") : "U/A BAS SCI (PHYS)",
-        ("A-LEVEL CHEMISTRY","UNASSIGNED CHEMISTRY 1ST YR") : "U/A BAS SCI (CHEM)",
-        ("A-LEVEL BIOLOGY","UNASSIGNED BIOLOGY 1ST YR") : "U/A BAS SCI (BIO)",
-        ("COMPLEMENTARY STUDIES ELECTIVE",
-        "COMPLIMENTARY STUDIES ELECTIVE",
-        "U/A OPEN ELECTIVE","U/A ARTS",
-        "U/A OPEN ARTS","U/A OPEN ELECTIVE") : "U/A CSE-OPEN",
-        ("BLOCK TRANSFER, U/A BLOCK TRANSFER") : "U/A BLOCK",
-        ("U/A TECHNICAL ELECTIVE","TECHNICAL ELECTIVE") : "U/A TE",
-    }
-
-    for key in course_title_dictionary:
-        s.replace(key,course_title_dictionary[key],inplace=True,regex=True)
-
-    return s
 
 class DataFileExtractor:
     _transfer_section_marker = "N/A"
@@ -193,14 +141,16 @@ class DataFileExtractor:
         # prepare transfer input
 
         dft = dft.loc[:, ~dft.columns.str.contains("^Unnamed")]
-        dft["Title"] = dft["Title"].str.replace("UNASSIGNED",'U/A',regex=True)
-        dft["Title"] = dft["Title"].str.replace("ASSIGNED",'',regex=True)
-        dft["Course"].fillna(get_transfer_unsassigned_courses(dft["Title"]), inplace=True)
+        dft["Title"] = dft["Title"].str.replace("UNASSIGNED", "U/A", regex=True)
+        dft["Title"] = dft["Title"].str.replace("ASSIGNED", "", regex=True)
+        dft["Course"].fillna(
+            get_transfer_unassigned_courses(dft["Title"]), inplace=True
+        )
         dft["Title"] = fix_course_title(dft["Title"])
         dft.dropna(axis=0, how="all", inplace=True)
 
         # create transfer course models
-        dft.drop_duplicates(subset=["Course","Title"], keep="last", inplace=True)
+        dft.drop_duplicates(subset=["Course", "Title"], keep="last", inplace=True)
         dft.dropna(axis=0, how="all", inplace=True)
         dft = dft.values.tolist()
         transfer_course_models = list(map(self._new_transfer_course, dft))
@@ -211,9 +161,11 @@ class DataFileExtractor:
     ):
         # prepare transfer input data
         dft = dft.loc[:, ~dft.columns.str.contains("^Unnamed")]
-        dft["Title"] = dft["Title"].str.replace("UNASSIGNED",'U/A',regex=True)
-        dft["Course"].fillna(get_transfer_unsassigned_courses(dft["Title"]), inplace=True)
-        dft["Title"] = dft["Title"].str.replace("ASSIGNED",'',regex=True)
+        dft["Title"] = dft["Title"].str.replace("UNASSIGNED", "U/A", regex=True)
+        dft["Course"].fillna(
+            get_transfer_unassigned_courses(dft["Title"]), inplace=True
+        )
+        dft["Title"] = dft["Title"].str.replace("ASSIGNED", "", regex=True)
         # dft["Title"] = fix_course_title(dft["Title"])
         dft.dropna(axis=0, how="all", inplace=True)
         dft_e = copy.deepcopy(dft)
