@@ -118,3 +118,31 @@ class StudentTests(TestCase):
         self.assertEqual(db_s2.upload_set, us2)
 
         return db_s1, db_s2
+
+    def test_claculate_cohort(self):
+        from datetime import datetime
+        us_tester = UploadSetTests()
+        us = us_tester.test_create_null_upload_set()
+
+        s1 = Student(
+            student_number=123456,
+            name="John Doe",
+            campus="FR",
+            program="SWE",
+            start_date=datetime.strptime("2020-09-01", "%Y-%m-%d"),
+            upload_set=us,
+        )
+        s1.save()
+
+        s2 = Student(
+            student_number=654321,
+            name="Doe Joe",
+            campus="SJ",
+            program="SWE",
+            start_date=datetime.strptime("2020-01-01", "%Y-%m-%d"),
+            upload_set=us,
+        )
+        s2.save()
+
+        self.assertEqual(s1.calculateCohort(), "2020-2021")
+        self.assertEqual(s2.calculateCohort(), "2019-2020")
