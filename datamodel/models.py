@@ -38,10 +38,13 @@ class Student(models.Model):
         date = self.start_date.strftime("%Y-%m")
         year = date[:4]
         month = date[5:]
+        cohort = (
+            [year, "-", str(int(year) + 1)]
+            if int(month) >= 9
+            else [str(int(year) - 1), "-", year]
+        )
 
-        cohort = [year, "-", str(int(year) + 1)] if int(month) >= 9 else [str(int(year) -1), "-", year]
-
-        return ''.join(cohort)
+        return "".join(cohort)
 
     def __str__(self):
         return f"sid: {self.student_number}, name: {self.name}"
