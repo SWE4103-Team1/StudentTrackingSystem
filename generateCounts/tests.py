@@ -65,23 +65,23 @@ class countsTester(TestCase):
 
         #   student1 enrolled in COOP Course , count =1
         enrolment1 = Enrolment(
-            student = student1,course = course1,term = "2021/WI",upload_set = _upload_set
+            student = student1,course = course1,term = "2021/WI",upload_set = _upload_set,grade="A"
         )
 
         #   student2 enrolled in COOP course, count =2
         enrolment2 = Enrolment(
-            student = student2,course = course2,term = "2021/WI",upload_set = _upload_set
+            student = student2,course = course2,term = "2021/WI",upload_set = _upload_set,grade="A"
         )
 
         # student2 enrolled in another coop course in the same term
         # This will probably not happen unless the data is flawed, count =2
         enrolment3 = Enrolment(
-            student = student2,course = course1,term = "2021/WI",upload_set = _upload_set
+            student = student2,course = course1,term = "2021/WI",upload_set = _upload_set,grade="A"
         )
 
         # student3 enrolled in a non co-op course, count=2
         enrolment4 = Enrolment(
-            student = student3,course = course3,term = "2021/WI",upload_set = _upload_set
+            student = student3,course = course3,term = "2021/WI",upload_set = _upload_set,grade="A"
         )
 
         # student4 enrolled in a non co-op course, count=2
@@ -91,17 +91,17 @@ class countsTester(TestCase):
 
         # student4 enrolled in a co-op course , count =3
         enrolment6 = Enrolment(
-            student = student4,course = course1,term = "2021/WI",upload_set = _upload_set
+            student = student4,course = course1,term = "2021/WI",upload_set = _upload_set,grade="A"
         )
 
         #  student4 duplicate, should not add to count, count = 3
         enrolment5 = Enrolment(
-            student = student4,course = course2,term = "2021/WI",upload_set = _upload_set
+            student = student4,course = course2,term = "2021/WI",upload_set = _upload_set,grade="A"
         )
 
         # student 5 in a another term, should not be counted, count =3
         enrolment6 = Enrolment(
-            student = student5,course = course1,term = "2021/FA",upload_set = _upload_set
+            student = student5,course = course1,term = "2021/FA",upload_set = _upload_set,grade="A"
         )
 
 
@@ -176,43 +176,43 @@ class countsTester(TestCase):
 
         #   student1 enrolled in COOP Course , count =1
         enrolment1 = Enrolment(
-            student = student1,course = course1,term = "2021/WI",upload_set = _upload_set
+            student = student1,course = course1,term = "2021/WI",upload_set = _upload_set,grade="A"
         )
 
         #   student2 enrolled in COOP course, count =2
         enrolment2 = Enrolment(
-            student = student2,course = course2,term = "2021/WI",upload_set = _upload_set
+            student = student2,course = course2,term = "2021/WI",upload_set = _upload_set,grade="A"
         )
 
         # student2 enrolled in another coop course in the same term
         # This will not happen, but as we may change the range parameter we cant have a student counted twice, count =2
         enrolment3 = Enrolment(
-            student = student2,course = course1,term = "2021/WI",upload_set = _upload_set
+            student = student2,course = course1,term = "2021/WI",upload_set = _upload_set,grade="A"
         )
 
         # student3 enrolled in a non co-op course, count=2
         enrolment4 = Enrolment(
-            student = student3,course = course3,term = "2021/WI",upload_set = _upload_set
+            student = student3,course = course3,term = "2021/WI",upload_set = _upload_set,grade="A"
         )
 
         # student4 enrolled in a non co-op course, count=2
         enrolment5 = Enrolment(
-            student = student4,course = course3,term = "2021/WI",upload_set = _upload_set
+            student = student4,course = course3,term = "2021/WI",upload_set = _upload_set,grade="A"
         )
 
         # student4 enrolled in a co-op course ,but start date doesnt match, count =2
         enrolment6 = Enrolment(
-            student = student4,course = course1,term = "2021/WI",upload_set = _upload_set
+            student = student4,course = course1,term = "2021/WI",upload_set = _upload_set,grade="A"
         )
 
         #  student4 duplicate, should not add to count, count = 2
         enrolment5 = Enrolment(
-            student = student4,course = course2,term = "2021/WI",upload_set = _upload_set
+            student = student4,course = course2,term = "2021/WI",upload_set = _upload_set,grade="A"
         )
 
         # student 5 start date does not match
         enrolment6 = Enrolment(
-            student = student5,course = course1,term = "2021/FA",upload_set = _upload_set
+            student = student5,course = course1,term = "2021/FA",upload_set = _upload_set,grade="A"
         )
 
 
@@ -265,11 +265,11 @@ class countsTester(TestCase):
 
 
         enrolment1 = Enrolment(
-            student = student1,course = course1,term = "2021/WI",upload_set = _upload_set
+            student = student1,course = course1,term = "2021/WI",upload_set = _upload_set,grade="A"
         )
 
         enrolment2 = Enrolment(
-            student = student2,course = course2,term = "2021/WI",upload_set = _upload_set
+            student = student2,course = course2,term = "2021/WI",upload_set = _upload_set,grade="A"
         )
 
         enrolment1.save()
@@ -310,19 +310,19 @@ class countsTester(TestCase):
         )
 
         enrolment1 = Enrolment(
-            student = student1,course = course1,term = "2021/WI",upload_set = _upload_set
+            student = student1,course = course1,term = "2021/WI",upload_set = _upload_set,grade="A"
         )
 
         enrolment2 = Enrolment(
-            student = student2,course = course2,term = "2021/FA",upload_set = _upload_set
+            student = student2,course = course2,term = "2021/FA",upload_set = _upload_set,grade="A"
         )
 
         enrolment3 = Enrolment(
-            student = student2,course = course1,term = "2021/FA",upload_set = _upload_set
+            student = student2,course = course1,term = "2021/FA",upload_set = _upload_set,grade="A"
         )
 
         enrolment4 = Enrolment(
-            student = student3,course = course1,term = "2021/FA",upload_set = _upload_set
+            student = student3,course = course1,term = "2021/FA",upload_set = _upload_set,grade="A"
         )
 
         student1.save()
@@ -384,19 +384,19 @@ class countsTester(TestCase):
 
 
         enrolment1 = Enrolment(
-            student = student1,course = course1,term = "2021/WI",upload_set = _upload_set
+            student = student1,course = course1,term = "2021/WI",upload_set = _upload_set,grade="A"
         )
 
         enrolment2 = Enrolment(
-            student = student2,course = course2,term = "2021/WI",upload_set = _upload_set
+            student = student2,course = course2,term = "2021/WI",upload_set = _upload_set,grade="A"
         )
 
         enrolment3 = Enrolment(
-            student = student3,course = course2,term = "2021/WI",upload_set = _upload_set
+            student = student3,course = course2,term = "2021/WI",upload_set = _upload_set,grade="A"
         )
 
         enrolment4 = Enrolment(
-            student = student4,course = course2,term = "2021/WI",upload_set = _upload_set
+            student = student4,course = course2,term = "2021/WI",upload_set = _upload_set,grade="A"
         )
 
         enrolment1.save()
