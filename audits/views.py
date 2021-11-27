@@ -9,7 +9,6 @@ from audits import audit
 
 @csrf_exempt
 def audit_student_api(request, student_num):
-    print("in audit student")
     if request.method == "GET":
         try:
             audit_response, _, _ = audit.audit_student(student_num)

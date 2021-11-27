@@ -79,10 +79,10 @@ class DataFileExtractor:
             student = uploaded_students[
                 DataFileExtractor._make_student_key(student_num)
             ]
-            # s_audit, _, mapped_courses = audit.audit_student(
-            #     student_num, student_enrolments, copy.deepcopy(courses), mapped_courses
-            # )
-            # student.status = status.student_status(s_audit["progress"])
+            s_audit, _, mapped_courses = audit.audit_student(
+                student_num, student_enrolments, copy.deepcopy(courses), mapped_courses
+            )
+            student.status = status.student_status(s_audit["progress"])
             student.rank = calculateRank(student_num, student_enrolments)
 
         # Store all models in DB. Not asyncly, sadly
