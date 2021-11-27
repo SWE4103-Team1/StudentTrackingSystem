@@ -44,7 +44,7 @@ class AuditData:
         progress = self.data["progress"]
         type_progress = progress.get(course.course_type, {})
         if status not in type_progress:
-            type_progress[status] = deepcopy(AuditData.empty_progress_data)
+            type_progress[status] = AuditData.default_progress_data()
         type_progress[status]["courses"].append(course.course_code.replace("*", ""))
         type_progress[status]["credit_hours"] += course.credit_hours
         self.data["progress"][course.course_type] = type_progress

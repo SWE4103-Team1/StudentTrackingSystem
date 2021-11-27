@@ -28,24 +28,19 @@ def audit_student(student_number, enrolments=None, courses=None, mapped_courses=
             student__student_number=student_number,
         ).order_by("term")
 
-    if len(enrolments) < 0:
-        raise RuntimeError("Student {} has no enrolments".format(student_number))
+    if len(enrolments) <= 0:
+        raise KeyError("Student {} has no enrolments".format(student_number))
 
     # Get credit hours for courses
     if courses is None:
         courses = Course.objects.all().order_by("upload_set__upload_datetime")
     if mapped_courses is None:
         # new courses will overwrite older
-        print(type(courses))
-        for c in courses:
-            print(type(c.course_code))
         mapped_courses = {c.course_code.replace("*", ""): c for c in courses}
 
     # Populate audit response with enrolment data
     audit_response = AuditData()
-    print("enrolment", enrolments[0])
     student = enrolments[0].student
-    print("student", student)
     conf_mat_sheet = best_fit_config_matrix(student)
     audit_response["latest_enrolment_term"] = enrolments[0].term
     audit_response["base_program"] = "SWE{}".format(conf_mat_sheet)
