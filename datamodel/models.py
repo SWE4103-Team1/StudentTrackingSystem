@@ -60,7 +60,7 @@ class Course(models.Model):
     upload_set = models.ForeignKey(UploadSet, on_delete=models.CASCADE)
 
     class Meta:
-        _index_fields = ["course_code", "section", "upload_set"]
+        _index_fields = ["course_code", "section", "upload_set", "name", "credit_hours"]
         indexes = [
             models.Index(fields=_index_fields, name="course_index"),
         ]
