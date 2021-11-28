@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     "datamodel",
     "dataloader",
     "corsheaders",
+    "audits",
 ]
 
 MIDDLEWARE = [

@@ -1,35 +1,16 @@
 from django.utils import timezone
-from django.db import transaction
 
 import pandas as pd
 import copy
 import itertools
 import numpy as np
+from datetime import date
 
 from datamodel.models import Student, Course, Enrolment, UploadSet
+from dataloader.db_enhancements import bulk_save, group_enrolments_by_student_num
 from StudentTrackingSystemApp.rankings import calculateRank
 from StudentTrackingSystemApp.configfuncs import get_course_type
-
-
-def bulk_save(models):
-    with transaction.atomic():
-        for model in models:
-            model.save()
-
-
-def _group_enrolments_by_student_num(enrolments: list):
-    """returns dict of sets, where key is student number and value is set of
-    their enrolments"""
-    groups = dict()
-    for enrolment in enrolments:
-        s_num = enrolment.student.student_number
-        existing = groups.get(s_num)
-        if existing is None:
-            groups[s_num] = [enrolment]
-        else:
-            existing.append(enrolment)
-
-    return groups
+from audits import audit, status
 
 
 class DataFileExtractor:
@@ -92,12 +73,18 @@ class DataFileExtractor:
         del df_transfer_enrolment
         all_enrolments = list(itertools.chain(enrolments, transfer_enrolments))
 
-        # Calculate rank from student's enrolments and update the models
-        grouped_enrolments = _group_enrolments_by_student_num(all_enrolments)
+        # Calculate rank & status from student's enrolments and update the models
+        grouped_enrolments = group_enrolments_by_student_num(all_enrolments)
+        mapped_courses = None
         for student_num, student_enrolments in grouped_enrolments.items():
-            uploaded_students[
+            student = uploaded_students[
                 DataFileExtractor._make_student_key(student_num)
-            ].rank = calculateRank(student_num, student_enrolments)
+            ]
+            s_audit, _, mapped_courses = audit.audit_student(
+                student_num, student_enrolments, copy.deepcopy(courses), mapped_courses
+            )
+            student.status = status.student_status(s_audit["progress"])
+            student.rank = calculateRank(student_num, student_enrolments)
 
         # Store all models in DB. Not asyncly, sadly
         bulk_save(itertools.chain(students, courses, transfer_courses))
@@ -133,6 +120,7 @@ class DataFileExtractor:
         dfc.drop_duplicates(subset=["Course", "Section"], keep="last", inplace=True)
         dfc = dfc.values.tolist()
         course_models = list(map(self._new_course_model, dfc))
+        course_models.sort(key=lambda c: c.upload_set.upload_datetime)
         return course_models
 
     def _build_enrolment_models(self, dfe, uploaded_students, uploaded_courses):
@@ -212,7 +200,7 @@ class DataFileExtractor:
             name=dfp[1],
             program=dfp[7],
             campus=dfp[8],
-            start_date=dfp[9],
+            start_date=date.fromisoformat(dfp[9]),
             upload_set=self._upload_set,
         )
         return student
