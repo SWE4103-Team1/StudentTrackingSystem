@@ -95,6 +95,10 @@ def settings(request):
                     elif f.name == "transferData.txt":
                         transferData = f
 
+                if not personData or not courseData or not transferData:
+                    context = {"DataError": "No Data File Found: Must upload 'personData.txt', 'courseData.txt' and 'transferData.txt' together"}
+                    return render(request, "StudentTrackingSystemApp/settings.html", context)
+
                 uploader = DataFileExtractor()
                 uploader.uploadAllFiles(personData, courseData, transferData)
         
