@@ -10,7 +10,7 @@ JUN_col = {}
 SOP_col = {}
 SEN_col = {}
 # grades to exclude from the calculations
-exception_grade = ["F", "W", "NCR", "D", "WF"]
+exception_grade = {"F", "W", "NCR", "D", "WF"}
 
 
 def set_prereq_file(filename):
