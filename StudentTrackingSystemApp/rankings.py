@@ -1,87 +1,148 @@
-# import prerequisite table from datamodel
-from datamodel.models import Student, Enrolment
+import pandas as pd
+from datamodel.models import Enrolment
+import math
 
-# To be removed
-prereq = {
-    "MATH*1003": "FIR",
-    "MATH*1503": "FIR",
-    "CS*1073": "FIR",
-    "PHSY*1081": "FIR",
-    "ENGG*1003": "FIR",
-    "ENGG*1015": "FIR",
-    "ENGG*1001": "FIR",
-    "CS*1083": "SOP",
-    "CS*2043": "SOP",
-    "CS*1303": "SOP",
-    "CS*2613": "SOP",
-    "ECE*2701": "SOP",
-    "ECE*2214": "SOP",
-    "ECE*2215": "SOP",
-    "CS*2333": "SOP",
-    "STAT*2593": "SOP",
-    "ECE*2412": "SOP",
-    "CS*3113": "JUN",
-    "CE*3963": "JUN",
-    "ME*3232": "JUN",
-    "CS*2263": "JUN",
-    "CS*2383": "JUN",
-    "ECE*3221": "JUN",
-    "SWE*4103": "JUN",
-    "SWE*4403": "SEN",
-    "CS*3503": "SEN",
-    "ECE*3232": "SEN",
-    "ECE*3242": "SEN",
-    "ENGG*4000": "SEN",
-    "CS*3383": "SEN",
-    "CS*3413": "SEN",
-    "CS*3873": "SEN",
-    "ECE*3812": "SEN",
-    "SWE*4203": "SEN",
-    "ENGG*4013": "SEN",
-}
+# the excel file
+xls = None
+
+# a dict to hold the pages within the excel file
+JUN_col = {}
+SOP_col = {}
+SEN_col = {}
+# grades to exclude from the calculations
+exception_grade = {"F", "W", "NCR", "D", "WF"}
 
 
-def calculateRank(student_number, student_enrolments=None):
+def set_prereq_file(filename):
+    """
+    Sets the pre-req file to the global variable xls
+
+        Param:
+            filename : the file that is passed in
+    """
+    # refer to the global variables
+    global xls, JUN_col, SOP_col, SEN_col
+
+    # parses the excel file
+    xls = pd.ExcelFile(filename)
+    df = xls.parse("Sheet1")
+
+    # gets each column with the header as key, and following cells as list
+    JUN_col = df["JUN"].dropna().to_dict()
+    SOP_col = df["SOP"].dropna().to_dict()
+    SEN_col = df["SEN"].dropna().to_dict()
+
+def get_rank_by_CH(student_number, student_enrolments=None):
+    """
+    returns the rank based on the credit hours that the student has
+
+        Param:
+            student_number : The student number to calculate the rank for
+            student_enrolments : the enrolments related to the given student. If not given, it will query the db for it
+
+        Return:
+            the student rank based on the number of credit hours they have
+    """
+
+    # takes the first cell in each of these columns
+    JUN_CH = JUN_col[0]
+    SOP_CH = SOP_col[0]
+    SEN_CH = SEN_col[0]
+
+    # the CH counter
+    total_ch = 0
+
+    # queries the DB for student"s enrolments if not given
     if student_enrolments is None:
         student_enrolments = Enrolment.objects.filter(
             student__student_number=student_number
         )
 
-    # keeps the count of number of pre-reqs in each ranks
-    FIR_count, JUN_count, SOP_count, SEN_count = 0, 0, 0, 0
-    FIR, JUN, SOP, SEN = 0, 0, 0, 0
-
-    # this for loop goes through the pre-req table to get the ranks of each course and add it to the count of the rank
-    for course in prereq.values():
-        if course == "FIR":
-            FIR_count += 1
-        elif course == "JUN":
-            JUN_count += 1
-        elif course == "SOP":
-            SOP_count += 1
-        elif course == "SEN":
-            SEN_count += 1
-
-    # return the coresponding rank depending on whether they completed all the courses in that rank
-    # EX: if the student's courses with the rank of 'FIR' is the same length as the FIR pre-req length, then return FIR
-    # EX: if the student needs 1 more FIR course, but completed all JUN courses, it will still return as first year since they are still missing FIR courses
     for e in student_enrolments:
-        if e.course.course_code in prereq and (prereq[e.course.course_code] == "FIR"):
-            FIR += 1
-        elif e.course.course_code in prereq and (prereq[e.course.course_code] == "JUN"):
-            JUN += 1
-        elif e.course.course_code in prereq and (prereq[e.course.course_code] == "SOP"):
-            SOP += 1
-        elif e.course.course_code in prereq and (prereq[e.course.course_code] == "SEN"):
-            SEN += 1
 
-    if FIR < FIR_count:
+        try:
+            if math.isnan(float(e.grade)): # if grade is nan, ignore
+                continue
+        except: # will enter here if its not nan and is a letter grade
+            if e.grade not in exception_grade:  # if they dint fail the class, count the CH
+                total_ch += e.course.credit_hours
+    
+    # if the total credit hours are lower than the required credit hours, return that rank
+    if total_ch <= JUN_CH:
         return "FIR"
-    elif JUN < JUN_count:
+    elif total_ch > JUN_CH and total_ch <= SOP_CH:
         return "JUN"
-    elif SOP < SOP_count:
+    elif total_ch > SOP_CH and total_ch <= SEN_CH:
         return "SOP"
-    elif SEN <= SEN_count:
-        return "SEN"
     else:
-        return ""
+        return "SEN"
+
+
+def get_rank_by_PREREQ(student_number, student_enrolments=None):
+    """
+    returns the rank based on a pre-req list of courses
+
+        Param:
+            student_number : The student number to calculate the rank for
+            student_enrolments : the enrolments related to the given student. If not given, it will query the db for it
+
+        Return:
+            the student rank based on what courses they have PASSED
+    """
+
+    # queries the DB for student"s enrolments if not given
+    if student_enrolments is None:
+        student_enrolments = Enrolment.objects.filter(
+            student__student_number=student_number
+        )
+
+    # gets the number of courses needed for each rank (-1 to exclude the credit hours)
+
+    # dropping nan from the dicts
+
+    JUN = len(JUN_col) - 1
+    SOP = len(SOP_col) - 1
+    SEN = len(SEN_col) - 1
+
+    # counter to count the number of courses within each rank
+    jun_c, sop_c, sen_c = 0, 0, 0
+
+    # to keep track of courses that are being taken more than once
+    counted = set()
+
+    for e in student_enrolments:
+        # if the course code found is within the "JUN" column AND its hasn"t been counted yet AND they din"t fail the course, add a count to that rank counter
+        try:# if the grade is nan, skip it
+            if math.isnan(float(e.grade)):
+                continue
+        except:
+            if e.course.course_code in JUN_col.values() and e.course.course_code not in counted and e.grade not in exception_grade:
+                counted.add(e.course.course_code)
+                jun_c += 1
+            elif e.course.course_code in SOP_col.values() and e.course.course_code not in counted and e.grade not in exception_grade:
+                counted.add(e.course.course_code)
+                sop_c += 1
+            elif e.course.course_code in SEN_col.values() and e.course.course_code not in counted and e.grade not in exception_grade:
+                counted.add(e.course.course_code)
+                sen_c += 1
+
+    if jun_c < JUN:
+        return "FIR"
+    elif jun_c >= JUN and sop_c < SOP:
+        return "JUN"
+    elif sop_c >= SOP and sen_c < SEN:
+        return "SOP"
+    else:
+        return "SEN"
+
+   
+
+def prereq_exist():
+    """
+    returns a boolean value of whether the pre-req excel file have been uploaded first
+
+        Return:
+            a boolean value of whether the pre-req excel file have been uploaded first
+    """
+    return xls != None
+

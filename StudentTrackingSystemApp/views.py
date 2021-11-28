@@ -3,6 +3,8 @@ from django.contrib.auth import authenticate, get_user_model, login, logout
 from django.shortcuts import redirect, render
 from generateCounts.counts import *
 from users.roles import UserRole
+from StudentTrackingSystemApp import configfuncs, rankings
+from django.utils.datastructures import MultiValueDictKeyError
 
 
 def registerPage(request):
@@ -43,7 +45,8 @@ def loginPage(request):
                 return redirect("dashboard")
             else:
                 print(f"{user} does not exist")
-                context = {"error": "Invalid login credentials. Please try again."}
+                context = {
+                    "error": "Invalid login credentials. Please try again."}
                 return render(request, "StudentTrackingSystemApp/login.html", context)
         except Exception as e:
             print(f"ERROR: {e}")
@@ -67,19 +70,53 @@ def redirectLogin(request):
 # able to read in files
 def settings(request):
     if request.method == "POST":
-        # files will hold all the files that are read in
-        files = request.FILES.getlist("input_files")
-        if files:
-            for f in files:
-                if f.name == "personData.txt":
-                    personData = f
-                elif f.name == "courseData.txt":
-                    courseData = f
-                elif f.name == "transferData.txt":
-                    transferData = f
 
-            uploader = DataFileExtractor()
-            uploader.uploadAllFiles(personData, courseData, transferData)
+        personData, courseData, transferData = None, None, None
+
+        # files will hold all the data files that are read in
+        data_files = request.FILES.getlist("data_files")
+        if data_files:
+            if not configfuncs.config_file_exist():
+                print(f"Can't Submit Data Files without Config Files")
+                context = {
+                    "DataError": "No Configuration File Found: Must Upload Configuration Files Before Data Files"}
+                return render(request, "StudentTrackingSystemApp/settings.html", context)
+            elif not rankings.prereq_exist():
+                print(f"Can't Submit Data Files without Pre-Reqs Files")
+                context = {
+                    "DataError": "No Prerequisites File Found: Must Upload Prerequisites Files Before Data Files"}
+                return render(request, "StudentTrackingSystemApp/settings.html", context)
+            else:
+                for f in data_files:
+                    if f.name == "personData.txt":
+                        personData = f
+                    elif f.name == "courseData.txt":
+                        courseData = f
+                    elif f.name == "transferData.txt":
+                        transferData = f
+
+                if not personData or not courseData or not transferData:
+                    context = {"DataError": "No Data File Found: Must upload 'personData.txt', 'courseData.txt' and 'transferData.txt' together"}
+                    return render(request, "StudentTrackingSystemApp/settings.html", context)
+
+                uploader = DataFileExtractor()
+                uploader.uploadAllFiles(personData, courseData, transferData)
+        
+        # config file holds a single config excel file
+        try:
+            config_file = request.FILES["config_file"]
+            if config_file:
+                configfuncs.set_config_file(config_file)
+        except MultiValueDictKeyError:
+            pass
+
+        # pre-req files holds a single prereq config excel file
+        try:
+            prereq_file = request.FILES["prereq_file"]
+            if prereq_file:
+                rankings.set_prereq_file(prereq_file)
+        except MultiValueDictKeyError:
+            pass
 
     context = {}
     return render(request, "StudentTrackingSystemApp/settings.html", context)
@@ -99,8 +136,10 @@ def dashboard(request):
         start_date = request.POST.get("start_date")
 
         try:
-            context["coopSemester"] = str(count_coop_students_by_semester(semester))
-            context["totalSemester"] = str(count_total_students_by_semester(semester))
+            context["coopSemester"] = str(
+                count_coop_students_by_semester(semester))
+            context["totalSemester"] = str(
+                count_total_students_by_semester(semester))
             context["coopStartDate"] = str(
                 count_coop_students_by_start_date(start_date)
             )
