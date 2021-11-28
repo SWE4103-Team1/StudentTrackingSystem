@@ -93,7 +93,7 @@ def get_course_type(course_code):
 
     # if a course code is one of these, it means its a transfer course
     # just return the course_code as the course_type 
-    unassigned_course_codes = ["EXTRA", "BASSCI", "CSE-OPEN", "CSE-HSS", "TE"]
+    unassigned_course_codes = {"EXTRA", "BASSCI", "CSE-OPEN", "CSE-HSS", "TE"}
 
     if course_code in unassigned_course_codes:
         # because at line 91 and 92 strips the course_code off spaces, BAS SCI -> BASSCI
