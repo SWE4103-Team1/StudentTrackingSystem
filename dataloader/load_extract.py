@@ -200,7 +200,9 @@ class DataFileExtractor:
             name=dfp[1],
             program=dfp[7],
             campus=dfp[8],
-            start_date=date.fromisoformat(dfp[9]),
+            start_date=date.fromisoformat(dfp[9])
+            if type(dfp[9]) is str
+            else timezone.now(),
             upload_set=self._upload_set,
         )
         return student

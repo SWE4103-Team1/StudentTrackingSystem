@@ -322,5 +322,5 @@ def _get_replacements(course_code):
 
 # Use local config file when testing
 if environment.local_config:
-    config_path = os.path.join(settings.BASE_DIR, "data", "rank-prerequisites.xlsx")
+    config_path = os.path.join(settings.BASE_DIR, "data", "SWEProgram.xlsx")
     set_config_file(config_path)
