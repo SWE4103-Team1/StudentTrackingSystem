@@ -10,6 +10,11 @@ Created on Sat Nov  6 21:44:25 2021
 import math
 import pandas as pd
 import re
+import os
+
+import environment
+from StudentTrackingSystem import settings
+
 
 # Temporary Course Excel URL
 
@@ -56,13 +61,16 @@ def get_pre_req(classcode):
         # takes the prefix of the class code (only the letter part of the class code)
         tag = _get_course_tag(classcode)
         # adds spacing in between the class code
-        classcode = tag + " " + classcode[len(tag):]
+        classcode = tag + " " + classcode[len(tag) :]
 
     pre_reqs = []
     # get all the pre-reqs given the course code (in the form of list)
 
-    for item in (excel_in_dict["prereqs"].loc[
-            excel_in_dict["prereqs"]["Course"] == classcode].values[0]):
+    for item in (
+        excel_in_dict["prereqs"]
+        .loc[excel_in_dict["prereqs"]["Course"] == classcode]
+        .values[0]
+    ):
         try:
             # since each pre-req is returned in the form of a list, so i only take the first element from 'item'
             # if the element is nan, this would be true, else it would throw an exception
@@ -92,14 +100,14 @@ def get_course_type(course_code):
     course_code = course_code.replace(" ", "")
 
     # if a course code is one of these, it means its a transfer course
-    # just return the course_code as the course_type 
+    # just return the course_code as the course_type
     unassigned_course_codes = {"EXTRA", "BASSCI", "CSE-OPEN", "CSE-HSS", "TE"}
 
     if course_code in unassigned_course_codes:
         # because at line 91 and 92 strips the course_code off spaces, BAS SCI -> BASSCI
         # need to add the space back
         if course_code == "BASSCI":
-            course_code = course_code[:3] +  " " + course_code[3:]
+            course_code = course_code[:3] + " " + course_code[3:]
         return course_code
 
     # check for replacements first
@@ -116,7 +124,10 @@ def get_course_type(course_code):
     # special case for CSE-HSS courses, since they overlap with CSE-OPEN courses
     # if its an exception for either CSE-HSS or CSE-ITS, but is is not an exception for CSE-OPEN, return CSE-OPEN instead
     if course_type == "CSE-HSS" or course_type == "CSE-ITS":
-        if (_is_exception(course_code, "CSE-ITS") or _is_exception(course_code, "CSE-HSS")) and not _is_exception(course_code, "CSE-OPEN"):
+        if (
+            _is_exception(course_code, "CSE-ITS")
+            or _is_exception(course_code, "CSE-HSS")
+        ) and not _is_exception(course_code, "CSE-OPEN"):
             return "CSE-OPEN"
 
     # if its a valid tag and is not in the exceptions list
@@ -138,8 +149,7 @@ def _validate_tag(course_code):
     # takes the prefix of the course code (EX: SWE4103 -> SWE)
     course_tag = _get_course_tag(course_code)
 
-    for key, value in excel_in_dict["valid-tags"].to_dict(
-            orient="list").items():
+    for key, value in excel_in_dict["valid-tags"].to_dict(orient="list").items():
         # for each item, if the prefix is in valid-tag or the entire course code (only for CSE-ITS)
         # return the key (course type)
         if course_tag in value or course_code in value:
@@ -180,8 +190,11 @@ def _get_course_tag(course_code):
     course_tag = ""
     i = 0
     # takes all characters up to the first digit in the course code
-    while (course_code is not None and i < len(course_code)
-           and not course_code[i].isdigit()):
+    while (
+        course_code is not None
+        and i < len(course_code)
+        and not course_code[i].isdigit()
+    ):
         course_tag += course_code[i]
         i += 1
     return course_tag
@@ -305,3 +318,9 @@ def _get_replacements(course_code):
                 return key
 
     return None
+
+
+# Use local config file when testing
+if environment.local_config:
+    config_path = os.path.join(settings.BASE_DIR, "data", "rank-prerequisites.xlsx")
+    set_config_file(config_path)
