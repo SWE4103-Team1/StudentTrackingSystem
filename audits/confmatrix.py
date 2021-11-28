@@ -35,13 +35,9 @@ def non_core_requirements(mat_sheet_name):
     return non_core_requirements
 
 
-def best_fit_config_matrix(student):
-    target_year = None
-    if type(student.start_date) == str:  # model not yet stored to DB
-        year_component = student.start_date.split("-")[0]
-        target_year = int(year_component)
-    else:
-        target_year = student.start_date.year
+def best_fit_config_matrix(cohort):
+    cohort_start_year = cohort.split("-")[0]
+    target_year = int(cohort_start_year)
 
     def is_target_year(sheet):
         mat_start_year = sheet.split("-")[0]

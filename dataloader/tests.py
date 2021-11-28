@@ -81,6 +81,7 @@ class DataLoaderTests(unittest.TestCase):
             uploader = DataFileExtractor()
             uploader.uploadAllFiles(person_file, course_file, transfer_file)
 
+
             db_students = Student.objects.filter()
             self.assertTrue(db_students)
             self.assertTrue(Course.objects.filter())

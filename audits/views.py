@@ -16,6 +16,9 @@ def audit_student_api(request, student_num):
         except KeyError as e:
             return HttpResponse(e.__str__(), status=404)  # student num not found
         except BaseException as e:
+            import traceback
+
+            traceback.print_exc()
             return HttpResponse(status=500)  # audit error
 
     return HttpResponse(status=405)  # incorrect HTTP method

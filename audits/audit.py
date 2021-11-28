@@ -1,5 +1,3 @@
-# TODO: use the cohort instead of the student's start date when finding best matrix
-
 from datetime import datetime
 
 from datamodel.models import Enrolment, Course
@@ -9,7 +7,6 @@ from audits.confmatrix import best_fit_config_matrix, non_core_requirements
 from audits import status
 
 
-UNPOP = "UNPOPULATED"
 pass_grades = {"nan", "CR", "C-", "C", "C+", "B-", "B", "B+", "A-", "A", "A+", "T"}
 
 
@@ -18,8 +15,8 @@ def audit_student(student_number, enrolments=None, courses=None, mapped_courses=
     Audits a student with the given student number. All default parameters are
     to improve performance for load-extract and can be omitted for a basic
     audit.
-    enrolments is a list of Enrolments, sorted in descending order by term
-    courses is a list of Courses, sorted in descending order by upload_datetime
+    enrolments is a list of Enrolments, sorted in ascending order by term
+    courses is a list of Courses, sorted in ascending order by upload_datetime
     mapped_courses is a dict, mapping the course code, without asterisks, to the course
     """
     # Query the enrolments for the given student number
@@ -33,7 +30,6 @@ def audit_student(student_number, enrolments=None, courses=None, mapped_courses=
 
     # Get credit hours for courses
     if courses is None:
-        # TODO: look for unique
         courses = Course.objects.all().order_by("upload_set__upload_datetime")
     if mapped_courses is None:
         # new courses will overwrite older
@@ -42,8 +38,8 @@ def audit_student(student_number, enrolments=None, courses=None, mapped_courses=
     # Populate audit response with enrolment data
     audit_response = AuditData()
     student = enrolments[0].student
-    conf_mat_sheet = best_fit_config_matrix(student)
-    audit_response["latest_enrolment_term"] = enrolments[0].term
+    conf_mat_sheet = best_fit_config_matrix(student.calculateCohort())
+    audit_response["latest_enrolment_term"] = enrolments[len(enrolments) - 1].term
     audit_response["base_program"] = "SWE{}".format(conf_mat_sheet)
     progress = audit_response["progress"]
 
@@ -93,7 +89,7 @@ def _student_data(student, status):
     return {
         "student_number": student.student_number,
         "full_name": student.name,
-        "cohort": UNPOP,
+        "cohort": student.calculateCohort(),
         "rank": student.rank,
         "years_in": years_in,
         "status": status,

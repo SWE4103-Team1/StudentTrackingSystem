@@ -4,6 +4,7 @@ import pandas as pd
 import copy
 import itertools
 import numpy as np
+from datetime import date
 
 from datamodel.models import Student, Course, Enrolment, UploadSet
 from dataloader.db_enhancements import bulk_save, group_enrolments_by_student_num
@@ -122,7 +123,7 @@ class DataFileExtractor:
         dfc.drop_duplicates(subset=["Course", "Section"], keep="last", inplace=True)
         dfc = dfc.values.tolist()
         course_models = list(map(self._new_course_model, dfc))
-        course_models.sort(key=lambda c: c.upload_set.upload_datetime, reverse=True)
+        course_models.sort(key=lambda c: c.upload_set.upload_datetime)
         return course_models
 
     def _build_enrolment_models(self, dfe, uploaded_students, uploaded_courses):
@@ -141,6 +142,8 @@ class DataFileExtractor:
         # prepare transfer input
 
         dft = dft.loc[:, ~dft.columns.str.contains("^Unnamed")]
+        dft = dft[dft["Transfer_Degrees"].str.contains("BSSWE|BAM")]
+
         dft["Title"] = dft["Title"].str.replace("UNASSIGNED", "U/A", regex=True)
         dft["Title"] = dft["Title"].str.replace("ASSIGNED", "", regex=True)
         dft["Course"].fillna(
@@ -161,6 +164,7 @@ class DataFileExtractor:
     ):
         # prepare transfer input data
         dft = dft.loc[:, ~dft.columns.str.contains("^Unnamed")]
+        dft = dft[dft["Transfer_Degrees"].str.contains("BSSWE|BAM")]
         dft["Title"] = dft["Title"].str.replace("UNASSIGNED", "U/A", regex=True)
         dft["Course"].fillna(
             get_transfer_unassigned_courses(dft["Title"]), inplace=True
@@ -212,7 +216,7 @@ class DataFileExtractor:
             name=dfp[1],
             program=dfp[7],
             campus=dfp[8],
-            start_date=dfp[9],
+            start_date=date.fromisoformat(dfp[9]),
             upload_set=self._upload_set,
         )
         return student

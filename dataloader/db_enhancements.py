@@ -22,6 +22,6 @@ def group_enrolments_by_student_num(enrolments: list):
 
     # sort the grouped enrolments
     for s_num, enrolments in groups.items():
-        enrolments.sort(key=lambda e: e.term, reverse=True)
+        enrolments.sort(key=lambda e: e.term)
 
     return groups
