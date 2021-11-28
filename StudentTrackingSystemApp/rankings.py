@@ -10,7 +10,7 @@ JUN_col = {}
 SOP_col = {}
 SEN_col = {}
 # grades to exclude from the calculations
-exception_grade = ['F', 'W', 'NCR', 'D', 'WF']
+exception_grade = ["F", "W", "NCR", "D", "WF"]
 
 
 def set_prereq_file(filename):
@@ -25,12 +25,12 @@ def set_prereq_file(filename):
 
     # parses the excel file
     xls = pd.ExcelFile(filename)
-    df = xls.parse('Sheet1')
+    df = xls.parse("Sheet1")
 
     # gets each column with the header as key, and following cells as list
-    JUN_col = df['JUN'].dropna().to_dict()
-    SOP_col = df['SOP'].dropna().to_dict()
-    SEN_col = df['SEN'].dropna().to_dict()
+    JUN_col = df["JUN"].dropna().to_dict()
+    SOP_col = df["SOP"].dropna().to_dict()
+    SEN_col = df["SEN"].dropna().to_dict()
 
 def get_rank_by_CH(student_number, student_enrolments=None):
     """
@@ -52,7 +52,7 @@ def get_rank_by_CH(student_number, student_enrolments=None):
     # the CH counter
     total_ch = 0
 
-    # queries the DB for student's enrolments if not given
+    # queries the DB for student"s enrolments if not given
     if student_enrolments is None:
         student_enrolments = Enrolment.objects.filter(
             student__student_number=student_number
@@ -69,13 +69,13 @@ def get_rank_by_CH(student_number, student_enrolments=None):
     
     # if the total credit hours are lower than the required credit hours, return that rank
     if total_ch <= JUN_CH:
-        return 'FIR'
+        return "FIR"
     elif total_ch > JUN_CH and total_ch <= SOP_CH:
-        return 'JUN'
+        return "JUN"
     elif total_ch > SOP_CH and total_ch <= SEN_CH:
-        return 'SOP'
+        return "SOP"
     else:
-        return 'SEN'
+        return "SEN"
 
 
 def get_rank_by_PREREQ(student_number, student_enrolments=None):
@@ -90,7 +90,7 @@ def get_rank_by_PREREQ(student_number, student_enrolments=None):
             the student rank based on what courses they have PASSED
     """
 
-    # queries the DB for student's enrolments if not given
+    # queries the DB for student"s enrolments if not given
     if student_enrolments is None:
         student_enrolments = Enrolment.objects.filter(
             student__student_number=student_number
@@ -111,7 +111,7 @@ def get_rank_by_PREREQ(student_number, student_enrolments=None):
     counted = set()
 
     for e in student_enrolments:
-        # if the course code found is within the "JUN" column AND its hasn't been counted yet AND they din't fail the course, add a count to that rank counter
+        # if the course code found is within the "JUN" column AND its hasn"t been counted yet AND they din"t fail the course, add a count to that rank counter
         try:# if the grade is nan, skip it
             if math.isnan(float(e.grade)):
                 continue
