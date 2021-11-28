@@ -53,8 +53,8 @@ class DataLoaderTests(unittest.TestCase):
             course_data = [
                 "Student_ID\tProgram\tTerm\tCourse\tTitle\tGrade\tCredit_Hrs\tGrade_Pts\tSection\tInt_Transfers\tNotes_Codes\n",
                 "5773669\tBSSWE\t2021/WI\tCHEM*1982\tGENERAL APPLIED CHEMISTRY\tA\t3.00\t12.0\tFR01B\n",
-                # "5004617\tBSSWE\t2021/WI\tPHYS*1081\tFOUNDATIONS OF PHYS FOR ENGG\tA\t3.00\t12.0\tFR01B\n",
-                # "5773669\tBSSWE\t2021/WI\tPHYS*1081\tFOUNDATIONS OF PHYS FOR ENGG\tA\t3.00\t12.0\tFR01B\n",
+                "5004617\tBSSWE\t2021/WI\tPHYS*1081\tFOUNDATIONS OF PHYS FOR ENGG\tA\t3.00\t12.0\tFR01B\n",
+                "5773669\tBSSWE\t2021/WI\tPHYS*1081\tFOUNDATIONS OF PHYS FOR ENGG\tA\t3.00\t12.0\tFR01B\n",
             ]
             person_data = [
                 "Student_ID\tFname-Lname\tGender\tBirthDay\tAddress_1\tAddress_2\tEmail\tProgram\tCampus\tStart_Date\n",
@@ -81,7 +81,6 @@ class DataLoaderTests(unittest.TestCase):
             uploader = DataFileExtractor()
             uploader.uploadAllFiles(person_file, course_file, transfer_file)
 
-
             db_students = Student.objects.filter()
             self.assertTrue(db_students)
             self.assertTrue(Course.objects.filter())
@@ -89,5 +88,9 @@ class DataLoaderTests(unittest.TestCase):
             self.assertEquals(db_students[0].rank, "FIR")
             self.assertEquals(len(db_students), 1)
 
-            self.assertTrue(Course.objects.filter(name = "U/A BLOCK",course_code= "BLOCK"))
-            self.assertTrue(Course.objects.filter(name = "U/A BAS SCI (PHYS)",course_code= "BAS SCI"))
+            self.assertTrue(
+                Course.objects.filter(name="U/A BLOCK", course_code="BLOCK")
+            )
+            self.assertTrue(
+                Course.objects.filter(name="U/A BAS SCI (PHYS)", course_code="BAS SCI")
+            )

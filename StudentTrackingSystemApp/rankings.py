@@ -1,9 +1,14 @@
 import pandas as pd
-from datamodel.models import Enrolment
 import math
+import os
+
+from StudentTrackingSystem import settings
+from datamodel.models import Enrolment
+import environment
 
 # the excel file
 xls = None
+
 
 # a dict to hold the pages within the excel file
 JUN_col = {}
@@ -31,6 +36,7 @@ def set_prereq_file(filename):
     JUN_col = df["JUN"].dropna().to_dict()
     SOP_col = df["SOP"].dropna().to_dict()
     SEN_col = df["SEN"].dropna().to_dict()
+
 
 def get_rank_by_CH(student_number, student_enrolments=None):
     """
@@ -61,12 +67,14 @@ def get_rank_by_CH(student_number, student_enrolments=None):
     for e in student_enrolments:
 
         try:
-            if math.isnan(float(e.grade)): # if grade is nan, ignore
+            if math.isnan(float(e.grade)):  # if grade is nan, ignore
                 continue
-        except: # will enter here if its not nan and is a letter grade
-            if e.grade not in exception_grade:  # if they dint fail the class, count the CH
+        except:  # will enter here if its not nan and is a letter grade
+            if (
+                e.grade not in exception_grade
+            ):  # if they dint fail the class, count the CH
                 total_ch += e.course.credit_hours
-    
+
     # if the total credit hours are lower than the required credit hours, return that rank
     if total_ch <= JUN_CH:
         return "FIR"
@@ -112,17 +120,29 @@ def get_rank_by_PREREQ(student_number, student_enrolments=None):
 
     for e in student_enrolments:
         # if the course code found is within the "JUN" column AND its hasn"t been counted yet AND they din"t fail the course, add a count to that rank counter
-        try:# if the grade is nan, skip it
+        try:  # if the grade is nan, skip it
             if math.isnan(float(e.grade)):
                 continue
         except:
-            if e.course.course_code in JUN_col.values() and e.course.course_code not in counted and e.grade not in exception_grade:
+            if (
+                e.course.course_code in JUN_col.values()
+                and e.course.course_code not in counted
+                and e.grade not in exception_grade
+            ):
                 counted.add(e.course.course_code)
                 jun_c += 1
-            elif e.course.course_code in SOP_col.values() and e.course.course_code not in counted and e.grade not in exception_grade:
+            elif (
+                e.course.course_code in SOP_col.values()
+                and e.course.course_code not in counted
+                and e.grade not in exception_grade
+            ):
                 counted.add(e.course.course_code)
                 sop_c += 1
-            elif e.course.course_code in SEN_col.values() and e.course.course_code not in counted and e.grade not in exception_grade:
+            elif (
+                e.course.course_code in SEN_col.values()
+                and e.course.course_code not in counted
+                and e.grade not in exception_grade
+            ):
                 counted.add(e.course.course_code)
                 sen_c += 1
 
@@ -135,7 +155,6 @@ def get_rank_by_PREREQ(student_number, student_enrolments=None):
     else:
         return "SEN"
 
-   
 
 def prereq_exist():
     """
@@ -146,3 +165,8 @@ def prereq_exist():
     """
     return xls != None
 
+
+# Use local config file when testing
+if environment.local_prereq:
+    prereq_path = os.path.join(settings.BASE_DIR, "data", "rank-prerequisites.xlsx")
+    set_prereq_file(prereq_path)

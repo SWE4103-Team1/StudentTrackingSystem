@@ -45,8 +45,7 @@ def loginPage(request):
                 return redirect("dashboard")
             else:
                 print(f"{user} does not exist")
-                context = {
-                    "error": "Invalid login credentials. Please try again."}
+                context = {"error": "Invalid login credentials. Please try again."}
                 return render(request, "StudentTrackingSystemApp/login.html", context)
         except Exception as e:
             print(f"ERROR: {e}")
@@ -79,13 +78,19 @@ def settings(request):
             if not configfuncs.config_file_exist():
                 print(f"Can't Submit Data Files without Config Files")
                 context = {
-                    "DataError": "No Configuration File Found: Must Upload Configuration Files Before Data Files"}
-                return render(request, "StudentTrackingSystemApp/settings.html", context)
+                    "DataError": "No Configuration File Found: Must Upload Configuration Files Before Data Files"
+                }
+                return render(
+                    request, "StudentTrackingSystemApp/settings.html", context
+                )
             elif not rankings.prereq_exist():
                 print(f"Can't Submit Data Files without Pre-Reqs Files")
                 context = {
-                    "DataError": "No Prerequisites File Found: Must Upload Prerequisites Files Before Data Files"}
-                return render(request, "StudentTrackingSystemApp/settings.html", context)
+                    "DataError": "No Prerequisites File Found: Must Upload Prerequisites Files Before Data Files"
+                }
+                return render(
+                    request, "StudentTrackingSystemApp/settings.html", context
+                )
             else:
                 for f in data_files:
                     if f.name == "personData.txt":
@@ -96,12 +101,16 @@ def settings(request):
                         transferData = f
 
                 if not personData or not courseData or not transferData:
-                    context = {"DataError": "No Data File Found: Must upload 'personData.txt', 'courseData.txt' and 'transferData.txt' together"}
-                    return render(request, "StudentTrackingSystemApp/settings.html", context)
+                    context = {
+                        "DataError": "No Data File Found: Must upload 'personData.txt', 'courseData.txt' and 'transferData.txt' together"
+                    }
+                    return render(
+                        request, "StudentTrackingSystemApp/settings.html", context
+                    )
 
                 uploader = DataFileExtractor()
                 uploader.uploadAllFiles(personData, courseData, transferData)
-        
+
         # config file holds a single config excel file
         try:
             config_file = request.FILES["config_file"]
@@ -136,10 +145,8 @@ def dashboard(request):
         start_date = request.POST.get("start_date")
 
         try:
-            context["coopSemester"] = str(
-                count_coop_students_by_semester(semester))
-            context["totalSemester"] = str(
-                count_total_students_by_semester(semester))
+            context["coopSemester"] = str(count_coop_students_by_semester(semester))
+            context["totalSemester"] = str(count_total_students_by_semester(semester))
             context["coopStartDate"] = str(
                 count_coop_students_by_start_date(start_date)
             )
@@ -189,7 +196,10 @@ def get_student_data_api(request):
     from django.shortcuts import HttpResponse
 
     serializedData = serializers.serialize(
-        "json", Student.objects.filter(upload_set=UploadSet.objects.first())
+        "json",
+        Student.objects.filter(
+            upload_set=UploadSet.objects.order_by("upload_datetime").last()
+        ),
     )
 
     return HttpResponse(serializedData)

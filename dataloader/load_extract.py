@@ -173,7 +173,7 @@ class DataFileExtractor:
         # dft["Title"] = fix_course_title(dft["Title"])
         dft.dropna(axis=0, how="all", inplace=True)
         dft_e = copy.deepcopy(dft)
-        # print(dft_e)
+
         # create transfer enrolment models
         dft_e.drop_duplicates(
             subset=["Student_ID", "Course"], keep="last", inplace=True
@@ -216,7 +216,9 @@ class DataFileExtractor:
             name=dfp[1],
             program=dfp[7],
             campus=dfp[8],
-            start_date=date.fromisoformat(dfp[9]),
+            start_date=date.fromisoformat(dfp[9])
+            if type(dfp[9]) is str
+            else timezone.now(),
             upload_set=self._upload_set,
         )
         return student
