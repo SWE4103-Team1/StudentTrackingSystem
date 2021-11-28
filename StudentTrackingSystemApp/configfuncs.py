@@ -91,6 +91,17 @@ def get_course_type(course_code):
     course_code = course_code.replace("*", "")
     course_code = course_code.replace(" ", "")
 
+    # if a course code is one of these, it means its a transfer course
+    # just return the course_code as the course_type 
+    unassigned_course_codes = ["EXTRA", "BASSCI", "CSE-OPEN", "CSE-HSS", "TE"]
+
+    if course_code in unassigned_course_codes:
+        # because at line 91 and 92 strips the course_code off spaces, BAS SCI -> BASSCI
+        # need to add the space back
+        if course_code == "BASSCI":
+            course_code = course_code[:3] +  " " + course_code[3:]
+        return course_code
+
     # check for replacements first
     temp = _get_replacements(course_code)
     # if a replacment is found, overwrite the course_code for the replacment code
@@ -215,7 +226,7 @@ def _get_all_cores(year=None):
     """
 
     # if you enter the year 2015, it will replace it to 2015-16
-    if year is not None and '-' not in year:
+    if year is not None and "-" not in year:
         year += "-" + str(int(year[1:]) + 1)
 
     keys = []
@@ -280,13 +291,13 @@ def _get_replacements(course_code):
     course_code = course_code.replace("*", "")
 
     # gets the replacement sheet
-    replacement_sheet = excel_in_dict['replacements']
+    replacement_sheet = excel_in_dict["replacements"]
 
     # converts all the replacments to a dict
     all_years = replacement_sheet.set_index(
-        'ALL YEARS')['Unnamed: 1'].to_dict()
+        "ALL YEARS")["Unnamed: 1"].to_dict()
     before_19 = replacement_sheet.set_index(
-        'Before 2019')['Unnamed: 3'].to_dict()
+        "Before 2019")["Unnamed: 3"].to_dict()
 
     # combine all the replacment dict to a single dict
     all_years.update(before_19)
