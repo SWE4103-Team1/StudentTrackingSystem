@@ -195,12 +195,11 @@ def get_student_data_api(request):
     from django.core import serializers
     from django.shortcuts import HttpResponse
 
-    upload_sets = UploadSet.objects.order_by("upload_datetime")
-
-    print("first:", upload_sets.first(), "last", upload_sets.last())
-
     serializedData = serializers.serialize(
-        "json", Student.objects.filter(upload_set=upload_sets.last())
+        "json",
+        Student.objects.filter(
+            upload_set=UploadSet.objects.order_by("upload_datetime").last()
+        ),
     )
 
     return HttpResponse(serializedData)
