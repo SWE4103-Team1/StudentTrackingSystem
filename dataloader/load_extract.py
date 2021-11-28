@@ -140,10 +140,7 @@ class DataFileExtractor:
 
     def _build_transfer_course_models(self, dft):
         # prepare transfer input
-
         dft = dft.loc[:, ~dft.columns.str.contains("^Unnamed")]
-        dft = dft[dft["Transfer_Degrees"].str.contains("BSSWE|BAM")]
-
         dft["Title"] = dft["Title"].str.replace("UNASSIGNED", "U/A", regex=True)
         dft["Title"] = dft["Title"].str.replace("ASSIGNED", "", regex=True)
         dft["Course"].fillna(
@@ -164,7 +161,6 @@ class DataFileExtractor:
     ):
         # prepare transfer input data
         dft = dft.loc[:, ~dft.columns.str.contains("^Unnamed")]
-        dft = dft[dft["Transfer_Degrees"].str.contains("BSSWE|BAM")]
         dft["Title"] = dft["Title"].str.replace("UNASSIGNED", "U/A", regex=True)
         dft["Course"].fillna(
             get_transfer_unassigned_courses(dft["Title"]), inplace=True
@@ -189,6 +185,7 @@ class DataFileExtractor:
         return transfer_enrolment_models
 
     def _new_transfer_course(self, dft):
+        print("dft1", dft[1])
         course = Course(
             course_code=dft[1],
             name=dft[2],
