@@ -1,5 +1,5 @@
 import pandas as pd
-
+import numpy as np
 
 def get_transfer_unassigned_courses(course_titles):
     transfer_course_codes = []
@@ -11,7 +11,7 @@ def get_transfer_unassigned_courses(course_titles):
         "OPEN": "CSE-OPEN",
         "TECHNICAL ELECTIVE": "TE",
     }
-    for title in course_titles.values():
+    for index,title in course_titles.items():
         if (
             "SCIENCE" in title
             or "PHYSICS" in title
@@ -53,11 +53,11 @@ def fix_course_title(course_titles):
         ("U/A HUMANITIES", "HUM"): "U/A CSE-HSS",
         (
             "A-LEVEL PHYSICS",
-            "UNASSIGNED PHYSICS 1ST YR",
-            "UNASSIGNED PHYSICS",
+            "U/A PHYSICS 1ST YR",
+            "U/A PHYSICS",
         ): "U/A BAS SCI (PHYS)",
-        ("A-LEVEL CHEMISTRY", "UNASSIGNED CHEMISTRY 1ST YR"): "U/A BAS SCI (CHEM)",
-        ("A-LEVEL BIOLOGY", "UNASSIGNED BIOLOGY 1ST YR"): "U/A BAS SCI (BIO)",
+        ("A-LEVEL CHEMISTRY", "U/A CHEMISTRY 1ST YR"): "U/A BAS SCI (CHEM)",
+        ("A-LEVEL BIOLOGY", "U/A BIOLOGY 1ST YR"): "U/A BAS SCI (BIO)",
         (
             "COMPLEMENTARY STUDIES ELECTIVE",
             "COMPLIMENTARY STUDIES ELECTIVE",
@@ -66,13 +66,13 @@ def fix_course_title(course_titles):
             "U/A OPEN ARTS",
             "U/A OPEN ELECTIVE",
         ): "U/A CSE-OPEN",
-        ("BLOCK TRANSFER, U/A BLOCK TRANSFER"): "U/A BLOCK",
+        ("BLOCK TRANSFER","U/A BLOCK TRANSFER"): "U/A BLOCK",
         ("U/A TECHNICAL ELECTIVE", "TECHNICAL ELECTIVE"): "U/A TE",
     }
 
     for key in course_title_dictionary:
         course_titles.replace(
-            key, course_title_dictionary[key], inplace=True, regex=True
+            key, course_title_dictionary[key], inplace=True, regex=False
         )
 
     return course_titles

@@ -53,8 +53,8 @@ class DataLoaderTests(unittest.TestCase):
             course_data = [
                 "Student_ID\tProgram\tTerm\tCourse\tTitle\tGrade\tCredit_Hrs\tGrade_Pts\tSection\tInt_Transfers\tNotes_Codes\n",
                 "5773669\tBSSWE\t2021/WI\tCHEM*1982\tGENERAL APPLIED CHEMISTRY\tA\t3.00\t12.0\tFR01B\n",
-                "5004617\tBSSWE\t2021/WI\tPHYS*1081\tFOUNDATIONS OF PHYS FOR ENGG\tA\t3.00\t12.0\tFR01B\n",
-                "5773669\tBSSWE\t2021/WI\tPHYS*1081\tFOUNDATIONS OF PHYS FOR ENGG\tA\t3.00\t12.0\tFR01B\n",
+                # "5004617\tBSSWE\t2021/WI\tPHYS*1081\tFOUNDATIONS OF PHYS FOR ENGG\tA\t3.00\t12.0\tFR01B\n",
+                # "5773669\tBSSWE\t2021/WI\tPHYS*1081\tFOUNDATIONS OF PHYS FOR ENGG\tA\t3.00\t12.0\tFR01B\n",
             ]
             person_data = [
                 "Student_ID\tFname-Lname\tGender\tBirthDay\tAddress_1\tAddress_2\tEmail\tProgram\tCampus\tStart_Date\n",
@@ -65,6 +65,8 @@ class DataLoaderTests(unittest.TestCase):
             transfer_data = [
                 "Student_ID\tCourse\tTitle\tCredit_Hrs\tInstitution\tTransfer_Degrees\tTransfer_Date\n",
                 "5773669\tMATH*1013\tINTRO TO CALCULUS II\t3.00\tBSE\tBSSWE\t2018/06/30\n",
+                "5773669		A-LEVEL PHYSICS	10.00		BSE  BSSWE	2018/06/30\n",
+                "5773669		BLOCK TRANSFER	60.00		BAM	2007/06/22\n",
             ]
 
             course_file.writelines(course_data)
@@ -84,4 +86,7 @@ class DataLoaderTests(unittest.TestCase):
             self.assertTrue(Course.objects.filter())
             self.assertTrue(Enrolment.objects.filter())
             self.assertEquals(db_students[0].rank, "FIR")
-            self.assertEquals(len(db_students), 2)
+            self.assertEquals(len(db_students), 1)
+
+            self.assertTrue(Course.objects.filter(name = "U/A BLOCK",course_code= "BLOCK"))
+            self.assertTrue(Course.objects.filter(name = "U/A BAS SCI (PHYS)",course_code= "BAS SCI"))
