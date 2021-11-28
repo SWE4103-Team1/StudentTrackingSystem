@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from ..rankings import calculateRank, prereq
+from ..rankings import get_rank_by_PREREQ
 from datamodel.models import Enrolment, Course
 from datamodel.tests.test_uploadset import UploadSetTests
 from datamodel.tests.test_student import StudentTests
@@ -36,7 +36,7 @@ class RankTests(TestCase):
                 )
                 e.save()
 
-        self.assertTrue(calculateRank(student.student_number) == "FIR")
+        self.assertTrue(get_rank_by_PREREQ(student.student_number) == "FIR")
 
     def test_calculate_rank_jun(self):
         us_tester = UploadSetTests()
