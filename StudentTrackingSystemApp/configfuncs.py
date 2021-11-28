@@ -200,19 +200,18 @@ def _get_matrix_courses(matrix_year):
     core_courses = []
     matrix = excel_in_dict[matrix_year]
 
-    for i, row in matrix.iterrows():
-        for j, value in row.items():
+    for _, row in matrix.iterrows():
+        for _, value in row.items():
             if type(value) is not float and type(value) is str:
                 value = value.replace(" ", "")
-                course_codes_only = re.findall(r"\b[A-Z]{2,4}[0-9]{2,4}\b",
-                                               str(value))
-                if not not course_codes_only:
-                    core_courses += (course_codes_only)
+                course_codes_only = re.findall(r"\b[A-Z]{2,4}[0-9]{2,4}\b", str(value))
+                if course_codes_only:
+                    core_courses += course_codes_only
 
     return core_courses
 
 
-def _get_all_cores(year=None):
+def get_all_cores(year=None):
     """
     Returns all the core courses based on the given year, else return all core courses
 
@@ -234,8 +233,7 @@ def _get_all_cores(year=None):
 
     for sheet_name in excel_in_dict:
         # check if the sheet name is the matrix year
-        if '-' in sheet_name and len(
-                sheet_name) == 7 and sheet_name is not None:
+        if "-" in sheet_name and len(sheet_name) == 7 and sheet_name is not None:
             keys.append(sheet_name)
 
     # use the matrix years as key for the dict
@@ -253,14 +251,14 @@ def _is_core(course_code, year=None):
     Returns a boolean value if the course_code is within a specific year's matrix, or in any of the matrices
 
         Param:
-            course_code : the course_code to check 
+            course_code : the course_code to check
             year : the year of the matrix to check in
 
         Return:
             The boolean value if the course_code is found within the matrix
     """
 
-    cores = _get_all_cores(year)
+    cores = get_all_cores(year)
 
     all_courses = []
 
@@ -294,10 +292,8 @@ def _get_replacements(course_code):
     replacement_sheet = excel_in_dict["replacements"]
 
     # converts all the replacments to a dict
-    all_years = replacement_sheet.set_index(
-        "ALL YEARS")["Unnamed: 1"].to_dict()
-    before_19 = replacement_sheet.set_index(
-        "Before 2019")["Unnamed: 3"].to_dict()
+    all_years = replacement_sheet.set_index("ALL YEARS")["Unnamed: 1"].to_dict()
+    before_19 = replacement_sheet.set_index("Before 2019")["Unnamed: 3"].to_dict()
 
     # combine all the replacment dict to a single dict
     all_years.update(before_19)

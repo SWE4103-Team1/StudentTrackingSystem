@@ -15,11 +15,11 @@ class UploadSet(models.Model):
 class Student(models.Model):
     id = models.BigAutoField(primary_key=True)
     student_number = models.IntegerField()
-    name = models.TextField(max_length=70,null=True)
-    campus = models.CharField(max_length=2,null=True)
-    program = models.CharField(max_length=10,null=True)
-    start_date = models.DateField(max_length=8,null=True)
-    rank = models.CharField(max_length=3,blank=True)
+    name = models.TextField(max_length=70, null=True)
+    campus = models.CharField(max_length=2, null=True)
+    program = models.CharField(max_length=10, null=True)
+    start_date = models.DateField(max_length=8, null=True)
+    rank = models.CharField(max_length=3, blank=True)
     upload_set = models.ForeignKey(UploadSet, on_delete=models.CASCADE)
 
     class Meta:
@@ -33,6 +33,18 @@ class Student(models.Model):
                 name="unique student index constraint",
             )
         ]
+
+    def calculateCohort(self):
+        date = self.start_date.strftime("%Y-%m")
+        year = date[:4]
+        month = date[5:]
+        cohort = (
+            [year, "-", str(int(year) + 1)]
+            if int(month) >= 9
+            else [str(int(year) - 1), "-", year]
+        )
+
+        return "".join(cohort)
 
     def __str__(self):
         return f"sid: {self.student_number}, name: {self.name}"
@@ -68,7 +80,7 @@ class Enrolment(models.Model):
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     term = models.CharField(max_length=10)
-    grade = models.CharField(max_length=5)
+    grade = models.CharField(max_length=5, null=True, blank=True)
     upload_set = models.ForeignKey(UploadSet, on_delete=models.CASCADE)
 
     class Meta:
@@ -77,7 +89,8 @@ class Enrolment(models.Model):
         ]
         constraints = [
             models.UniqueConstraint(
-                fields=["student_id", "course_id","term"], name="unique_enrolment_constraint"
+                fields=["student_id", "course_id", "term"],
+                name="unique_enrolment_constraint",
             )
         ]
 

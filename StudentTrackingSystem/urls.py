@@ -17,20 +17,37 @@ from django.contrib import admin
 from django.urls import path
  
 from StudentTrackingSystemApp import views
+from audits import views as a_views
+
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('', views.redirectLogin),
-    path('login/', views.loginPage, name ='loginPage'),
-    path('logout/', views.logout_view, name='logout'),
-    path('register/', views.registerPage, name ='registerPage'),
-    path('settings/', views.settings, name='settings'),
-    path('student_data/', views.student_data, name ='student_data'),
-    path('course_data/', views.course_data, name ='course_data'),
-    path('enrolment_data/', views.enrolment_data, name ='enrolment_data'),
-    path('dashboard/', views.dashboard, name ='dashboard'),
-    path('api/student_data/', views.get_student_data_api, name ='get_student_data_api'),
-    path('api/counts_semester/<path:semester>/', views.get_counts_by_semester, name ='get_counts_by_semester_api'),
-    path('api/counts_start_date/<str:start_date>/', views.get_counts_by_start_date, name ='get_counts_by_start_date_api'),
-    path('api/count_parameters', views.get_count_parameters_api, name ='get_count_parameters_api'),
-    path('get_transcript/<int:student_num>', views.get_transcript, name = 'get_transcript'),
+    path("admin/", admin.site.urls),
+    path("", views.redirectLogin),
+    path("login/", views.loginPage, name="loginPage"),
+    path("logout/", views.logout_view, name="logout"),
+    path("register/", views.registerPage, name="registerPage"),
+    path("settings/", views.settings, name="settings"),
+    path("student_data/", views.student_data, name="student_data"),
+    path("course_data/", views.course_data, name="course_data"),
+    path("enrolment_data/", views.enrolment_data, name="enrolment_data"),
+    path("dashboard/", views.dashboard, name="dashboard"),
+    path("api/student_data/", views.get_student_data_api, name="get_student_data_api"),
+    path(
+        "api/counts_semester/<path:semester>/",
+        views.get_counts_by_semester,
+        name="get_counts_by_semester_api",
+    ),
+    path(
+        "api/counts_start_date/<str:start_date>/",
+        views.get_counts_by_start_date,
+        name="get_counts_by_start_date_api",
+    ),
+    path(
+        "api/count_parameters",
+        views.get_count_parameters_api,
+        name="get_count_parameters_api",
+    ),
+    path(
+        "get_transcript/<int:student_num>", views.get_transcript, name="get_transcript"
+    ),
+    path("audit_student/<path:student_num>/", a_views.audit_student_api),
 ]
