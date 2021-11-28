@@ -7,8 +7,8 @@ import numpy as np
 from datetime import date
 
 from datamodel.models import Student, Course, Enrolment, UploadSet
+from StudentTrackingSystemApp.rankings import get_rank_by_PREREQ
 from dataloader.db_enhancements import bulk_save, group_enrolments_by_student_num
-from StudentTrackingSystemApp.rankings import calculateRank
 from StudentTrackingSystemApp.configfuncs import get_course_type
 from audits import audit, status
 
@@ -84,7 +84,7 @@ class DataFileExtractor:
                 student_num, student_enrolments, copy.deepcopy(courses), mapped_courses
             )
             student.status = status.student_status(s_audit["progress"])
-            student.rank = calculateRank(student_num, student_enrolments)
+            student.rank = get_rank_by_PREREQ(student_num, student_enrolments)
 
         # Store all models in DB. Not asyncly, sadly
         bulk_save(itertools.chain(students, courses, transfer_courses))

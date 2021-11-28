@@ -13,23 +13,51 @@
     <link rel="stylesheet" href="{% static 'StudentTrackingSystemApp/sideNav.css' %}">
 </head>
 
-<body >
-    <div class = "container-settings">
-       <div class = "container-header">
-            <span class = "navButton", onclick="openNav()">&#9776; </span>
-            <h1 class = "title">Settings</h1>
+<body>
+    <div class="container-settings">
+        <div class="container-header">
+            <span class="navButton" , onclick="openNav()">&#9776; </span>
+            <h1 class="title">Settings</h1>
         </div>
-        <div id = "main" onclick="closeNav()">
-            <h2>Upload Data Files</h2>
-            <div class='file_upload_container'>
-                <form method="POST" enctype="multipart/form-data">{% csrf_token %}
-                    <input type="file" name="input_files" class="input_files" accept=".txt" multiple>
-                    <button type="submit">Upload</button>
-                </form>
+        <div id="main" onclick="closeNav()">
+            <div class="columns">
+                <div class="column">
+                    <h2>Upload Data Files</h2>
+                    <form class="DataFiles" method="POST" enctype="multipart/form-data">{% csrf_token %}
+                        <input type="file" name="data_files" class="data_files" accept=".txt" multiple>
+                        <button type="submit">Upload</button>
+                    </form>
+
+                    <p style="text-align:center;color:red;">
+                        {{DataError}}
+                    </p>
+                </div>
+                <div class="column">
+                    <h2>Upload Configuration File</h2>
+                    <form class="Config" method="POST" enctype="multipart/form-data">{% csrf_token %}
+                        <input type="file" name="config_file" class="config_file" accept=".xlsx">
+                        <button type="submit">Upload</button>
+                    </form>
+                </div>
+                <div class="column">
+                    <h2>Upload Prerequisites</h2>
+                    <form class="Prerequisites" method="POST" enctype="multipart/form-data">{% csrf_token %}
+                        <input type="file" name="prereq_file" class="prereq_file" accept=".xlsx" multiple>
+                        <button type="submit">Upload</button>
+                    </form>
+                </div>
+
+                <p style="text-align:center;color:red;">
+                    {{NoFiles}}
+                </p>
+
             </div>
+
+
+
             <h2>View Raw Data Files</h2>
             <div class="nav_button_container">
-                
+
                 <a href="{% url 'student_data' %}" style="text-decoration:none">
                     <button class="nav_button">Student Data</button>
                 </a>
@@ -41,24 +69,24 @@
                 </a>
             </div>
         </div>
-        <div id = "mySidenav" class="sidenav">
+        <div id="mySidenav" class="sidenav">
             <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
             <a href="{% url 'dashboard' %}" style="text-decoration:none">Dashboard </a>
             <a href="{% url 'settings' %}" style="text-decoration:none"> Settings </a>
             <a href="{% url 'logout' %}" style="text-decoration:none"> Logout </a>
         </div>
-        
-        
+
+
         <script>
-        function openNav() {
-        document.getElementById("mySidenav").style.width = "250px";
-        document.getElementById("main").style.marginLeft = "250px";
-        }
-        
-        function closeNav() {
-        document.getElementById("mySidenav").style.width = "0";
-        document.getElementById("main").style.marginLeft= "0";
-        }
+            function openNav() {
+                document.getElementById("mySidenav").style.width = "250px";
+                document.getElementById("main").style.marginLeft = "250px";
+            }
+
+            function closeNav() {
+                document.getElementById("mySidenav").style.width = "0";
+                document.getElementById("main").style.marginLeft = "0";
+            }
         </script>
     </div>
 </body>
