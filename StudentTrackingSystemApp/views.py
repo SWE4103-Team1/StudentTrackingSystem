@@ -2,6 +2,10 @@ from dataloader.load_extract import DataFileExtractor
 from django.contrib.auth import authenticate, get_user_model, login, logout
 from django.shortcuts import redirect, render
 from users.roles import UserRole
+from StudentTrackingSystemApp import configfuncs, rankings
+from django.utils.datastructures import MultiValueDictKeyError
+from datamodel import Student
+
 
 def registerPage(request):
     if request.method == "POST":
@@ -65,19 +69,63 @@ def redirectLogin(request):
 # able to read in files
 def settings(request):
     if request.method == "POST":
-        # files will hold all the files that are read in
-        files = request.FILES.getlist("input_files")
-        if files:
-            for f in files:
-                if f.name == "personData.txt":
-                    personData = f
-                elif f.name == "courseData.txt":
-                    courseData = f
-                elif f.name == "transferData.txt":
-                    transferData = f
 
-            uploader = DataFileExtractor()
-            uploader.uploadAllFiles(personData, courseData, transferData)
+        personData, courseData, transferData = None, None, None
+
+        # files will hold all the data files that are read in
+        data_files = request.FILES.getlist("data_files")
+        if data_files:
+            if not configfuncs.config_file_exist():
+                print(f"Can't Submit Data Files without Config Files")
+                context = {
+                    "DataError": "No Configuration File Found: Must Upload Configuration Files Before Data Files"
+                }
+                return render(
+                    request, "StudentTrackingSystemApp/settings.html", context
+                )
+            elif not rankings.prereq_exist():
+                print(f"Can't Submit Data Files without Pre-Reqs Files")
+                context = {
+                    "DataError": "No Prerequisites File Found: Must Upload Prerequisites Files Before Data Files"
+                }
+                return render(
+                    request, "StudentTrackingSystemApp/settings.html", context
+                )
+            else:
+                for f in data_files:
+                    if f.name == "personData.txt":
+                        personData = f
+                    elif f.name == "courseData.txt":
+                        courseData = f
+                    elif f.name == "transferData.txt":
+                        transferData = f
+
+                if not personData or not courseData or not transferData:
+                    context = {
+                        "DataError": "No Data File Found: Must upload 'personData.txt', 'courseData.txt' and 'transferData.txt' together"
+                    }
+                    return render(
+                        request, "StudentTrackingSystemApp/settings.html", context
+                    )
+
+                uploader = DataFileExtractor()
+                uploader.uploadAllFiles(personData, courseData, transferData)
+
+        # config file holds a single config excel file
+        try:
+            config_file = request.FILES["config_file"]
+            if config_file:
+                configfuncs.set_config_file(config_file)
+        except MultiValueDictKeyError:
+            pass
+
+        # pre-req files holds a single prereq config excel file
+        try:
+            prereq_file = request.FILES["prereq_file"]
+            if prereq_file:
+                rankings.set_prereq_file(prereq_file)
+        except MultiValueDictKeyError:
+            pass
 
     context = {}
     return render(request, "StudentTrackingSystemApp/settings.html", context)
@@ -119,7 +167,10 @@ def get_student_data_api(request):
     from django.shortcuts import HttpResponse
 
     serializedData = serializers.serialize(
-        "json", Student.objects.filter(upload_set=UploadSet.objects.first())
+        "json",
+        Student.objects.filter(
+            upload_set=UploadSet.objects.order_by("upload_datetime").last()
+        ),
     )
 
     return HttpResponse(serializedData)
@@ -188,17 +239,17 @@ def get_count_parameters_api(request):
         year = start_date[:4]
         month = start_date[5:]
 
-        # If a student starts in sept then they are a part of the 
+        # If a student starts in sept then they are a part of the
         # currentYear-nextYear cohort
-        # If a student starts in the winter or summer term, then they are 
+        # If a student starts in the winter or summer term, then they are
         # a part of the previousYear-currentYear cohort
         cohort = []
         if int(month) == 9:
-            cohort = [year, "-", str(int(year) + 1)] 
+            cohort = [year, "-", str(int(year) + 1)]
         else:
             cohort = [str(int(year) - 1), "-", year]
 
-        cohorts.append(''.join(cohort))
+        cohorts.append("".join(cohort))
 
     # Remove dupliactes and sort list
     cohorts = list(dict.fromkeys(cohorts))
@@ -210,7 +261,7 @@ def get_count_parameters_api(request):
         semesters.append(semester)
 
     semesters.sort(reverse=True)
-    semesters = semesters[1:] #THIS IS TO REMOVE A STUPID WEIRD T AT THE FRONT
+    semesters = semesters[1:]  # THIS IS TO REMOVE A STUPID WEIRD T AT THE FRONT
 
     return HttpResponse(dumps({"cohorts": cohorts, "semesters": semesters}))
 

@@ -1,6 +1,7 @@
 from datamodel.models import Student, Course, Enrolment, UploadSet
 from django.db.models import Q
 
+
 def count_coop_students_by_semester(term_):
     added_students = []
     coop_course_ids = []
@@ -38,7 +39,13 @@ def count_coop_students_by_cohort(cohort):
 
     # Maybe use __contains = [fall, winter, summer]
     coop_courses = list(Course.objects.filter(name="CO-OP WORK TERM").values("id"))
-    students = list(Student.objects.filter(Q(start_date__contains=fall) | Q(start_date__contains=winter) | Q(start_date__contains=summer)).values("id"))
+    students = list(
+        Student.objects.filter(
+            Q(start_date__contains=fall)
+            | Q(start_date__contains=winter)
+            | Q(start_date__contains=summer)
+        ).values("id")
+    )
 
     for coop_course in coop_courses:
         coop_course_ids.append(coop_course["id"])
@@ -88,7 +95,13 @@ def count_total_students_by_cohort(cohort):
     winter = nextYear + "-01"
     summer = nextYear + "-05"
 
-    students = list(Student.objects.filter(Q(start_date__contains=fall) | Q(start_date__contains=winter) | Q(start_date__contains=summer)).values("id"))
+    students = list(
+        Student.objects.filter(
+            Q(start_date__contains=fall)
+            | Q(start_date__contains=winter)
+            | Q(start_date__contains=summer)
+        ).values("id")
+    )
 
     for student in students:
         student_id_list.append(student["id"])
@@ -154,7 +167,13 @@ def count_students_by_rank_cohort(cohort):
     winter = nextYear + "-01"
     summer = nextYear + "-05"
 
-    students = list(Student.objects.filter(Q(start_date__contains=fall) | Q(start_date__contains=winter) | Q(start_date__contains=summer)).values("rank"))
+    students = list(
+        Student.objects.filter(
+            Q(start_date__contains=fall)
+            | Q(start_date__contains=winter)
+            | Q(start_date__contains=summer)
+        ).values("rank")
+    )
 
     for student in students:
         if student["rank"] == "FIR":
