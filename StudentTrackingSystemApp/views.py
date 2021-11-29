@@ -4,7 +4,7 @@ from django.shortcuts import redirect, render
 from users.roles import UserRole
 from StudentTrackingSystemApp import configfuncs, rankings
 from django.utils.datastructures import MultiValueDictKeyError
-from datamodel import Student
+from datamodel.models import Student
 
 
 def registerPage(request):
