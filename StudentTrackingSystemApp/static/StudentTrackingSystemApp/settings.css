@@ -18,11 +18,13 @@
 }
 form{
     background-color: white;
-    width: 50%;
+    width: 90%;
     padding-top: 10px;
     padding-bottom: 10px;
     margin: auto;
     border-radius: 10px;
+    align-items: center;
+    text-align: center;
     box-shadow: 0 0 20px rgba(0, 0, 0, .15);
 }
 
@@ -48,4 +50,21 @@ form{
     justify-content:center;
     flex-direction: row;
     margin:20px;
+}
+.columns:after{
+    content: "";
+    display: table;
+    clear: both;
+    
+}
+
+.column{
+    width: 33.33%;
+    float: left;
+}
+
+@media screen and (max-width: 600px) {
+    .column {
+      width: 100%;
+    }
 }

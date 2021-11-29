@@ -21,6 +21,7 @@ class Student(models.Model):
     start_date = models.DateField(max_length=8, null=True)
     rank = models.CharField(max_length=3, blank=True)
     upload_set = models.ForeignKey(UploadSet, on_delete=models.CASCADE)
+    status = models.CharField(max_length=20, blank=True, null=True)
 
     class Meta:
         _index_fields = ["student_number", "upload_set"]
@@ -60,7 +61,7 @@ class Course(models.Model):
     upload_set = models.ForeignKey(UploadSet, on_delete=models.CASCADE)
 
     class Meta:
-        _index_fields = ["course_code", "section", "upload_set"]
+        _index_fields = ["course_code", "section", "upload_set", "name", "credit_hours"]
         indexes = [
             models.Index(fields=_index_fields, name="course_index"),
         ]

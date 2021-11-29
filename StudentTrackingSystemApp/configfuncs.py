@@ -5,39 +5,45 @@ Created on Sat Nov  6 21:44:25 2021
 
 @author: tylertravis, Elliot
 
-Last Edit : Elliot, 9.11.2021 8:14PM
 """
 
 import math
 import pandas as pd
-import os
 import re
+import os
 
-from StudentTrackingSystem.settings import BASE_DIR
+import environment
+from StudentTrackingSystem import settings
+
 
 # Temporary Course Excel URL
 
-filename = os.path.join(BASE_DIR, "data", "SWEProgram.xlsx")
-
-
 excel_in_dict = {}
+xls = None
 
-# gets the excel file and store it on xls
-xls = pd.ExcelFile(filename)
 
-# store each sheet in a dict
-# call the sheets by doing "excel_in_dict[sheet_name_to_call]"
-for sheet_name in xls.sheet_names:
-    excel_in_dict[sheet_name] = xls.parse(sheet_name)
+def set_config_file(filename):
+    """
+    Sets the global variable to the config file
 
-# Declaring Pre-Req Table
-excel_in_dict["prereqs"].columns = [
-    "Course",
-    "PreReqs1",
-    "PreReqs2",
-    "PreReqs3",
-    "PreReqs4",
-]
+        Param:
+            filename : the config file
+    """
+    global xls
+
+    xls = pd.ExcelFile(filename)
+
+    # store each sheet in a dict
+    # call the sheets by doing "excel_in_dict[sheet_name_to_call]"
+    for sheet_name in xls.sheet_names:
+        excel_in_dict[sheet_name] = xls.parse(sheet_name)
+
+
+def config_file_exist():
+    """
+    returns a boolean vlaue of whether the config excel file have been uploaded first
+    """
+    return xls != None
 
 
 def get_pre_req(classcode):
@@ -93,6 +99,17 @@ def get_course_type(course_code):
     course_code = course_code.replace("*", "")
     course_code = course_code.replace(" ", "")
 
+    # if a course code is one of these, it means its a transfer course
+    # just return the course_code as the course_type
+    unassigned_course_codes = {"EXTRA", "BASSCI", "CSE-OPEN", "CSE-HSS", "TE"}
+
+    if course_code in unassigned_course_codes:
+        # because at line 91 and 92 strips the course_code off spaces, BAS SCI -> BASSCI
+        # need to add the space back
+        if course_code == "BASSCI":
+            course_code = course_code[:3] + " " + course_code[3:]
+        return course_code
+
     # check for replacements first
     temp = _get_replacements(course_code)
     # if a replacment is found, overwrite the course_code for the replacment code
@@ -103,6 +120,15 @@ def get_course_type(course_code):
 
     if _is_core(course_code):
         return "CORE"
+
+    # special case for CSE-HSS courses, since they overlap with CSE-OPEN courses
+    # if its an exception for either CSE-HSS or CSE-ITS, but is is not an exception for CSE-OPEN, return CSE-OPEN instead
+    if course_type == "CSE-HSS" or course_type == "CSE-ITS":
+        if (
+            _is_exception(course_code, "CSE-ITS")
+            or _is_exception(course_code, "CSE-HSS")
+        ) and not _is_exception(course_code, "CSE-OPEN"):
+            return "CSE-OPEN"
 
     # if its a valid tag and is not in the exceptions list
     if _is_exception(course_code, course_type):
@@ -261,7 +287,6 @@ def _is_core(course_code, year=None):
 
 
 def _get_replacements(course_code):
-
     """
     Returns the equivalent course for the given course_code
 
@@ -293,3 +318,9 @@ def _get_replacements(course_code):
                 return key
 
     return None
+
+
+# Use local config file when testing
+if environment.local_config:
+    config_path = os.path.join(settings.BASE_DIR, "data", "SWEProgram.xlsx")
+    set_config_file(config_path)

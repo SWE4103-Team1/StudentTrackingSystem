@@ -7,14 +7,17 @@ import numpy as np
 from datetime import date
 
 from datamodel.models import Student, Course, Enrolment, UploadSet
+from StudentTrackingSystemApp.rankings import get_rank_by_PREREQ
 from dataloader.db_enhancements import bulk_save, group_enrolments_by_student_num
-from StudentTrackingSystemApp.rankings import calculateRank
+from dataloader.unassigned_transfers import *
 from StudentTrackingSystemApp.configfuncs import get_course_type
 from audits import audit, status
 
 
 class DataFileExtractor:
-    _transfer_marker = "T"
+    _transfer_section_marker = "N/A"
+    _transfer_term_marker = "0000/00"
+    _transfer_grade_marker = "CR"
 
     @staticmethod
     def _make_course_key(course_code, course_section):
@@ -84,7 +87,7 @@ class DataFileExtractor:
                 student_num, student_enrolments, copy.deepcopy(courses), mapped_courses
             )
             student.status = status.student_status(s_audit["progress"])
-            student.rank = calculateRank(student_num, student_enrolments)
+            student.rank = get_rank_by_PREREQ(student_num, student_enrolments)
 
         # Store all models in DB. Not asyncly, sadly
         bulk_save(itertools.chain(students, courses, transfer_courses))
@@ -136,13 +139,18 @@ class DataFileExtractor:
         return enrolment_models
 
     def _build_transfer_course_models(self, dft):
-        # prepare transfer input data
+        # prepare transfer input
         dft = dft.loc[:, ~dft.columns.str.contains("^Unnamed")]
-        dft["Course"].fillna(dft["Title"], inplace=True)
+        dft["Title"] = dft["Title"].str.replace("UNASSIGNED", "U/A", regex=True)
+        dft["Title"] = dft["Title"].str.replace("ASSIGNED", "", regex=True)
+        dft["Course"].fillna(
+            get_transfer_unassigned_courses(dft["Title"]), inplace=True
+        )
+        dft["Title"] = fix_course_title(dft["Title"])
         dft.dropna(axis=0, how="all", inplace=True)
 
         # create transfer course models
-        dft.drop_duplicates(subset=["Course"], keep="last", inplace=True)
+        dft.drop_duplicates(subset=["Course", "Title"], keep="last", inplace=True)
         dft.dropna(axis=0, how="all", inplace=True)
         dft = dft.values.tolist()
         transfer_course_models = list(map(self._new_transfer_course, dft))
@@ -153,7 +161,12 @@ class DataFileExtractor:
     ):
         # prepare transfer input data
         dft = dft.loc[:, ~dft.columns.str.contains("^Unnamed")]
-        dft["Course"].fillna(dft["Title"], inplace=True)
+        dft["Title"] = dft["Title"].str.replace("UNASSIGNED", "U/A", regex=True)
+        dft["Course"].fillna(
+            get_transfer_unassigned_courses(dft["Title"]), inplace=True
+        )
+        dft["Title"] = dft["Title"].str.replace("ASSIGNED", "", regex=True)
+        # dft["Title"] = fix_course_title(dft["Title"])
         dft.dropna(axis=0, how="all", inplace=True)
         dft_e = copy.deepcopy(dft)
 
@@ -169,7 +182,6 @@ class DataFileExtractor:
                 e, uploaded_students, uploaded_courses
             )
             transfer_enrolment_models.append(e_model)
-
         return transfer_enrolment_models
 
     def _new_transfer_course(self, dft):
@@ -179,7 +191,7 @@ class DataFileExtractor:
             credit_hours=dft[3],
             course_type=get_course_type(dft[1]),
             upload_set=self._upload_set,
-            section=DataFileExtractor._transfer_marker,
+            section=DataFileExtractor._transfer_section_marker,
         )
         return course
 
@@ -200,7 +212,9 @@ class DataFileExtractor:
             name=dfp[1],
             program=dfp[7],
             campus=dfp[8],
-            start_date=date.fromisoformat(dfp[9]),
+            start_date=date.fromisoformat(dfp[9])
+            if type(dfp[9]) is str
+            else timezone.now(),
             upload_set=self._upload_set,
         )
         return student
@@ -246,7 +260,7 @@ class DataFileExtractor:
         )
         enrolled_course = uploaded_courses.get(
             DataFileExtractor._make_course_key(
-                course_code, DataFileExtractor._transfer_marker
+                course_code, DataFileExtractor._transfer_section_marker
             )
         )
 
@@ -265,8 +279,8 @@ class DataFileExtractor:
             student=enrolled_student,
             course=enrolled_course,
             upload_set=self._upload_set,
-            term=DataFileExtractor._transfer_marker,
-            grade=DataFileExtractor._transfer_marker,
+            term=DataFileExtractor._transfer_term_marker,
+            grade=DataFileExtractor._transfer_grade_marker,
         )
 
         return enrolment
