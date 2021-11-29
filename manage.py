@@ -18,9 +18,10 @@ def main():
             "forget to activate a virtual environment?"
         ) from exc
 
-    if "test" in sys.argv:
+    if "test" in sys.argv or os.environ.get("USE_LOCAL_CONFIGS") == "TRUE":
         environment.local_config = True
         environment.local_prereq = True
+        print("Using local config files")
 
     execute_from_command_line(sys.argv)
 
