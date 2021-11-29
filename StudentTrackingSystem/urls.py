@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
- 
+
 from StudentTrackingSystemApp import views
 from audits import views as a_views
 
@@ -37,9 +37,9 @@ urlpatterns = [
         name="get_counts_by_semester_api",
     ),
     path(
-        "api/counts_start_date/<str:start_date>/",
-        views.get_counts_by_start_date,
-        name="get_counts_by_start_date_api",
+        "api/counts_cohort/<str:cohort>/",
+        views.get_counts_by_cohort,
+        name="get_counts_by_cohort_api",
     ),
     path(
         "api/count_parameters",
