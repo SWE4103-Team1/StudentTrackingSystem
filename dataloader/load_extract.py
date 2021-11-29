@@ -185,7 +185,6 @@ class DataFileExtractor:
         return transfer_enrolment_models
 
     def _new_transfer_course(self, dft):
-        print("dft1", dft[1])
         course = Course(
             course_code=dft[1],
             name=dft[2],

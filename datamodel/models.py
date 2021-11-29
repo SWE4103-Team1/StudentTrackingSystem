@@ -21,6 +21,7 @@ class Student(models.Model):
     start_date = models.DateField(max_length=8, null=True)
     rank = models.CharField(max_length=3, blank=True)
     upload_set = models.ForeignKey(UploadSet, on_delete=models.CASCADE)
+    status = models.CharField(max_length=20, blank=True, null=True)
 
     class Meta:
         _index_fields = ["student_number", "upload_set"]
