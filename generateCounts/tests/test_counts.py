@@ -2,11 +2,11 @@ from django.test import TestCase
 from datamodel.models import Student, Course, Enrolment, UploadSet
 import datetime
 from django.utils import timezone
-from generateCounts.counts import count_coop_students_by_semester,count_total_students_by_semester,count_total_students_by_start_date,count_coop_students_by_start_date,count_students_by_rank_semester
 
 class countsTester(TestCase):
 
     def test_count_coop_students_by_semester(self):
+        from ..counts import count_coop_students_by_semester
         _upload_set = UploadSet(upload_datetime=timezone.now())
         _upload_set.save()
 
@@ -117,7 +117,8 @@ class countsTester(TestCase):
         self.assertTrue(countWinter == 3)
         self.assertTrue(countFall == 1)
 
-    def test_count_coop_students_by_start_date(self):
+    def test_count_coop_students_by_cohort(self):
+        from ..counts import count_coop_students_by_cohort
         _upload_set = UploadSet(upload_datetime=timezone.now())
         _upload_set.save()
 
@@ -223,10 +224,11 @@ class countsTester(TestCase):
         enrolment5.save()
         enrolment6.save()
 
-        count = count_coop_students_by_start_date("2019-01-01")
+        count = count_coop_students_by_cohort("2019-2020")
         self.assertTrue(count == 2)
 
     def test_count_total_students_by_semester(self):
+        from ..counts import count_total_students_by_semester
         _upload_set = UploadSet(upload_datetime=timezone.now())
         _upload_set.save()
         student1 = Student(
@@ -278,7 +280,8 @@ class countsTester(TestCase):
         count = count_total_students_by_semester("2021/WI")
         self.assertTrue(count == 2)
 
-    def test_count_total_students_by_start_date(self):
+    def test_count_total_students_by_cohort(self):
+        from ..counts import count_total_students_by_cohort
         _upload_set = UploadSet(upload_datetime=timezone.now())
         _upload_set.save()
 
@@ -335,11 +338,12 @@ class countsTester(TestCase):
         enrolment3.save()
         enrolment4.save()
 
-        count = count_total_students_by_start_date("2019-01-01")
+        count = count_total_students_by_cohort("2019-2020")
 
         self.assertTrue(count == 2)
 
-    def test_count_students_by_rank(self):
+    def test_count_students_by_rank_semester(self):
+        from ..counts import count_students_by_rank_semester
         _upload_set = UploadSet(upload_datetime=timezone.now())
         _upload_set.save()
         student1 = Student(
@@ -407,3 +411,38 @@ class countsTester(TestCase):
         rank_counts = list(count_students_by_rank_semester("2021/WI").values()) # count_students_by_rank returns dictionary
 
         self.assertTrue(rank_counts == [1,1,1,1])
+
+    def test_count_students_by_rank_cohort(self):
+        from ..counts import count_students_by_rank_cohort
+        _upload_set = UploadSet(upload_datetime=timezone.now())
+        _upload_set.save()
+        student1 = Student(
+            student_number = "3573669",name = "Fletcher Donaldson",campus = "FR",program ="BSSWE",
+            start_date = "2021-09-01",upload_set = _upload_set,rank = 'FIR'
+        )
+
+        student2 = Student(
+            student_number = "4567123",name = "Susie Lee",campus = "FR",program ="BSSWE",
+            start_date = "2021-09-01",upload_set = _upload_set,rank = 'SOP'
+        )
+
+        student3 = Student(
+            student_number = "3617785",name = "Henry MacDonald",campus = "SJ",program ="BSSWE",
+            start_date = "2021-09-01",upload_set = _upload_set,rank = 'JUN'
+        )
+
+        student4 = Student(
+            student_number = "3629987",name = "Felix Johnson",campus = "FR",program ="BSSWE",
+            start_date = "2021-09-01",upload_set = _upload_set,rank = 'SEN'
+        )
+
+
+        student1.save()
+        student2.save()
+        student3.save()
+        student4.save()
+
+        rank_counts = list(count_students_by_rank_cohort("2021-2022").values())
+
+        self.assertTrue(rank_counts == [1,1,1,1])
+
