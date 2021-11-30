@@ -5,6 +5,7 @@ from users.roles import UserRole
 from StudentTrackingSystemApp import configfuncs, rankings
 from django.utils.datastructures import MultiValueDictKeyError
 from datamodel.models import Student
+from django.views.decorators.csrf import csrf_exempt
 
 
 def registerPage(request):
@@ -130,46 +131,10 @@ def settings(request):
     context = {}
     return render(request, "StudentTrackingSystemApp/settings.html", context)
 
-
+@csrf_exempt
 def dashboard(request):
-    import requests
-    #from audits.views import audit_student_api
     context = {}
-
-    # If the user selects on text audit button
-    if request.method == "POST":
-        print("u want an audit mate?")
-
-        stu_num = 5091054
-        req = requests.get('http://127.0.0.1:8000/audit_student/' + str(stu_num))
-
-        if req.status_code == 200:
-            # Request worked, generate text audit
-            from django.shortcuts import HttpResponse
-            from audits.text_audit import generate_text_audit
-
-            textResp = HttpResponse(content_type='text/plain')
-            textResp['Content-Disposition'] = 'attachment; filename=' + str(stu_num) +'_audit.txt'
-
-            textResp.writelines(generate_text_audit(req.json()))
-            return textResp
-
-        elif req.status_code == 404:
-            # Student number was not found
-            print("Student number not found")
-            pass
-        elif req.status_code == 500:
-            # Audit error
-            print("Audit error")
-            pass
-        else:
-            # Something exploded?
-            print("Unexpected error when requesting audit")
-            pass
-
-
     return render(request, "StudentTrackingSystemApp/Dashboard/index.html", context)
-
 
 def student_data(request):
     from datamodel.models import Student
