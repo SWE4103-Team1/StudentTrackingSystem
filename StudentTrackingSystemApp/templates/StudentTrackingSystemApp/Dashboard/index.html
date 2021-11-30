@@ -26,7 +26,13 @@
     <div class="container-header">
         <span class="navButton" , onclick="openNav()">&#9776; </span>
         <h1 class="title">Dashboard</h1>
-        </div>
+
+        <!-- broken -->
+        <form class="text-audit" method="POST">{% csrf_token %}
+            <button type="submit">Generate Text Audit</button>
+        </form>
+
+    </div>
     <div id="mySidenav" class="sidenav">
         <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
         <a href="{% url 'dashboard' %}" style="text-decoration:none">Dashboard </a>
