@@ -172,7 +172,7 @@ def get_student_data_api(request):
             upload_set=UploadSet.objects.order_by("upload_datetime").last()
         ),
     )
-
+    print(Student.objects.all())
     return HttpResponse(serializedData)
 
 
