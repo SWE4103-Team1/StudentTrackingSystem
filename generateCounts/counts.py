@@ -2,17 +2,26 @@ from datamodel.models import Student, Course, Enrolment, UploadSet
 from django.db.models import Q
 
 
+def latest_upload_set():
+    return UploadSet.objects.order_by("upload_datetime").last()
+
+
 def count_coop_students_by_semester(term_):
     added_students = []
     coop_course_ids = []
+    latest_us = latest_upload_set()
 
-    coop_courses = list(Course.objects.filter(name="CO-OP WORK TERM").values("id"))
+    coop_courses = list(
+        Course.objects.filter(upload_set=latest_us, name="CO-OP WORK TERM").values("id")
+    )
 
     for coop_course in coop_courses:
         coop_course_ids.append(coop_course["id"])
 
     for enrolmentValues in (
-        Enrolment.objects.filter(term=term_).values("course", "student").iterator()
+        Enrolment.objects.filter(upload_set=latest_us, term=term_)
+        .values("course", "student")
+        .iterator()
     ):
         course_id = enrolmentValues["course"]
         student_id = enrolmentValues["student"]
@@ -26,6 +35,7 @@ def count_coop_students_by_cohort(cohort):
     coop_course_ids = []
     added_students = []
     student_id_list = []
+    latest_us = latest_upload_set()
 
     # Since parameter is passed as year-nextYear we need to extract the year
     year = cohort[:4]
@@ -38,12 +48,15 @@ def count_coop_students_by_cohort(cohort):
     summer = nextYear + "-05"
 
     # Maybe use __contains = [fall, winter, summer]
-    coop_courses = list(Course.objects.filter(name="CO-OP WORK TERM").values("id"))
+    coop_courses = list(
+        Course.objects.filter(upload_set=latest_us, name="CO-OP WORK TERM").values("id")
+    )
     students = list(
         Student.objects.filter(
+            Q(upload_set=latest_us),
             Q(start_date__contains=fall)
             | Q(start_date__contains=winter)
-            | Q(start_date__contains=summer)
+            | Q(start_date__contains=summer),
         ).values("id")
     )
 
@@ -54,7 +67,9 @@ def count_coop_students_by_cohort(cohort):
         student_id_list.append(student["id"])
 
     for enrolmentValues in (
-        Enrolment.objects.all().values("course", "student").iterator()
+        Enrolment.objects.filter(upload_set=latest_us)
+        .values("course", "student")
+        .iterator()
     ):
         course_id = enrolmentValues["course"]
         student_id = enrolmentValues["student"]
@@ -69,11 +84,11 @@ def count_coop_students_by_cohort(cohort):
 
 
 def count_total_students_by_semester(term_):
-    studentList = []
-    enrolmentQuerySet = Enrolment.objects.filter(term=term_)
     student_ids = []
-    added_students = []
-    students = list(Enrolment.objects.filter(term=term_).values("student_id"))
+    latest_us = latest_upload_set()
+    students = list(
+        Enrolment.objects.filter(upload_set=latest_us, term=term_).values("student_id")
+    )
     for student in students:
         student_ids.append(student["student_id"])
 
@@ -84,6 +99,7 @@ def count_total_students_by_semester(term_):
 def count_total_students_by_cohort(cohort):
     added_students = []
     student_id_list = []
+    latest_us = latest_upload_set()
 
     # Since parameter is passed as year-nextYear we need to extract the year
     year = cohort[:4]
@@ -97,9 +113,10 @@ def count_total_students_by_cohort(cohort):
 
     students = list(
         Student.objects.filter(
+            Q(upload_set=latest_us),
             Q(start_date__contains=fall)
             | Q(start_date__contains=winter)
-            | Q(start_date__contains=summer)
+            | Q(start_date__contains=summer),
         ).values("id")
     )
 
@@ -107,7 +124,9 @@ def count_total_students_by_cohort(cohort):
         student_id_list.append(student["id"])
 
     for enrolmentValues in (
-        Enrolment.objects.all().values("course", "student").iterator()
+        Enrolment.objects.filter(upload_set=latest_us)
+        .values("course", "student")
+        .iterator()
     ):
         student_id = enrolmentValues["student"]
         if student_id in student_id_list and not student_id in added_students:
@@ -122,15 +141,20 @@ def count_students_by_rank_semester(term_):
     JUN = 0
     SEN = 0
     enrolled_student_ids = []
+    latest_us = latest_upload_set()
 
-    enrolled_students = list(Enrolment.objects.filter(term=term_).values("student_id"))
+    enrolled_students = list(
+        Enrolment.objects.filter(upload_set=latest_us, term=term_).values("student_id")
+    )
 
     for enrolled_student in enrolled_students:
         enrolled_student_ids.append(enrolled_student["student_id"])
 
     enrolled_student_ids = list(set(enrolled_student_ids))
 
-    for studentValues in Student.objects.all().values("id", "rank").iterator():
+    for studentValues in (
+        Student.objects.filter(upload_set=latest_us).values("id", "rank").iterator()
+    ):
         student_id = studentValues["id"]
         student_rank = studentValues["rank"]
         if student_id in enrolled_student_ids:
@@ -169,9 +193,10 @@ def count_students_by_rank_cohort(cohort):
 
     students = list(
         Student.objects.filter(
+            Q(upload_set=latest_upload_set()),
             Q(start_date__contains=fall)
             | Q(start_date__contains=winter)
-            | Q(start_date__contains=summer)
+            | Q(start_date__contains=summer),
         ).values("rank")
     )
 
