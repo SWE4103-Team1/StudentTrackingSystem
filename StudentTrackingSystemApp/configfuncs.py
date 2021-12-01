@@ -5,37 +5,45 @@ Created on Sat Nov  6 21:44:25 2021
 
 @author: tylertravis, Elliot
 
-Last Edit : Elliot, 9.11.2021 8:14PM
 """
 
 import math
 import pandas as pd
+import re
 import os
 
-from StudentTrackingSystem.settings import BASE_DIR
+import environment
+from StudentTrackingSystem import settings
+
 
 # Temporary Course Excel URL
 
-filename = os.path.join(BASE_DIR, "data", "SWEProgram.xlsx")
-
 excel_in_dict = {}
+xls = None
 
-# gets the excel file and store it on xls
-xls = pd.ExcelFile(filename)
 
-# store each sheet in a dict
-# call the sheets by doing "excel_in_dict[sheet_name_to_call]"
-for sheet_name in xls.sheet_names:
-    excel_in_dict[sheet_name] = xls.parse(sheet_name)
+def set_config_file(filename):
+    """
+    Sets the global variable to the config file
 
-# Declaring Pre-Req Table
-excel_in_dict["prereqs"].columns = [
-    "Course",
-    "PreReqs1",
-    "PreReqs2",
-    "PreReqs3",
-    "PreReqs4",
-]
+        Param:
+            filename : the config file
+    """
+    global xls
+
+    xls = pd.ExcelFile(filename)
+
+    # store each sheet in a dict
+    # call the sheets by doing "excel_in_dict[sheet_name_to_call]"
+    for sheet_name in xls.sheet_names:
+        excel_in_dict[sheet_name] = xls.parse(sheet_name)
+
+
+def config_file_exist():
+    """
+    returns a boolean vlaue of whether the config excel file have been uploaded first
+    """
+    return xls != None
 
 
 def get_pre_req(classcode):
@@ -91,39 +99,42 @@ def get_course_type(course_code):
     course_code = course_code.replace("*", "")
     course_code = course_code.replace(" ", "")
 
+    # if a course code is one of these, it means its a transfer course
+    # just return the course_code as the course_type
+    unassigned_course_codes = {"EXTRA", "BASSCI", "CSE-OPEN", "CSE-HSS", "TE"}
+
+    if course_code in unassigned_course_codes:
+        # because at line 91 and 92 strips the course_code off spaces, BAS SCI -> BASSCI
+        # need to add the space back
+        if course_code == "BASSCI":
+            course_code = course_code[:3] + " " + course_code[3:]
+        return course_code
+
+    # check for replacements first
+    temp = _get_replacements(course_code)
+    # if a replacment is found, overwrite the course_code for the replacment code
+    if temp is not None:
+        course_code = temp
+
     course_type = _validate_tag(course_code)
 
-    # if is valid tag, and is not in exception, return course type
-    if course_type == "NS" and not _is_exception(course_code, "NS"):
-        return "SCIENCE"
+    if _is_core(course_code):
+        return "CORE"
 
-    elif course_type == "CSE-ITS" and not _is_exception(course_code, "CSE-ITS"):
-        return "CSE-ITS"
+    # special case for CSE-HSS courses, since they overlap with CSE-OPEN courses
+    # if its an exception for either CSE-HSS or CSE-ITS, but is is not an exception for CSE-OPEN, return CSE-OPEN instead
+    if course_type == "CSE-HSS" or course_type == "CSE-ITS":
+        if (
+            _is_exception(course_code, "CSE-ITS")
+            or _is_exception(course_code, "CSE-HSS")
+        ) and not _is_exception(course_code, "CSE-OPEN"):
+            return "CSE-OPEN"
 
-    elif course_type == "CSE-HSS" and not _is_exception(course_code, "CSE-HSS"):
-        return "CSE-HSS"
-
-    elif course_type == "CSE-OPEN" and not _is_exception(course_code, "CSE-OPEN"):
-        return "CSE-OPEN"
-
-    elif (
-        course_type == "FUNDAMENTALS"
-        and _is_course_group(course_code) == "FUNDAMENTALS"
-    ):
-        return "FUNDAMENTALS"
-
-    # if the tag is TE, check if its in the course_group first
-    elif _validate_tag(course_code) == "TE" and not _is_exception(course_code, "TE"):
-        # gets the course type from within 'course-groups' page if the given course code is found
-        course_group = _is_course_group(course_code)
-
-        if course_group is not None:
-            return course_group
-        else:
-            # since its not in the course group, but validate_tag is under "TE", return TE instead
-            return "TE"
-    else:
+    # if its a valid tag and is not in the exceptions list
+    if _is_exception(course_code, course_type):
         return None
+    else:
+        return course_type
 
 
 def _validate_tag(course_code):
@@ -134,11 +145,9 @@ def _validate_tag(course_code):
     Return:
         returns the column header
     """
+
     # takes the prefix of the course code (EX: SWE4103 -> SWE)
     course_tag = _get_course_tag(course_code)
-
-    if course_tag == "ENGG" or course_code == "ME3232":
-        return "FUNDAMENTALS"
 
     for key, value in excel_in_dict["valid-tags"].to_dict(orient="list").items():
         # for each item, if the prefix is in valid-tag or the entire course code (only for CSE-ITS)
@@ -165,9 +174,7 @@ def _is_exception(course_code, course_type):
     if course_type is None:
         return None
 
-    if course_code in excel_in_dict["exceptions"][course_type]:
-        return True
-    return False
+    return course_code in excel_in_dict["exceptions"][course_type].to_list()
 
 
 def _get_course_tag(course_code):
@@ -193,17 +200,127 @@ def _get_course_tag(course_code):
     return course_tag
 
 
-def _is_course_group(course_code):
+def _get_matrix_courses(matrix_year):
     """
-    Returns the course_type if it is found within the 'course-groups' page
+    returns a list of core courses found within the given year matrix
+
+    Param:
+        matrix_year : the pear of the matrix to search
+
+    Returns:
+        the list of courses within the matrix
+    """
+    core_courses = []
+    matrix = excel_in_dict[matrix_year]
+
+    for _, row in matrix.iterrows():
+        for _, value in row.items():
+            if type(value) is not float and type(value) is str:
+                value = value.replace(" ", "")
+                course_codes_only = re.findall(r"\b[A-Z]{2,4}[0-9]{2,4}\b", str(value))
+                if course_codes_only:
+                    core_courses += course_codes_only
+
+    return core_courses
+
+
+def get_all_cores(year=None):
+    """
+    Returns all the core courses based on the given year, else return all core courses
 
         Param:
-            course_code : the course code
+            year : the year to return the core courses found in the matrix
+                    (leave blank for all the core corses for existing matrix)
 
         Return:
-            the course type if the given course code is found within the 'course-groups' page
+            the core courses found within the given year matrix
+            (all core courses found within the config file if year is None)
     """
-    for key, value in excel_in_dict["course-groups"].to_dict(orient="list").items():
-        if course_code in value:
-            return key
+
+    # if you enter the year 2015, it will replace it to 2015-16
+    if year is not None and "-" not in year:
+        year += "-" + str(int(year[1:]) + 1)
+
+    keys = []
+    cores = {}
+
+    for sheet_name in excel_in_dict:
+        # check if the sheet name is the matrix year
+        if "-" in sheet_name and len(sheet_name) == 7 and sheet_name is not None:
+            keys.append(sheet_name)
+
+    # use the matrix years as key for the dict
+    for key in keys:
+        cores[key] = _get_matrix_courses(key)
+
+    if year is not None:
+        return cores[year]
+
+    return cores
+
+
+def _is_core(course_code, year=None):
+    """
+    Returns a boolean value if the course_code is within a specific year's matrix, or in any of the matrices
+
+        Param:
+            course_code : the course_code to check
+            year : the year of the matrix to check in
+
+        Return:
+            The boolean value if the course_code is found within the matrix
+    """
+
+    cores = get_all_cores(year)
+
+    all_courses = []
+
+    # if the year is not given, combine all the courses from all the matrices
+    if year is None:
+        for courses in cores.values():
+            all_courses += courses
+
+        return course_code in all_courses
+    # else if a year is given, only return the list of courses within that year's matrix
+    else:
+        return course_code in cores
+
+
+def _get_replacements(course_code):
+    """
+    Returns the equivalent course for the given course_code
+
+        Param:
+            course_code : the course code to find the replacements
+
+        Return:
+            the equivalent course code of the given course_code if found in the replacement sheet
+    """
+
+    # fix the formatting of course_code
+    course_code = course_code.replace(" ", "")
+    course_code = course_code.replace("*", "")
+
+    # gets the replacement sheet
+    replacement_sheet = excel_in_dict["replacements"]
+
+    # converts all the replacments to a dict
+    all_years = replacement_sheet.set_index("ALL YEARS")["Unnamed: 1"].to_dict()
+    before_19 = replacement_sheet.set_index("Before 2019")["Unnamed: 3"].to_dict()
+
+    # combine all the replacment dict to a single dict
+    all_years.update(before_19)
+
+    # check each value in the dict, if a replacment is found, return the key (replacement course code)
+    for key, value in all_years.items():
+        if type(value) is not float:
+            if course_code in value:
+                return key
+
     return None
+
+
+# Use local config file when testing
+if environment.local_config:
+    config_path = os.path.join(settings.BASE_DIR, "data", "SWEProgram.xlsx")
+    set_config_file(config_path)
