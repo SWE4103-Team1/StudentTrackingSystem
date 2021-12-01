@@ -35,7 +35,7 @@ def get_transfer_unassigned_courses(course_titles):
         elif "ASSIGNED" in title:
             transfer_course_codes.append(title)
         else:
-            transfer_course_codes.append("BLOCK")
+            transfer_course_codes.append("EXTRA")
     return pd.Series(transfer_course_codes)
 
 
