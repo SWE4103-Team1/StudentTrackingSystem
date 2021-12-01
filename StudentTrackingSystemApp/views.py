@@ -5,6 +5,7 @@ from users.roles import UserRole
 from StudentTrackingSystemApp import configfuncs, rankings
 from django.utils.datastructures import MultiValueDictKeyError
 from datamodel.models import Student
+from django.views.decorators.csrf import csrf_exempt
 
 
 def registerPage(request):
@@ -131,6 +132,7 @@ def settings(request):
     return render(request, "StudentTrackingSystemApp/settings.html", context)
 
 
+@csrf_exempt
 def dashboard(request):
     context = {}
     return render(request, "StudentTrackingSystemApp/Dashboard/index.html", context)
@@ -172,7 +174,6 @@ def get_student_data_api(request):
             upload_set=UploadSet.objects.order_by("upload_datetime").last()
         ),
     )
-
     return HttpResponse(serializedData)
 
 
@@ -276,7 +277,6 @@ def get_transcript(request, student_num=0):
     student_ID = Student.objects.filter(student_number=student_num)
     student_django_id = student_ID[0].id
     all_entries = Enrolment.objects.filter(student_id=student_django_id)
-    print(all_entries[1])
     student_transcript = []
     for entry in all_entries:
         transcript = {
