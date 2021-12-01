@@ -13,7 +13,7 @@ class RankTests(TestCase):
 
         us = us_tester.test_create_null_upload_set()
         student = student_tester.test_create_student()
-
+        
         for course_id in prereq:
 
             if prereq[course_id] != "FIR":

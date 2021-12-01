@@ -224,8 +224,10 @@ class countsTester(TestCase):
         enrolment5.save()
         enrolment6.save()
 
-        count = count_coop_students_by_cohort("2019-2020")
-        self.assertTrue(count == 2)
+        count1 = count_coop_students_by_cohort("2019-2020")
+        count2 = count_coop_students_by_cohort("2018-2019")
+        self.assertTrue(count1 == 2)
+        self.assertTrue(count2 == 2)
 
     def test_count_total_students_by_semester(self):
         from ..counts import count_total_students_by_semester
@@ -338,9 +340,11 @@ class countsTester(TestCase):
         enrolment3.save()
         enrolment4.save()
 
-        count = count_total_students_by_cohort("2019-2020")
+        count1 = count_total_students_by_cohort("2019-2020")
+        count2 = count_total_students_by_cohort("2018-2019")
 
-        self.assertTrue(count == 2)
+        self.assertTrue(count1 == 1)
+        self.assertTrue(count2 == 2)
 
     def test_count_students_by_rank_semester(self):
         from ..counts import count_students_by_rank_semester

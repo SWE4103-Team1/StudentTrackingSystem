@@ -53,7 +53,7 @@ class DataLoaderTests(unittest.TestCase):
             course_data = [
                 "Student_ID\tProgram\tTerm\tCourse\tTitle\tGrade\tCredit_Hrs\tGrade_Pts\tSection\tInt_Transfers\tNotes_Codes\n",
                 "5773669\tBSSWE\t2021/WI\tCHEM*1982\tGENERAL APPLIED CHEMISTRY\tA\t3.00\t12.0\tFR01B\n",
-                "5004617\tBSSWE\t2021/WI\tPHYS*1081\tFOUNDATIONS OF PHYS FOR ENGG\tA\t3.00\t12.0\tFR01B\n",
+                "5773669\tBSSWE\t2021/WI\tPHYS*1081\tFOUNDATIONS OF PHYS FOR ENGG\tA\t3.00\t12.0\tFR01B\n",
                 "5773669\tBSSWE\t2021/WI\tPHYS*1081\tFOUNDATIONS OF PHYS FOR ENGG\tA\t3.00\t12.0\tFR01B\n",
             ]
             person_data = [
@@ -89,8 +89,8 @@ class DataLoaderTests(unittest.TestCase):
             self.assertEquals(len(db_students), 1)
 
             self.assertTrue(
-                Course.objects.filter(name="U/A BLOCK", course_code="BLOCK")
+                Course.objects.filter(course_code="EXTRA")
             )
             self.assertTrue(
-                Course.objects.filter(name="U/A BAS SCI (PHYS)", course_code="BAS SCI")
+                Course.objects.filter(course_code="BAS SCI")
             )
