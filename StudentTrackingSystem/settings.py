@@ -24,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "django-insecure-7uh^l%zllqn=^ujk_g_szhj#!f+vahxzw*w2)hx=_*^(8wpb)p"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = [".elasticbeanstalk.com", "localhost", "127.0.0.1", "172.31.35.174"]
 
@@ -146,4 +146,3 @@ CORS_ALLOWED_ORIGINS = [
     "http://swe4103-env.eba-tq53gcxr.us-east-1.elasticbeanstalk.com",
 ]
 
-#CORS_ORIGIN_ALLOW_ALL = True
