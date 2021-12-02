@@ -276,7 +276,6 @@ def get_transcript(request, student_num=0):
 
     student_transcript = []
     for entry in all_entries:
-        print("course type", entry.course.course_type)
         transcript = {
             "Course_Code": entry.course.course_code,
             "Course_Name": entry.course.name,

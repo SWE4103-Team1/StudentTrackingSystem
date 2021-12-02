@@ -197,7 +197,6 @@ class DataFileExtractor:
 
     def _new_course_model(self, dfc):
         course_type = get_course_type(dfc[3])
-        print("adding course type for", dfc[3], "as", course_type)
         course = Course(
             course_code=dfc[3],
             credit_hours=dfc[6],
