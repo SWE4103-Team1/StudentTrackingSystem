@@ -196,9 +196,11 @@ class DataFileExtractor:
         return course
 
     def _new_course_model(self, dfc):
+        course_type = get_course_type(dfc[3])
         course = Course(
             course_code=dfc[3],
             credit_hours=dfc[6],
+            course_type=course_type,
             name=dfc[4],
             section=dfc[8],
             upload_set=self._upload_set,

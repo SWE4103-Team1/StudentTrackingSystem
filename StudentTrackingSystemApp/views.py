@@ -271,12 +271,9 @@ def get_transcript(request, student_num=0):
     from django.shortcuts import HttpResponse
     from datamodel.models import Enrolment
     import json
-    from django.core import serializers
 
-    # get student id
-    student_ID = Student.objects.filter(student_number=student_num)
-    student_django_id = student_ID[0].id
-    all_entries = Enrolment.objects.filter(student_id=student_django_id)
+    all_entries = Enrolment.objects.filter(student__student_number=student_num)
+
     student_transcript = []
     for entry in all_entries:
         transcript = {
@@ -288,7 +285,6 @@ def get_transcript(request, student_num=0):
             "Credit_Hours": entry.course.credit_hours,
             "Grade": entry.grade,
         }
-        jsonstr = json.dumps(transcript)
         student_transcript.append(transcript)
 
     jsonstrMast = json.dumps(student_transcript)
