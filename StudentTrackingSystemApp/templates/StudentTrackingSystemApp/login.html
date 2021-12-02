@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+  {% load static %}
+  <head>
+    <title>Student Tracking System Login</title>
+    <meta charset="UTF-8" />
+    <link
+      rel="stylesheet"
+      href="{% static 'StudentTrackingSystemApp/main.css' %}"
+    />
+    <link
+      rel="stylesheet"
+      href="{% static 'StudentTrackingSystemApp/login.css' %}"
+    />
+  </head>
+
+  <body>
+    <h1>Login</h1>
+    <form method="POST">
+      {% csrf_token %}
+      <div class="container">
+        <input type="email" placeholder="Email" name="email" required />
+        <input
+          type="password"
+          placeholder="Password"
+          name="password"
+          required
+        />
+        <p style="text-align: center; color: red">{{error}}</p>
+        <button type="submit">Login</button>
+      </div>
+    </form>
+
+    <div class="links">
+      <span class="accnt">
+        <a href="{% url 'registerPage' %}"> Registration </a>
+      </span>
+    </div>
+  </body>
+</html>
