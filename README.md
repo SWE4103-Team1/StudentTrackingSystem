@@ -2,7 +2,7 @@
 
 [![Django CI](https://github.com/SWE4103-Team1/StudentTrackingSystem/actions/workflows/django.yml/badge.svg?branch=dev)](https://github.com/SWE4103-Team1/StudentTrackingSystem/actions/workflows/django.yml)
 ***
-# Visit our website on [Student Tracking System](http://swe4103production-env.eba-tq53gcxr.us-east-1.elasticbeanstalk.com)
+## ***Visit our website on [Student Tracking System](http://swe4103production-env.eba-tq53gcxr.us-east-1.elasticbeanstalk.com)***
 ***
 ## Dependencies
 
