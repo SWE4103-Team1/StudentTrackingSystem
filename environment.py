@@ -1,2 +1,2 @@
 local_prereq = False
-local_config = False
+local_config = True
