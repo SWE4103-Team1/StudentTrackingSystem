@@ -24,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "django-insecure-7uh^l%zllqn=^ujk_g_szhj#!f+vahxzw*w2)hx=_*^(8wpb)p"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = [".elasticbeanstalk.com", "localhost", "127.0.0.1", "172.31.35.174"]
 
@@ -140,11 +140,10 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR / "StudentTrackingSystemApp/static")]
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 AUTH_USER_MODEL = "users.User"
-# CORS_ALLOWED_ORIGINS = [ 
-#     "http://localhost:3000",
-#     "http://localhost:8000",
-#     "http://swe4103-env.eba-irrkpdyi.us-east-2.elasticbeanstalk.com",
-#     "http://" + HOSTNAME + ":8000",
-# ]
+CORS_ALLOWED_ORIGINS = [ 
+    "http://localhost:3000",
+    "http://localhost:8000",
+    "http://swe4103-env.eba-tq53gcxr.us-east-1.elasticbeanstalk.com",
+]
 
-CORS_ORIGIN_ALLOW_ALL = True
+#CORS_ORIGIN_ALLOW_ALL = True
